@@ -1,0 +1,8 @@
+@if (userProfile$ | async) {
+	@if (userPreferences$ | async) {
+		<app-analysis-request-form />
+	}
+}
+
+<h4>Your past results</h4>
+<app-analysis-result-list />

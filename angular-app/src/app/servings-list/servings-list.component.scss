@@ -1,0 +1,67 @@
+:host {
+	::ng-deep .mat-expansion-panel-body {
+		padding: 1rem;
+	}
+}
+.servings-date-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.date-navigation {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.loading-card {
+	display: flex;
+	gap: 1rem;
+	padding: 2rem;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 2rem;
+
+	p {
+		margin: 0;
+	}
+}
+
+.empty-state {
+	margin: 20px 0;
+	text-align: center;
+}
+
+.servings-by-category {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+mat-expansion-panel {
+	margin-bottom: 16px;
+}
+
+mat-panel-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+mat-expansion-panel-header {
+	padding: 0 16px;
+}
+
+.category-servings-list {
+	padding: 8px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+mat-divider {
+	margin: 0;
+}

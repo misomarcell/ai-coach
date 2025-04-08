@@ -1,0 +1,123 @@
+<div class="add-serving-container">
+	<h4 mat-dialog-title>
+		Add <em>{{ food.name }}</em> to My Servings
+	</h4>
+
+	<mat-dialog-content>
+		<form [formGroup]="form" class="food-form">
+			<div class="form-row">
+				<mat-form-field>
+					<mat-label>Amount</mat-label>
+					<input #amount matInput type="number" formControlName="amount" step="0.01" min="0.01" />
+					@if (form.get("amount")?.invalid && form.get("amount")?.touched) {
+						<mat-error>Please enter a valid amount</mat-error>
+					}
+				</mat-form-field>
+
+				<mat-form-field>
+					<mat-label>Serving Size</mat-label>
+					<mat-select formControlName="servingSize">
+						@for (size of food.servingSizes; track size.name) {
+							<mat-option [value]="size">
+								{{ size.name }} {{ size.name !== "g" ? "(" + size.gramWeight + "g)" : "" }}
+							</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+			</div>
+
+			<div class="form-row">
+				<mat-form-field>
+					<mat-label>Time</mat-label>
+					<input matInput formControlName="time" placeholder="HH:MM" />
+					@if (form.get("time")?.invalid && form.get("time")?.touched) {
+						<mat-error>Please enter a valid time (HH:MM)</mat-error>
+					}
+				</mat-form-field>
+
+				<mat-form-field>
+					<mat-label>Category</mat-label>
+					<mat-select formControlName="category">
+						@for (category of servingCategories; track category) {
+							<mat-option [value]="category">{{ category }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+			</div>
+		</form>
+
+		<div class="food-details">
+			<div class="macros-panel">
+				<h4 class="title">Nutrition Information</h4>
+				<div class="macros-list">
+					<div class="macro-item">
+						<span class="macro-label">{{ "Energy" }}</span>
+						<span class="macro-value">{{ nutritions["Calories"] | number: "1.0-2" }} kcal</span>
+					</div>
+					<div class="macro-item">
+						<span class="macro-label">{{ "Total fat" }}</span>
+						<span class="macro-value">{{ nutritions["Total Fat"] | number: "1.0-2" }} g</span>
+					</div>
+					<div class="macro-item">
+						<span class="macro-label indent">{{ "Of which saturated" }}</span>
+						<span class="macro-value">{{ nutritions["Saturated Fat"] | number: "1.0-2" }} g</span>
+					</div>
+					<div class="macro-item">
+						<span class="macro-label">{{ "Carbohydrates" }}</span>
+						<span class="macro-value">{{ nutritions["Carbohydrates"] | number: "1.0-2" }} g</span>
+					</div>
+					<div class="macro-item">
+						<span class="macro-label indent">{{ "Of which sugars" }}</span>
+						<span class="macro-value">{{ nutritions["Sugar"] | number: "1.0-2" }} g</span>
+					</div>
+					<div class="macro-item">
+						<span class="macro-label">{{ "Protein" }}</span>
+						<span class="macro-value">{{ nutritions["Protein"] | number: "1.0-2" }} g</span>
+					</div>
+					<div class="macro-item">
+						<span class="macro-label">{{ "Sodium" }}</span>
+						<span class="macro-value">{{ nutritions["Sodium"] | number: "1.0-2" }} g</span>
+					</div>
+				</div>
+			</div>
+
+			<mat-expansion-panel class="nutrition-panel">
+				<mat-expansion-panel-header>
+					<mat-panel-title>Full Nutrition Details</mat-panel-title>
+				</mat-expansion-panel-header>
+
+				<div class="nutrition-list">
+					@for (nutrition of getSortedNutritionList(); track nutrition.type) {
+						<div class="nutrition-item">
+							<span class="nutrition-label">{{ nutrition.type }}</span>
+							<span class="nutrition-value"> {{ nutritions[nutrition.type] | number: "1.0-2" }} {{ nutrition.unit }} </span>
+						</div>
+					}
+				</div>
+			</mat-expansion-panel>
+
+			@if (food.dietaryFlags && dietaryFlags.length > 0) {
+				<div class="dietary-flags">
+					<h4>Dietary Information</h4>
+					<mat-chip-set>
+						@for (flag of food.dietaryFlags; track flag) {
+							<mat-chip>{{ flag }}</mat-chip>
+						}
+					</mat-chip-set>
+				</div>
+			}
+		</div>
+	</mat-dialog-content>
+
+	<mat-dialog-actions align="end">
+		<button mat-stroked-button (click)="onClose()">Close</button>
+		<button mat-flat-button class="add-serving-button" [disabled]="form.invalid || isSubmitting" (click)="onAddServing()">
+			<mat-icon>add</mat-icon>
+			@if (isSubmitting) {
+				Adding...
+			} @else {
+				Add Serving
+			}
+		</button>
+	</mat-dialog-actions>
+</div>

@@ -1,0 +1,7 @@
+@if (isLoading()) {
+	<div class="loader-wrapper">
+		<mat-spinner [diameter]="64" />
+	</div>
+} @else {
+	<app-barcode-scanner (scanComplete)="onScanComplete($event)" />
+}

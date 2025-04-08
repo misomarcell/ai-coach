@@ -1,0 +1,17 @@
+:host {
+	display: flex;
+	height: 100vh;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	padding: 0 1rem;
+
+	h4 {
+		margin-bottom: 5rem;
+	}
+
+	button {
+		width: 100%;
+	}
+}

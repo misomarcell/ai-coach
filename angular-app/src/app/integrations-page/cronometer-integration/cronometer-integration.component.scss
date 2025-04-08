@@ -1,0 +1,58 @@
+.connect-panel-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.connect-form {
+	display: flex;
+	flex-direction: column;
+
+	.consent {
+		--mat-checkbox-label-text-size: 1rem;
+		--mat-checkbox-label-text-line-height: 1;
+	}
+
+	.disclaimer {
+		margin-top: 1rem;
+		font-size: 0.8rem;
+	}
+}
+.status-message {
+	display: flex;
+	gap: 0.5rem;
+
+	&.column {
+		flex-direction: column;
+	}
+
+	.mat-icon {
+		flex-shrink: 0;
+	}
+}
+
+.try-again-button-wrapper {
+	text-align: right;
+	margin-top: 1rem;
+}
+
+.upload-progress-container {
+	margin-top: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.upload-progress-text {
+	font-size: 0.8rem;
+	color: #666;
+	text-align: center;
+}
+
+.success-message {
+	border: 1px solid rgba(50, 180, 80, 0.6);
+
+	mat-icon {
+		color: #32b450;
+	}
+}

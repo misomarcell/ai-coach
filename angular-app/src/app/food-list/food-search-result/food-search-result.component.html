@@ -1,0 +1,23 @@
+@let _food = food();
+<mat-card class="food-search-result" (click)="onFoodClick()">
+	<div class="food-name" [innerHTML]="_food.brand ? _food.brand + ', ' + _food.name : _food.name"></div>
+	<div class="food-category" [innerHTML]="_food.source ? _food.category + ' • ' + _food.source : _food.category"></div>
+	<div class="food-details">
+		<div class="quick-detail">
+			<span class="detail-value">{{ getNutritionFor(_food, "Calories") | number: "1.0-2" }}kcal</span>
+			<span class="detail-title">Calories</span>
+		</div>
+		<div class="quick-detail">
+			<span class="detail-value">{{ getNutritionFor(_food, "Total Fat") | number: "1.0-2" }}g</span>
+			<span class="detail-title">Fat</span>
+		</div>
+		<div class="quick-detail">
+			<span class="detail-value">{{ getNutritionFor(_food, "Carbohydrates") | number: "1.0-2" }}g</span>
+			<span class="detail-title">Carbs</span>
+		</div>
+		<div class="quick-detail">
+			<span class="detail-value">{{ getNutritionFor(_food, "Protein") | number: "1.0-2" }}g</span>
+			<span class="detail-title">Protein</span>
+		</div>
+	</div>
+</mat-card>

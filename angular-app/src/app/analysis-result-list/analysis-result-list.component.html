@@ -1,0 +1,13 @@
+@if (analyses$ | async; as analyses) {
+	@if (analyses.length > 0) {
+		<div class="result-list">
+			@for (analysis of analyses; track analysis?.id) {
+				<app-analysis-card [analysis]="analysis" />
+			}
+		</div>
+	} @else {
+		<mat-card>
+			<mat-card-content> No results yet. You can request an analysis with the buttons above. </mat-card-content>
+		</mat-card>
+	}
+}

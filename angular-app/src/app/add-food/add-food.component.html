@@ -1,0 +1,37 @@
+@let _loadingStatus = loadingStatus();
+@if (!_loadingStatus) {
+	@let _foodId = foodId();
+	@let _analysisResult = analysisResult();
+	<div class="add-food-container">
+		@if (_foodId && _analysisResult?.status === "prefilled") {
+			<app-add-food-form [food]="analysisResult()" />
+		} @else if (_analysisResult?.status === "invalid") {
+			<div class="error-message">
+				<mat-icon>error</mat-icon>
+				<p>We were not albe to extract data from the uploaded images. Please try again.</p>
+				<button mat-flat-button color="primary" (click)="onTryAgainClick()">Try again</button>
+			</div>
+		} @else {
+			<app-label-analyzer [foodId]="_foodId" (analysisComplete)="onAnalyzisComplete($event)" />
+			<button mat-button class="skip-button" (click)="skipAnalysis()">Skip analysis</button>
+		}
+	</div>
+} @else {
+	<div class="loading-container">
+		<mat-spinner [diameter]="64" />
+		@switch (_loadingStatus) {
+			@case ("InitDocument") {
+				<p>Initializing document...</p>
+			}
+			@case ("UploadingImages") {
+				<p>Uploading images...</p>
+			}
+			@case ("AnalyzingLabel") {
+				<p>Analyzing label...</p>
+			}
+			@default {
+				<p>Loading...</p>
+			}
+		}
+	</div>
+}

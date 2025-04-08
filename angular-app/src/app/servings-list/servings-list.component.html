@@ -1,0 +1,47 @@
+<div class="servings-list-container">
+	<div class="servings-date-header">
+		<strong>{{ selectedDate.value | date: "YYYY-MM-dd" }}</strong>
+		<div class="date-navigation">
+			<button mat-icon-button color="primary" (click)="previousDay()">
+				<mat-icon>navigate_before</mat-icon>
+			</button>
+			<button mat-stroked-button color="primary" (click)="today()">Today</button>
+			<button mat-icon-button color="primary" (click)="nextDay()">
+				<mat-icon>navigate_next</mat-icon>
+			</button>
+		</div>
+	</div>
+
+	@if (isLoading()) {
+		<mat-card class="loading-card">
+			<mat-spinner diameter="24" />
+			<p>Fetching history...</p>
+		</mat-card>
+	} @else if (isResultEmpty()) {
+		<div class="empty-state">
+			<mat-card>
+				<mat-card-content>
+					<p>Nothing logged yet.</p>
+				</mat-card-content>
+			</mat-card>
+		</div>
+	}
+
+	<div class="servings-by-category">
+		@for (category of servingCategories; track category) {
+			@if (getServingsByCategory(category); as servings) {
+				<mat-expansion-panel [expanded]="servings.length > 0">
+					<mat-expansion-panel-header>
+						<mat-panel-title> {{ category }} ({{ servings.length }}) </mat-panel-title>
+					</mat-expansion-panel-header>
+
+					<div class="category-servings-list">
+						@for (serving of servings; track serving.id) {
+							<app-serving-item [serving]="serving" (click)="openServingDetails(serving)" />
+						}
+					</div>
+				</mat-expansion-panel>
+			}
+		}
+	</div>
+</div>

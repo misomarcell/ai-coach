@@ -1,0 +1,93 @@
+<mat-expansion-panel class="connect-panel">
+	<mat-expansion-panel-header>
+		<mat-panel-title class="connect-panel-title">
+			<mat-icon [svgIcon]="'cronometer'" />
+			<span>Cronometer</span>
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	@if (!exportStatus()) {
+		@if (credentials(); as credentials) {
+			@if (credentials.status === "processing") {
+				<div class="status-message">
+					<mat-spinner diameter="24" />
+					<span>Connecting to your account...</span>
+				</div>
+			} @else if (credentials.status === "invalid") {
+				<div class="status-message">
+					<mat-icon>error_outline</mat-icon>
+					<span>Could not log in to your Cronometer account with the provided credentials.</span>
+				</div>
+				<div class="try-again-button-wrapper">
+					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
+				</div>
+			} @else {
+				<div class="status-message column">
+					<span>Connected ({{ credentials.username }})</span>
+					<button mat-flat-button (click)="requestServingsExport('cronometer')">Export servings</button>
+				</div>
+			}
+		} @else {
+			<form [formGroup]="formGroup" class="connect-form">
+				<mat-form-field>
+					<mat-label>Cronometer login E-mail</mat-label>
+					<input matInput formControlName="email" name="email" autocomplete="email" />
+				</mat-form-field>
+				<mat-form-field>
+					<mat-label>Cronometer login password</mat-label>
+					<input matInput formControlName="password" [type]="isPasswordVisible ? 'text' : 'password'" />
+					<mat-icon matSuffix (click)="isPasswordVisible = !isPasswordVisible">
+						{{ isPasswordVisible ? "visibility_off" : "visibility" }}
+					</mat-icon>
+				</mat-form-field>
+				<p class="disclaimer">Becasue cronometer does not offer API for exporting your data, we need to store your credentials.</p>
+				<p class="consent">
+					<mat-checkbox formControlName="consent"> I consent to storing my credentials in clear text </mat-checkbox>
+				</p>
+
+				@if (formGroup.invalid) {
+					<ul>
+						<li *ngFor="let error of getFormErrors()">
+							<mat-error> {{ error.message }}</mat-error>
+						</li>
+					</ul>
+				}
+
+				<button mat-flat-button color="primary" (click)="onConnectClick()">Connect Cronometer</button>
+			</form>
+
+			<mat-divider class="mt-2 mb-2" />
+
+			<input #fileInput type="file" accept=".csv" (change)="onFileSelected($event)" style="display: none" />
+			<button mat-stroked-button class="w-100" (click)="fileInput.click()" [disabled]="!!uploadProgress()">
+				<mat-icon>file_upload</mat-icon>
+				Upload CSV
+			</button>
+
+			@if (uploadProgress() !== null) {
+				<div class="upload-progress-container">
+					<mat-progress-bar mode="determinate" [value]="uploadProgress()!" />
+					<span class="upload-progress-text">Uploading: {{ uploadProgress()!.toFixed(0) }}%</span>
+				</div>
+			}
+		}
+	} @else {
+		<div class="status-message">
+			<mat-spinner diameter="24" />
+			@switch (exportStatus()) {
+				@case ("pending") {
+					<span>Export requested. Waiting for robots...</span>
+				}
+				@case ("exporting") {
+					<span>Robots found. Exporting data...</span>
+				}
+				@case ("processing") {
+					<span>Data exported. Processing...</span>
+				}
+				@default {
+					<span>Export servings data</span>
+				}
+			}
+		</div>
+	}
+</mat-expansion-panel>

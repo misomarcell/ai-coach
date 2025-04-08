@@ -1,0 +1,24 @@
+<mat-expansion-panel class="connect-panel">
+	<mat-expansion-panel-header>
+		<mat-panel-title class="connect-panel-title">
+			<mat-icon [svgIcon]="'telegram'" />
+			<span>Telegram</span>
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	@if (telegramUsername(); as username) {
+		<div class="connected-wrapper">
+			<strong>Connected</strong>
+			<p>Your Telegram account is already connected.</p>
+		</div>
+	} @else {
+		<div>
+			<strong>Connect Telegram</strong>
+			<p>Get notified when your analysis is ready.</p>
+		</div>
+
+		@if (connectCode(); as connectCode) {
+			<button mat-flat-button class="w-100" (click)="onConnectClick(connectCode)">Connect Telegram</button>
+		}
+	}
+</mat-expansion-panel>

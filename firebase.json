@@ -1,0 +1,54 @@
+{
+	"firestore": {
+		"rules": "firestore.rules",
+		"indexes": "firestore.indexes.json"
+	},
+	"functions": [
+		{
+			"source": "functions",
+			"codebase": "default",
+			"ignore": ["node_modules", "downloads/**", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
+			"predeploy": [
+				"npm --prefix \"./shared\" run build",
+				"npm --prefix \"$RESOURCE_DIR\" run lint",
+				"npm --prefix \"$RESOURCE_DIR\" run build"
+			]
+		}
+	],
+	"hosting": {
+		"source": "angular-app",
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**", "downloads/**"],
+		"frameworksBackend": {
+			"region": "europe-west1"
+		}
+	},
+	"emulators": {
+		"functions": {
+			"port": 5001,
+			"host": "0.0.0.0"
+		},
+		"firestore": {
+			"port": 8080
+		},
+		"hosting": {
+			"frameworksBackend": {
+				"region": "europe-west1"
+			},
+			"source": "."
+		},
+		"ui": {
+			"enabled": true
+		},
+		"singleProjectMode": true,
+		"auth": {
+			"port": 9099,
+			"host": "0.0.0.0"
+		}
+	},
+	"storage": {
+		"rules": "storage.rules"
+	},
+	"extensions": {
+		"firestore-algolia-search": "algolia/firestore-algolia-search@1.2.9"
+	}
+}

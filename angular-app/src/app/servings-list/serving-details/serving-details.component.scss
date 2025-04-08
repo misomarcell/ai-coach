@@ -1,0 +1,95 @@
+:host {
+	display: block;
+}
+
+.mat-mdc-dialog-title,
+.mat-mdc-dialog-actions {
+	background-color: var(--mat-sys-surface-container);
+}
+
+.mat-mdc-dialog-content {
+	padding: 0 1rem;
+}
+
+.approved-icon {
+	color: #4caf50;
+	vertical-align: middle;
+}
+
+.details-section,
+.food-details-section,
+.nutrition-section {
+	margin: 16px 0;
+}
+
+.detail-row {
+	display: flex;
+	margin-bottom: 8px;
+
+	.detail-label {
+		font-weight: 500;
+		flex: 1;
+	}
+
+	.detail-value {
+		flex: 1;
+	}
+}
+
+.flags-list,
+.tags-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.main-nutrients {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	justify-items: center;
+	gap: 1rem;
+	margin: 1rem 0;
+
+	.nutrient-value {
+		font-size: 1.5rem;
+	}
+}
+
+.main-nutrient-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.nutrient-value {
+	font-weight: 500;
+	margin-bottom: 4px;
+}
+
+.nutrient-type {
+	&.bold {
+		font-weight: 700;
+	}
+}
+
+.other-nutrients {
+	display: flex;
+	flex-direction: column;
+	margin: 16px auto;
+	max-width: 600px;
+}
+
+.nutrient-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 4px 6px;
+
+	&.alternate:nth-last-of-type(odd) {
+		background-color: var(--mat-sys-surface-container);
+	}
+}
+
+.close-button {
+	flex-grow: 1;
+}

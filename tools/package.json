@@ -1,0 +1,22 @@
+{
+	"name": "tools",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"see-algolia": "npx tsc seed-algolia.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"dependencies": {
+		"algoliasearch": "^5.23.2",
+		"dotenv": "^16.4.7",
+		"firebase-admin": "^13.2.0",
+		"xlsx": "^0.18.5"
+	},
+	"devDependencies": {
+		"@types/node": "^22.14.0"
+	}
+}

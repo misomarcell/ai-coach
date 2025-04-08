@@ -1,0 +1,92 @@
+<h4>Upload product photos</h4>
+<div class="analyzer-container">
+	<mat-expansion-panel [expanded]="isPackagePanelOpen" class="upload-expansion">
+		<mat-expansion-panel-header>
+			<mat-panel-title class="upload-expansion-title">
+				<mat-icon>{{ packageImage().preview ? "done" : "photo_camera" }}</mat-icon>
+				Product packaging
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+
+		@if (!packageImage().preview) {
+			Upload a clear image of the product packaging, making sure the brand and product name is visible.
+		}
+
+		<div class="photo-buttons">
+			<button mat-stroked-button (click)="packageFileInput.click()">
+				<input #packageFileInput type="file" (change)="onFileSelected($event, 'package')" accept="image/*" hidden />
+				<mat-icon>attach_file</mat-icon>
+				Choose image
+			</button>
+			<button mat-stroked-button (click)="packageCameraInput.click()">
+				<input
+					#packageCameraInput
+					type="file"
+					accept="image/*"
+					capture="environment"
+					(change)="onFileSelected($event, 'package')"
+					hidden
+				/>
+				<mat-icon>photo_camera</mat-icon>
+				Open camera
+			</button>
+		</div>
+
+		@if (packageImage().preview) {
+			<div class="image-preview">
+				<button mat-icon-button class="discard-button" color="warn" (click)="resetFileInput('package')">
+					<mat-icon>close</mat-icon>
+				</button>
+				<img [src]="packageImage().preview" alt="Package preview" />
+			</div>
+		}
+	</mat-expansion-panel>
+
+	<mat-expansion-panel [expanded]="isLabelPanelOpen" class="upload-expansion">
+		<mat-expansion-panel-header>
+			<mat-panel-title class="upload-expansion-title">
+				<mat-icon>{{ labelImage().preview ? "done" : "photo_camera" }}</mat-icon>
+				Nutrition label
+			</mat-panel-title>
+		</mat-expansion-panel-header>
+
+		@if (!labelImage().preview) {
+			Upload a clear image of the nutrition label.
+		}
+
+		<div class="photo-buttons">
+			<button mat-stroked-button (click)="labelFileInput.click()">
+				<input #labelFileInput type="file" (change)="onFileSelected($event, 'label')" accept="image/*" hidden />
+				<mat-icon>attach_file</mat-icon>
+				Choose image
+			</button>
+			<button mat-stroked-button (click)="labelCameraInput.click()">
+				<input
+					#labelCameraInput
+					type="file"
+					accept="image/*"
+					capture="environment"
+					(change)="onFileSelected($event, 'label')"
+					hidden
+				/>
+				<mat-icon>photo_camera</mat-icon>
+				Open camera
+			</button>
+		</div>
+
+		@if (labelImage().preview) {
+			<div class="image-preview">
+				<button mat-icon-button class="discard-button" color="warn" (click)="resetFileInput('label')">
+					<mat-icon>close</mat-icon>
+				</button>
+				<img [src]="labelImage().preview" alt="Label preview" />
+			</div>
+		}
+	</mat-expansion-panel>
+
+	<div class="actions">
+		<button mat-flat-button color="primary" [disabled]="!areImagesReady()" (click)="uploadImages()" class="analyze-button">
+			Send for Analysis
+		</button>
+	</div>
+</div>

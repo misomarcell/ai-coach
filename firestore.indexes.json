@@ -1,0 +1,65 @@
+{
+	"indexes": [
+		{
+			"collectionGroup": "analyses",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "request.status",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "request.created",
+					"order": "DESCENDING"
+				}
+			]
+		},
+		{
+			"collectionGroup": "credentials",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "status",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "type",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "verifiedAt",
+					"order": "DESCENDING"
+				}
+			]
+		},
+		{
+			"collectionGroup": "credentials",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "type",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "created",
+					"order": "DESCENDING"
+				}
+			]
+		},
+		{
+			"collectionGroup": "credentials",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "type",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "verifiedAt",
+					"order": "DESCENDING"
+				}
+			]
+		}
+	],
+	"fieldOverrides": []
+}

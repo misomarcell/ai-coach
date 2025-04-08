@@ -1,0 +1,26 @@
+.user-avatar {
+	background-size: contain;
+	border: 1px solid var(--mat-sys-background);
+}
+
+.mat-mdc-card-header-text {
+	width: 100%;
+}
+
+.mat-mdc-card-title {
+	display: flex;
+	width: 100%;
+
+	.user-name {
+		flex-grow: 1;
+	}
+
+	.status-icons {
+		display: flex;
+		gap: 0.5rem;
+	}
+}
+
+.user-card-actions {
+	gap: 1rem;
+}

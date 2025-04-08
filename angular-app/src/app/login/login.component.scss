@@ -1,0 +1,61 @@
+.login-wrapper {
+	transform: translateY(50%);
+	max-width: 650px;
+	padding: 0 1rem;
+	margin: 0 auto;
+
+	h3 {
+		font-weight: 900;
+	}
+
+	.login-card {
+		.btn-google {
+			--mdc-filled-button-container-color: #db4437;
+			--mdc-filled-button-label-text-color: #e6e6e6;
+		}
+
+		.btn-github {
+			--mdc-filled-button-container-color: #2b3137;
+			--mdc-filled-button-label-text-color: #fafbfc;
+		}
+
+		padding: 1rem;
+		display: flex;
+		gap: 1rem;
+
+		.login-disclaimer {
+			font-size: 0.8rem;
+			color: #666;
+		}
+	}
+
+	.ai-highlight {
+		display: inline-block;
+		color: #fff;
+		background: linear-gradient(45deg, #ff6b6b, #ff8e53, #ffd43b, #4ecdc4, #45b7d1, #96c93d, #ff6b6b);
+		background-size: 200% 200%;
+		background-clip: text;
+		animation: plasmaWave 5s ease-in-out infinite;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: 0.5px #ccc;
+
+		@keyframes plasmaWave {
+			0% {
+				background-position: 0% 0%;
+			}
+			25% {
+				background-position: 000% 100%;
+			}
+			50% {
+				background-position: 100% 100%;
+			}
+			75% {
+				background-position: 100% 0%;
+			}
+			100% {
+				background-position: 0% 0%;
+			}
+		}
+	}
+}

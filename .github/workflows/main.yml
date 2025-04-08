@@ -1,0 +1,48 @@
+name: Deploy Project to Firebase
+on:
+    push:
+        branches: [main]
+jobs:
+    build:
+        name: "Build Projects"
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - name: "Install: Shared"
+              run: npm ci
+              working-directory: ./shared
+
+            - name: "Install: Angular App"
+              run: npm ci
+              working-directory: ./angular-app
+
+            - name: "Install: Functions"
+              run: npm ci
+              working-directory: ./functions
+
+            - name: "Build: Shared"
+              run: npm run build
+              working-directory: ./shared
+
+            - name: "Build: Functions"
+              run: npm run build
+              working-directory: ./functions
+
+            - name: "Deploy to Firebase"
+              run: |
+                  echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KOMBUCH_AI }}" | base64 -d > service-account.json
+                  ls
+                  npm install -g firebase-tools
+                  firebase experiments:enable webframeworks
+                  firebase deploy --only hosting,storage,functions --force --project kombuch-ai
+              env:
+                  GOOGLE_APPLICATION_CREDENTIALS: service-account.json
+              working-directory: ./
+            - name: Cleanup
+              run: rm -rf service-account.json
+              if: always()

@@ -1,0 +1,18 @@
+.mat-expansion-panel-header-title {
+	gap: 0.5rem;
+
+	mat-icon {
+		color: var(--accent-light);
+	}
+}
+
+.mat-mdc-radio-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.submit-button {
+	margin-top: 2rem;
+	width: 100%;
+}

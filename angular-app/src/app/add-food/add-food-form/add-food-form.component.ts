@@ -1,0 +1,288 @@
+import {
+	dietaryFlags,
+	Food,
+	foodCategories,
+	FoodStatus,
+	NutritionType,
+	nutritionTypes,
+	NutritionUnit,
+	nutritionUnits
+} from "@aicoach/shared";
+import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { CommonModule } from "@angular/common";
+import { Component, inject, input, OnInit, signal } from "@angular/core";
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { Router } from "@angular/router";
+import { catchError, EMPTY, finalize, from, switchMap, take, tap } from "rxjs";
+import { BarcodeScannerService } from "../../services/barcode-scanner.service";
+import { FoodService } from "../../services/food.service";
+
+@Component({
+	selector: "app-add-food-form",
+	imports: [
+		CommonModule,
+		ReactiveFormsModule,
+		MatButtonModule,
+		MatCardModule,
+		MatMenuModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatSelectModule,
+		MatAutocompleteModule,
+		MatChipsModule,
+		MatIconModule,
+		MatProgressSpinnerModule
+	],
+	templateUrl: "./add-food-form.component.html",
+	styleUrl: "./add-food-form.component.scss"
+})
+export class AddFoodFormComponent implements OnInit {
+	foodForm!: FormGroup;
+	remainingNutritions: NutritionType[] = [];
+	separatorKeysCodes: number[] = [ENTER, COMMA];
+	selectedDietaryFlags: string[] = [];
+	tags: string[] = [];
+
+	nutritionTypes = nutritionTypes;
+	nutritionUnits = nutritionUnits;
+	foodCategories = foodCategories;
+
+	defaultNutritions: NutritionType[] = ["Calories", "Total Fat", "Saturated Fat", "Carbohydrates", "Sugar", "Fiber", "Protein", "Sodium"];
+	dietaryFlags = dietaryFlags;
+
+	private router = inject(Router);
+	private foodService = inject(FoodService);
+	private scannerService = inject(BarcodeScannerService);
+	private formBuilder = inject(FormBuilder);
+	private snackBar = inject(MatSnackBar);
+
+	isLoading = signal(false);
+	food = input<Partial<Food>>();
+
+	ngOnInit(): void {
+		this.initForm();
+		this.updateRemainingNutritions();
+		this.prefillAnalyzerResult();
+	}
+
+	initForm(): void {
+		this.foodForm = this.formBuilder.group({
+			name: ["", Validators.required],
+			brand: [""],
+			barcode: [""],
+			category: ["", Validators.required],
+			variation: [""],
+			nutritions: this.formBuilder.array(this.createDefaultNutritions()),
+			servingSizes: this.formBuilder.array([this.createServingSize("100g", 100)]),
+			dietaryFlags: [this.selectedDietaryFlags],
+			tags: [this.tags]
+		});
+	}
+
+	onSubmit(): void {
+		const foodId = this.food()?.id;
+		if (!this.foodForm.valid || !foodId) {
+			console.log("Form is invalid or foodId is not set", { valid: this.foodForm.valid, foodId: this.food()?.id });
+			return;
+		}
+
+		this.isLoading.set(true);
+		this.foodService
+			.updateFood(foodId, { ...this.foodForm.value, status: FoodStatus.Created })
+			.pipe(
+				take(1),
+				tap(() => {
+					this.snackBar.open("Food item updated successfully!", "Close", {
+						duration: 3000
+					});
+				}),
+				catchError(() => {
+					this.snackBar.open("Error updating food item", "Close", {
+						duration: 3000
+					});
+
+					return EMPTY;
+				}),
+				switchMap(() => from(this.router.navigate(["/home"]))),
+				finalize(() => () => this.isLoading.set(false))
+			)
+			.subscribe();
+	}
+
+	createDefaultNutritions(): FormGroup[] {
+		return this.defaultNutritions.map((type) => {
+			return this.createNutrition(type);
+		});
+	}
+
+	createNutrition(type: NutritionType): FormGroup {
+		return this.formBuilder.group({
+			type: new FormControl<NutritionType>(type, [Validators.required]),
+			unit: new FormControl<NutritionUnit>("g"),
+			amount: new FormControl<number>(0, [Validators.required, Validators.min(0)])
+		});
+	}
+
+	createServingSize(name = "", weight = 0): FormGroup {
+		return this.formBuilder.group({
+			name: [name, Validators.required],
+			weight: [weight, [Validators.required, Validators.min(0)]]
+		});
+	}
+
+	get nutritionsFormArray(): FormArray {
+		return this.foodForm.get("nutritions") as FormArray;
+	}
+
+	get servingSizesFormArray(): FormArray {
+		return this.foodForm.get("servingSizes") as FormArray;
+	}
+
+	updateRemainingNutritions(): void {
+		const currentTypes = this.nutritionsFormArray.controls.map((control) => control.get("type")?.value);
+		this.remainingNutritions = nutritionTypes.filter((type) => !currentTypes.includes(type));
+	}
+
+	isNutritionTypeUnique(type: NutritionType): boolean {
+		const currentTypes = this.nutritionsFormArray.controls.map((control) => control.get("type")?.value);
+		return !currentTypes.includes(type);
+	}
+
+	isNutritionTypeUniqueExcept(type: NutritionType, exceptIndex: number): boolean {
+		const currentTypes = this.nutritionsFormArray.controls
+			.map((control, index) => ({ value: control.get("type")?.value, index }))
+			.filter((item) => item.index !== exceptIndex)
+			.map((item) => item.value);
+
+		return !currentTypes.includes(type);
+	}
+
+	onNutritionTypeChange(event: any, index: number): void {
+		const selectedType = event.value;
+		const otherTypes = this.nutritionsFormArray.controls
+			.map((control, i) => ({ value: control.get("type")?.value, index: i }))
+			.filter((item) => item.index !== index)
+			.map((item) => item.value);
+
+		if (otherTypes.includes(selectedType)) {
+			const control = this.nutritionsFormArray.at(index).get("type");
+			if (control) {
+				const previousValue = control.value;
+				if (previousValue !== selectedType) {
+					setTimeout(() => {
+						control.setValue(previousValue);
+					});
+				}
+			}
+		}
+
+		this.updateRemainingNutritions();
+	}
+
+	addNutrition(type?: NutritionType): void {
+		if (type && !this.isNutritionTypeUnique(type)) {
+			return;
+		}
+
+		this.nutritionsFormArray.push(this.createNutrition(type!));
+		this.updateRemainingNutritions();
+	}
+
+	removeNutrition(index: number): void {
+		this.nutritionsFormArray.removeAt(index);
+		this.updateRemainingNutritions();
+	}
+
+	addServingSize(): void {
+		if (this.servingSizesFormArray.length < 11) {
+			this.servingSizesFormArray.push(this.createServingSize());
+		}
+	}
+
+	removeServing(index: number): void {
+		this.servingSizesFormArray.removeAt(index);
+	}
+
+	onScanBarcodeClick() {
+		this.scannerService.scanBarcode(true).subscribe((result) => {
+			if (result) {
+				const barcodeControl = this.foodForm.get("barcode");
+				if (barcodeControl) {
+					barcodeControl.enable();
+					barcodeControl.setValue(result.getText());
+				}
+			}
+		});
+	}
+
+	addTag(event: MatChipInputEvent): void {
+		const value = (event.value || "").trim().toLowerCase();
+
+		if (value) {
+			this.tags.push(value);
+			this.foodForm.get("tags")?.setValue(this.tags);
+		}
+
+		event.chipInput!.clear();
+	}
+
+	removeTag(tag: string): void {
+		const index = this.tags.indexOf(tag);
+
+		if (index >= 0) {
+			this.tags.splice(index, 1);
+			this.foodForm.get("tags")?.setValue(this.tags);
+		}
+	}
+
+	toggleDietaryFlag(flag: string): void {
+		const flagControl = this.foodForm.get("dietaryFlags")?.value;
+		if (flagControl) {
+			const currentFlags = flagControl.value as string[];
+			if (this.selectedDietaryFlags.includes(flag)) {
+				this.selectedDietaryFlags = currentFlags.filter((f) => f !== flag);
+			} else {
+				this.selectedDietaryFlags.push(flag);
+			}
+
+			this.foodForm.get("dietaryFlags")?.setValue(this.selectedDietaryFlags);
+		}
+	}
+
+	private prefillAnalyzerResult(): void {
+		const prefilledFood = this.food();
+		if (!prefilledFood || !this.foodForm) {
+			return;
+		}
+
+		this.foodForm.get("name")?.setValue(prefilledFood.name || "");
+		this.foodForm.get("brand")?.setValue(prefilledFood.brand || "");
+		this.foodForm.get("variation")?.setValue(prefilledFood.variation || "");
+		this.foodForm.get("barcode")?.setValue(prefilledFood.barcode || "");
+		this.foodForm.get("category")?.setValue(prefilledFood.category || "");
+		this.foodForm.get("nutritions")?.patchValue(prefilledFood.nutritions || []);
+		this.foodForm.get("servingSizes")?.patchValue(prefilledFood.servingSizes || []);
+
+		this.tags = prefilledFood.tags || [];
+		this.foodForm.get("tags")?.setValue(this.tags);
+		this.selectedDietaryFlags = prefilledFood.dietaryFlags || [];
+		this.foodForm.get("dietaryFlags")?.setValue(this.selectedDietaryFlags);
+
+		this.foodForm.get("nutritions")?.value.forEach((nutrition: any, index: number) => {
+			if (nutrition.amount === 0) {
+				this.nutritionsFormArray.removeAt(index);
+			}
+		});
+	}
+}

@@ -1,0 +1,114 @@
+@use "@angular/material" as mat;
+@use "../theme-colors" as theme-colors;
+@import url("https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+$theme: mat.define-theme(
+	(
+		color: (
+			theme-type: dark,
+			primary: theme-colors.$primary-palette,
+			tertiary: theme-colors.$tertiary-palette
+		),
+		typography: (
+			plain-family: Aleo,
+			brand-family: Montserrat,
+			bold-weight: 900,
+			medium-weight: 700,
+			regular-weight: 500
+		),
+		density: (
+			scale: 0
+		)
+	)
+);
+
+body {
+	@include mat.core();
+	@include mat.all-component-themes($theme);
+	@include mat.system-level-colors($theme);
+
+	.mat-mdc-menu-panel {
+		--mat-menu-container-color: var(--mat-sys-on-secondary);
+		--mat-menu-item-spacing: 2rem;
+		--mat-menu-item-with-icon-leading-spacing: 1rem;
+		--mat-menu-item-with-icon-trailing-spacing: 1rem;
+		--mat-menu-item-label-text-size: 1rem;
+	}
+}
+
+@include mat.typography-hierarchy($theme);
+
+html,
+body {
+	background: var(--mat-sys-surface);
+	color: var(--mat-sys-on-surface);
+	height: 100%;
+	margin: 0;
+
+	--mat-expansion-container-background-color: var(--mat-sys-surface-container);
+}
+
+:root {
+	--accent-color: #ffa41e;
+	--accent-light: #ffca7a;
+	--success-color: #2abb58;
+	--success-light: #5fd876;
+	--primary-color: #41b8e0;
+	--primary-light: #63d4fd;
+	--tertiary-color: #8e8db2;
+	--tertiary-light: #c4c3ea;
+	--error-color: #ff5449;
+	--error-light: #ffb4ab;
+
+	--mat-divider-color: #3e484e;
+
+	.w-100 {
+		width: 100%;
+	}
+
+	$spacing-unit: 0.5rem;
+	$spacing-levels: 1, 2, 3, 4, 5;
+	@each $level in $spacing-levels {
+		.m-#{$level} {
+			margin: $level * $spacing-unit;
+		}
+
+		.mt-#{$level} {
+			margin-top: $level * $spacing-unit;
+		}
+
+		.mb-#{$level} {
+			margin-bottom: $level * $spacing-unit;
+		}
+
+		.ml-#{$level} {
+			margin-left: $level * $spacing-unit;
+		}
+
+		.mr-#{$level} {
+			margin-right: $level * $spacing-unit;
+		}
+	}
+
+	@each $level in $spacing-levels {
+		.p-#{$level} {
+			padding: $level * $spacing-unit;
+		}
+
+		.pt-#{$level} {
+			padding-top: $level * $spacing-unit;
+		}
+
+		.pb-#{$level} {
+			padding-bottom: $level * $spacing-unit;
+		}
+
+		.pl-#{$level} {
+			padding-left: $level * $spacing-unit;
+		}
+
+		.pr-#{$level} {
+			padding-right: $level * $spacing-unit;
+		}
+	}
+}

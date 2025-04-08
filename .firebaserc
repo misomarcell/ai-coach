@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "kombuch-ai"
+  },
+  "targets": {},
+  "etags": {
+    "kombuch-ai": {
+      "extensionInstances": {
+        "firestore-algolia-search": "972bd752d1037e300b9ee4d5b76702e2ed14beec6784f13c20bbf3e7f590b920"
+      }
+    }
+  }
+}

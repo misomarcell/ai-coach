@@ -1,0 +1,92 @@
+.form-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+
+	.form-row {
+		display: flex;
+		gap: 1rem;
+		width: 100%;
+
+		mat-form-field {
+			flex: 1;
+		}
+	}
+
+	.form-field-name,
+	.form-field-brand {
+		width: 100%;
+	}
+
+	.section-title {
+		font-size: 1.2rem;
+		font-weight: 600;
+		margin-bottom: 16px;
+	}
+}
+
+.content-section {
+	margin-bottom: 24px;
+}
+
+.nutrition-item,
+.serving-item {
+	--mat-mdc-form-field-floating-label-scale: 0.5;
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 8px;
+	align-items: center;
+
+	mat-form-field {
+		flex: 1;
+	}
+
+	.nutrition-type-field {
+		flex: 2;
+	}
+
+	.nutrition-unit-field {
+		flex: 1.2;
+	}
+
+	.nutrition-amount-field {
+		flex: 1.2;
+	}
+
+	.delete-button {
+		--mdc-icon-button-state-layer-size: 24px;
+		flex: 0 0 auto;
+		padding: 0;
+		min-width: auto;
+		margin-bottom: 21px;
+	}
+}
+
+.add-button-row {
+	margin-top: 8px;
+}
+
+.form-field-tags {
+	width: 100%;
+}
+
+.form-field-dietary-flags {
+	width: 100%;
+	margin-bottom: 16px;
+
+	.dietary-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+}
+
+.form-actions {
+	margin-top: 16px;
+	display: flex;
+	justify-content: flex-end;
+
+	button {
+		width: 100%;
+	}
+}

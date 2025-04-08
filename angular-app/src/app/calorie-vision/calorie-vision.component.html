@@ -1,0 +1,9 @@
+<div class="calorie-vision-container">
+	<h3>Calorie Vision</h3>
+	<p>Upload a picture of your meal for an AI powered macronutrients estimation</p>
+
+	<div class="content-container">
+		<app-calorie-vision-upload (uploadStarted)="handleUploadStarted()" (uploadComplete)="handleUploadComplete($event)" />
+		<app-calorie-vision-results [currentFileName]="currentFileName" />
+	</div>
+</div>

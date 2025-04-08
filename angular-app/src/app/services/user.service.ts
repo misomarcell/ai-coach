@@ -1,0 +1,55 @@
+import { UserProfile, UserProfileDb } from "@aicoach/shared";
+import { inject, Injectable } from "@angular/core";
+import { doc, docData, Firestore, FirestoreDataConverter, serverTimestamp, setDoc, Timestamp } from "@angular/fire/firestore";
+import { ActivatedRouteSnapshot } from "@angular/router";
+import { filter, from, map, Observable, of, switchMap, take } from "rxjs";
+import { AuthService } from "./auth.service";
+@Injectable({
+	providedIn: "root"
+})
+export class UserService {
+	private firestore = inject(Firestore);
+	private authService = inject(AuthService);
+
+	private userProfileConverter: FirestoreDataConverter<UserProfile, UserProfileDb> = {
+		toFirestore(model: UserProfile): UserProfileDb {
+			return {
+				...model,
+				created: model.created ? Timestamp.fromDate(model.created) : (serverTimestamp() as Timestamp)
+			};
+		},
+		fromFirestore(snapshot, options): UserProfile {
+			const data = snapshot.data(options) as UserProfileDb;
+			return {
+				...data,
+				created: (data.created as Timestamp)?.toDate() || new Date()
+			};
+		}
+	};
+
+	getUserProfile$(activatedRoute?: ActivatedRouteSnapshot): Observable<UserProfile | undefined> {
+		if (activatedRoute && activatedRoute.data["userProfile"]) {
+			return of(activatedRoute.data["userProfile"] as UserProfile);
+		}
+
+		return this.authService.getCurrentUser$().pipe(
+			filter((user) => !!user),
+			take(1),
+			map((user) => doc(this.firestore, "users", user.uid).withConverter(this.userProfileConverter)),
+			switchMap((userDoc) => docData(userDoc)),
+			map((user) => user)
+		);
+	}
+
+	updateUserProfile$(value: Partial<UserProfile>): Observable<void> {
+		return this.authService.uid.pipe(
+			filter((uid) => !!uid),
+			map((uid) => {
+				const userDoc = doc(this.firestore, "users", uid!).withConverter(this.userProfileConverter);
+
+				return setDoc(userDoc, value, { merge: true });
+			}),
+			from
+		);
+	}
+}

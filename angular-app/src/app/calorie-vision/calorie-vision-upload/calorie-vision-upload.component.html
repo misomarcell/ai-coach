@@ -1,0 +1,57 @@
+<mat-expansion-panel [expanded]="isExpanded" class="upload-panel">
+	<mat-expansion-panel-header>
+		<mat-panel-title class="upload-panel-title">
+			<mat-icon>cloud_upload</mat-icon>
+			Upload for AI estiamtion
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	<form class="upload-form" [formGroup]="uploadForm">
+		<div class="photo-buttons">
+			<button mat-stroked-button class="choose-file-button" (click)="fileInput.click()">
+				<input #fileInput type="file" id="file" (change)="onFileSelected($event)" accept="image/*" hidden />
+				<label for="file" class="file-label">
+					<mat-icon>attach_file</mat-icon>
+					<span>Choose image</span>
+				</label>
+			</button>
+			<button mat-stroked-button class="choose-file-button" (click)="fileCameraInput.click()">
+				<input #fileCameraInput type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" hidden />
+				<label for="file" class="file-label">
+					<mat-icon>photo_camera</mat-icon>
+					<span>Open camera</span>
+				</label>
+			</button>
+		</div>
+
+		@let _imagePreview = imagePreview();
+		<div *ngIf="_imagePreview" class="image-preview">
+			<button mat-icon-button class="discard-button" color="warn" (click)="resetFileInput()">
+				<mat-icon>close</mat-icon>
+			</button>
+			<img [src]="_imagePreview" alt="Preview" />
+		</div>
+
+		<mat-form-field appearance="outline" class="image-description">
+			<mat-label>Description (optional)</mat-label>
+			<textarea
+				matInput
+				formControlName="description"
+				placeholder="e.g. A medium sized bowl of fried sweet potatoes with half an avocado"
+				rows="3"
+			></textarea>
+			<mat-hint>Add some known facts about the food for a more accurate estimation.</mat-hint>
+		</mat-form-field>
+
+		@let _uploadPercent = uploadPercent();
+		<button mat-flat-button color="primary" *ngIf="!_uploadPercent" [disabled]="!selectedFile() || loading" (click)="uploadImage()">
+			<mat-icon>file_upload</mat-icon>
+			Upload for estimation
+		</button>
+
+		<div *ngIf="_uploadPercent !== null && _uploadPercent !== 100" class="upload-progress">
+			<mat-progress-bar mode="determinate" [value]="_uploadPercent"></mat-progress-bar>
+			<span>{{ _uploadPercent | number: "1.0-0" }}%</span>
+		</div>
+	</form>
+</mat-expansion-panel>

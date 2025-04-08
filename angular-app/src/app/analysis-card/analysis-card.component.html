@@ -1,0 +1,71 @@
+@if (status === "completed") {
+	<mat-card>
+		<mat-card-content>
+			<p>{{ result?.summary }}</p>
+
+			@if (result?.suggestions; as suggestions) {
+				<ul>
+					@for (suggestion of suggestions; track suggestion) {
+						<li>{{ suggestion }}</li>
+					}
+				</ul>
+			}
+
+			<strong>Positives</strong>
+			<ul>
+				@for (positive of result?.positives; track positive) {
+					<li>
+						<strong>{{ positive.foodName }}:</strong> {{ positive.comment }}
+					</li>
+				}
+			</ul>
+
+			<strong>Negatives</strong>
+			<ul>
+				@for (negative of result?.negatives; track negative) {
+					<li>
+						<strong>{{ negative.foodName }}:</strong> {{ negative.comment }}
+					</li>
+				}
+			</ul>
+
+			<strong>Score: {{ result?.score + "/100" }}</strong>
+			<div class="score-bar"><div class="score" [ngStyle]="{ left: (result?.score ?? 0) + '%' }"></div></div>
+			<mat-card-actions [align]="'end'">
+				<button mat-icon-button (click)="onDeleteClick()">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</mat-card-actions>
+		</mat-card-content>
+		<mat-card-footer class="suggestion-card-footer">
+			{{ result?.created | date: "YYYY-MM-dd HH:mm" }}
+			•
+			{{ result?.model }}
+		</mat-card-footer>
+	</mat-card>
+} @else if (status === "created" || status === "processing") {
+	<mat-card>
+		<mat-card-content>
+			<div class="processing">
+				<mat-spinner diameter="18" />
+				<span>There is an analysis currently in progress...</span>
+			</div>
+		</mat-card-content>
+	</mat-card>
+} @else if (status === "failed") {
+	<mat-card class="error">
+		<mat-card-content>
+			<span>
+				This request couldn't be completed due to an unexpected error. Please try again later, or using a different model.
+			</span>
+			<mat-card-actions [align]="'end'">
+				<button mat-icon-button (click)="onDeleteClick()">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</mat-card-actions>
+		</mat-card-content>
+		<mat-card-footer class="suggestion-card-footer">
+			{{ analysis?.request?.created | date: "YYYY-MM-dd HH:mm" }}
+		</mat-card-footer>
+	</mat-card>
+}

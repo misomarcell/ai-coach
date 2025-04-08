@@ -1,0 +1,57 @@
+<div class="scanner-container">
+	<div class="header">
+		<h3>Scan Barcode</h3>
+		@if (dialogRef) {
+			<button mat-icon-button (click)="onCloseClick()"><mat-icon>close</mat-icon></button>
+		}
+	</div>
+
+	<div class="controls-row">
+		<mat-form-field>
+			<mat-label>Select camera</mat-label>
+			<mat-select [(ngModel)]="selectedDevice" (valueChange)="onDeviceChanges($event)">
+				@for (device of availableDevices; track device.deviceId) {
+					<mat-option [value]="device">
+						{{ device.label || "Camera " + (availableDevices.indexOf(device) + 1) }}
+					</mat-option>
+				}
+			</mat-select>
+		</mat-form-field>
+
+		@if (torchCompatible) {
+			<button
+				mat-icon-button
+				[matTooltip]="torchEnabled ? 'Turn torch off' : 'Turn torch on'"
+				(click)="toggleTorch()"
+				class="torch-button"
+			>
+				<mat-icon>{{ torchEnabled ? "flashlight_off" : "flashlight_on" }}</mat-icon>
+			</button>
+		}
+	</div>
+
+	@if (enableScanner) {
+		<div class="scanner-wrapper">
+			@if (isLoadingCamera) {
+				<mat-spinner [diameter]="48" />
+			}
+			<zxing-scanner
+				#scanner
+				[(device)]="selectedDevice"
+				[formats]="allowedFormats"
+				[torch]="torchEnabled"
+				[tryHarder]="true"
+				(camerasFound)="onCamerasFound($event)"
+				(scanComplete)="onScanComplete($event)"
+				(autostarted)="onAutostarted()"
+				(torchCompatible)="torchCompatible = $event"
+			/>
+		</div>
+	}
+
+	<mat-form-field>
+		<input matInput placeholder="Enter barcode" [(ngModel)]="resultText" />
+	</mat-form-field>
+
+	<button mat-stroked-button [disabled]="!result" (click)="onSubmitClick()">Continue</button>
+</div>

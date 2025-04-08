@@ -1,0 +1,171 @@
+<h3>Add New Food</h3>
+
+<form [formGroup]="foodForm" (ngSubmit)="onSubmit()">
+	<div class="form-container">
+		<mat-form-field class="form-field-name">
+			<mat-label>Name</mat-label>
+			<input matInput formControlName="name" placeholder="Enter food name" />
+			@if (foodForm.get("name")?.invalid && foodForm.get("name")?.touched) {
+				<mat-error>Name is required</mat-error>
+			}
+		</mat-form-field>
+
+		<div class="form-row">
+			<mat-form-field class="form-field-name">
+				<mat-label>Variation</mat-label>
+				<input matInput formControlName="variation" placeholder="e.g. Apple flavor" />
+			</mat-form-field>
+
+			<mat-form-field class="form-field-brand">
+				<mat-label>Brand</mat-label>
+				<input matInput formControlName="brand" placeholder="Enter brand name" />
+			</mat-form-field>
+		</div>
+
+		<div class="form-row">
+			<mat-form-field class="form-field-barcode">
+				<mat-label>Barcode</mat-label>
+				<input matInput formControlName="barcode" placeholder="Barcode" />
+				<button mat-icon-button matSuffix type="button" (click)="onScanBarcodeClick()">
+					<mat-icon>qr_code_scanner</mat-icon>
+				</button>
+			</mat-form-field>
+
+			<mat-form-field class="form-field-category">
+				<mat-label>Category</mat-label>
+				<mat-select formControlName="category">
+					@for (category of foodCategories; track category) {
+						<mat-option [value]="category">{{ category }}</mat-option>
+					}
+				</mat-select>
+				@if (foodForm.get("category")?.invalid && foodForm.get("category")?.touched) {
+					<mat-error>Category is required</mat-error>
+				}
+			</mat-form-field>
+		</div>
+
+		<div class="content-section">
+			<p class="section-title">Nutritions</p>
+			<div formArrayName="nutritions">
+				@for (nutrition of nutritionsFormArray.controls; track $index; let i = $index) {
+					<div [formGroupName]="i" class="nutrition-item">
+						<mat-form-field [floatLabel]="'always'" class="nutrition-type-field">
+							<mat-select formControlName="type" (selectionChange)="onNutritionTypeChange($event, i)">
+								@for (type of nutritionTypes; track type) {
+									@if (isNutritionTypeUniqueExcept(type, i) || nutritionsFormArray.at(i).get("type")?.value === type) {
+										<mat-option [value]="type">
+											{{ type | titlecase }}
+										</mat-option>
+									}
+								}
+							</mat-select>
+						</mat-form-field>
+
+						<mat-form-field class="nutrition-amount-field">
+							<input matInput type="number" formControlName="amount" />
+						</mat-form-field>
+
+						<mat-form-field class="nutrition-unit-field">
+							<mat-select formControlName="unit">
+								@for (unit of nutritionUnits; track unit) {
+									<mat-option [value]="unit">{{ unit }}</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+
+						<button mat-icon-button type="button" class="delete-button" (click)="removeNutrition(i)">
+							<mat-icon class="small-icon">delete</mat-icon>
+						</button>
+					</div>
+				}
+
+				<div class="add-button-row">
+					<button mat-button type="button" [matMenuTriggerFor]="nutritionMenu"><mat-icon>add</mat-icon> Add Nutrition</button>
+					<mat-menu #nutritionMenu="matMenu">
+						@for (nutritionType of remainingNutritions; track nutritionType) {
+							<button mat-menu-item (click)="addNutrition(nutritionType)">
+								{{ nutritionType | titlecase }}
+							</button>
+						}
+					</mat-menu>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<p class="section-title">Serving sizes</p>
+			<div formArrayName="servingSizes">
+				@for (serving of servingSizesFormArray.controls; track $index; let i = $index) {
+					<div [formGroupName]="i" class="serving-item">
+						<mat-form-field>
+							<mat-label>Name</mat-label>
+							<input matInput formControlName="name" placeholder="e.g. Cup, Slice" />
+						</mat-form-field>
+
+						<mat-form-field>
+							<mat-label>Weight (g)</mat-label>
+							<input matInput type="number" formControlName="weight" />
+						</mat-form-field>
+
+						@if (i > 0) {
+							<button mat-icon-button type="button" class="delete-button" (click)="removeServing(i)">
+								<mat-icon class="small-icon">delete</mat-icon>
+							</button>
+						}
+					</div>
+				}
+
+				@if (servingSizesFormArray.length < 11) {
+					<div class="add-button-row">
+						<button mat-button type="button" (click)="addServingSize()"><mat-icon>add</mat-icon> Add Serving</button>
+					</div>
+				}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<mat-form-field class="form-field-tags">
+				<mat-label>Tags</mat-label>
+				<mat-chip-grid #chipGrid>
+					@for (tag of tags; track tag) {
+						<mat-chip-row (removed)="removeTag(tag)">
+							{{ tag }}
+							<button matChipRemove>
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</mat-chip-row>
+					}
+					<input
+						placeholder="New tag..."
+						[matChipInputFor]="chipGrid"
+						[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+						(matChipInputTokenEnd)="addTag($event)"
+					/>
+				</mat-chip-grid>
+			</mat-form-field>
+		</div>
+
+		<div class="form-row">
+			<div class="form-field-dietary-flags" formGroupName="dietaryFlags">
+				<p class="section-title">Dietary flags</p>
+				<div class="dietary-chips">
+					@for (option of dietaryFlags; track option) {
+						<mat-chip-option [selected]="selectedDietaryFlags.includes(option)" (click)="toggleDietaryFlag(option)">
+							{{ option | titlecase }}
+						</mat-chip-option>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="form-actions">
+			<button mat-flat-button color="primary" type="submit" [disabled]="foodForm.invalid || isLoading()">
+				@if (isLoading()) {
+					Updating food...
+				} @else {
+					Submit
+				}
+			</button>
+		</div>
+	</div>
+</form>
