@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"see-algolia": "npx tsc seed-algolia.ts"
+		"seed-algolia": "npx tsx src/seed-algolia.ts",
+		"import-foods": "npx tsx src/import-tools/ciqual.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -14,6 +15,7 @@
 		"algoliasearch": "^5.23.2",
 		"dotenv": "^16.4.7",
 		"firebase-admin": "^13.2.0",
+		"prompt-sync": "^4.2.0",
 		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {

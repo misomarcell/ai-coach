@@ -2,10 +2,11 @@ import { Algoliasearch, algoliasearch } from "algoliasearch";
 import { config } from "dotenv";
 import { applicationDefault, initializeApp } from "firebase-admin/app";
 import { FieldPath, Firestore, initializeFirestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
+import path from "path";
 
 async function main() {
 	process.env["FIRESTORE_EMULATOR_HOST"] = "localhost:8080";
-	config({ path: "../../../.env.local" });
+	config({ path: path.resolve(__dirname, "../.env.local") });
 
 	const FIREBASE_APP = initializeApp({
 		credential: applicationDefault(),
@@ -16,16 +17,16 @@ async function main() {
 
 	const algoliaApiKey = process.env["ALGOLIA_DEV_API_KEY"];
 	if (!algoliaApiKey) {
-		console.error("Algolia API key not found in environment variables.");
+		console.error("ERROR: Algolia API key not found in environment variables.");
 		return;
 	}
 
-	const path = "foods";
 	const batchSize = 100;
 	const client = algoliasearch("XUT0HRI9ZP", algoliaApiKey);
-	const indexName = path;
+	const indexName = "foods";
 
-	await pushDocumentsInBatches(FIRESTORE, path, batchSize, client, indexName);
+	await client.clearObjects({ indexName });
+	await pushDocumentsInBatches(FIRESTORE, indexName, batchSize, client, indexName);
 	console.log("All documents pushed to Algolia");
 }
 

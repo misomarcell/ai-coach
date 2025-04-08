@@ -39,3 +39,5 @@ functions/lib/**
 servings.csv
 /functions/src/tools/*.js
 /functions/src/tools/import-tools/import-sources
+/tools/src/import-tools/sources
+/tools/src/import-tools/import-sources

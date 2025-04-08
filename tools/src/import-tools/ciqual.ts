@@ -4,21 +4,34 @@ import { FieldValue } from "firebase-admin/firestore";
 import { readFile, utils } from "xlsx";
 import { xlsHeaders, xlsToFoodCategoryMap, xlsToNutritionMap } from "./ciqual.model";
 import { addFoodsToDb, initFirestore } from "./import-base";
+import path from "path";
+var prompt = require("prompt-sync")();
 
 async function main(): Promise<void> {
-	const file = readFile("./import-sources/ciqual.xls");
+	const recordsInput = prompt("Number of records to import (blank = all): ");
+	const envInput = prompt("Environment (prod / blank = dev): ") ?? "dev";
+	const numberOfRecords = recordsInput ? parseInt(recordsInput, 10) : undefined;
+	if (numberOfRecords !== undefined && isNaN(numberOfRecords)) {
+		throw new Error("Invalid number entered. Please enter a valid number or leave blank.");
+	}
+
+	if (envInput && !["prod", "dev"].includes(envInput)) {
+		throw new Error("Invalid environment entered. Please enter either 'prod', 'dev' or leave blank for dev.");
+	}
+
+	console.log(`Importing ${numberOfRecords ?? "All"} records to ${envInput ?? "DEV"} environment...`);
+
+	const file = readFile(path.resolve(__dirname, "./sources/ciqual.xls"));
 	const sheetName = file.SheetNames[0];
 	const sheet = file.Sheets[sheetName];
 	const data = utils.sheet_to_json(sheet, { header: xlsHeaders, defval: null });
 
-	const foods = data
-		.slice(1)
-		.map((row: any) => convertRowsToFoods(row))
-		.filter((food) => !!food && !!getNutritionValue(food, "Calories"));
+	const dataToImport = numberOfRecords ? data.slice(0, numberOfRecords) : data.slice(1);
+	const foods = dataToImport.map((row: any) => convertRowsToFoods(row)).filter((food) => !!food && !!getNutritionValue(food, "Calories"));
 
-	console.log(`Total of ${foods.length} foods to be added...`);
+	console.log(`Total of ${foods.length} converted foods to be saved...`);
 
-	await initFirestore(true);
+	await initFirestore(envInput === "prod");
 	await addFoodsToDb(foods);
 }
 
