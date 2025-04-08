@@ -3,8 +3,8 @@ on:
     push:
         branches: [main]
 jobs:
-    build:
-        name: "Build Projects"
+    build_and_deploy:
+        name: "Build & Deploy Projects"
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repository
@@ -23,14 +23,6 @@ jobs:
 
             - name: "Install: Functions"
               run: npm ci
-              working-directory: ./functions
-
-            - name: "Build: Shared"
-              run: npm run build
-              working-directory: ./shared
-
-            - name: "Build: Functions"
-              run: npm run build
               working-directory: ./functions
 
             - name: "Deploy to Firebase"
