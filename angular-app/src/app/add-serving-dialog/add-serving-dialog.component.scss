@@ -27,71 +27,8 @@
 	}
 }
 
-.macros-panel {
-	background-color: var(--mat-sys-secondary-container);
-	border-radius: 8px;
-	padding: 1rem;
-	margin-bottom: 16px;
-
-	.title {
-		font-size: 1.5rem;
-		font-weight: 600;
-		margin-bottom: 1rem;
-	}
-
-	.macros-list {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-
-		.macro-item {
-			display: flex;
-			justify-content: space-between;
-			padding: 4px 0;
-			font-size: 1rem;
-
-			.macro-label {
-				font-weight: 500;
-
-				&.indent {
-					padding-left: 1rem;
-				}
-			}
-
-			.macro-value {
-				font-weight: 600;
-			}
-		}
-	}
-}
-
-.nutrition-panel {
-	::ng-deep .mat-expansion-panel-body {
-		padding: 0;
-	}
-
-	.nutrition-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.nutrition-item {
-		display: flex;
-		justify-content: space-between;
-		padding: 8px;
-
-		&:nth-of-type(odd) {
-			background-color: var(--mat-sys-inverse-on-surface);
-		}
-	}
-}
-
 .dietary-flags {
-	margin-top: 16px;
-
-	h4 {
-		margin-bottom: 8px;
-	}
+	margin: 0.5rem 0;
 }
 
 .add-serving-button {

@@ -1,0 +1,16 @@
+@let _sortedNutritions = sortedNutritions();
+<mat-expansion-panel class="nutrition-panel">
+	<mat-expansion-panel-header>
+		<mat-panel-title>See all {{ _sortedNutritions.length }} nutritions</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	<div class="list-title">{{ grams() | number: "1.0-2" }} grams of {{ food().name }} contains...</div>
+	<div class="nutrition-list">
+		@for (nutrition of _sortedNutritions; track nutrition.type) {
+			<div class="nutrition-item">
+				<span class="nutrition-label">{{ nutrition.type }}</span>
+				<span class="nutrition-value"> {{ nutrition.amount | number: "1.0-2" }} {{ nutrition.unit }} </span>
+			</div>
+		}
+	</div>
+</mat-expansion-panel>

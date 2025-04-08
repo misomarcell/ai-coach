@@ -1,6 +1,5 @@
-import { Food, Nutrition, ServingCategory, ServingSize, servingCategories } from "@aicoach/shared";
-import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
+import { Food, servingCategories, ServingCategory } from "@aicoach/shared";
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, signal, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
@@ -11,15 +10,17 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatSelectModule } from "@angular/material/select";
-import { startWith, take } from "rxjs";
-import { ServingsService } from "../services/servings.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { startWith, take } from "rxjs";
+import { NutritionLabelComponent } from "../nutrition-label/nutrition-label.component";
+import { NutritionListComponent } from "../nutrition-list/nutrition-list.component";
+import { ServingsService } from "../services/servings.service";
 
 @Component({
-	selector: "app-add-serving-dialog",
 	standalone: true,
 	imports: [
-		CommonModule,
+		NutritionLabelComponent,
+		NutritionListComponent,
 		ReactiveFormsModule,
 		MatDialogModule,
 		MatButtonModule,
@@ -39,13 +40,13 @@ export class AddServingDialogComponent implements OnInit, AfterViewInit {
 	form: FormGroup;
 	servingCategories = servingCategories;
 	isSubmitting = false;
-	nutritions: Record<string, number> = {};
+	servingGrams = signal<number | undefined>(undefined);
 
 	get dietaryFlags(): string[] {
 		return Array.from(this.food.dietaryFlags || []);
 	}
 
-	@ViewChild("amount", { static: false }) amount: ElementRef<HTMLInputElement> | undefined;
+	@ViewChild("amount", { static: false }) amountField: ElementRef<HTMLInputElement> | undefined;
 	constructor(
 		private formBuilder: FormBuilder,
 		private snackService: MatSnackBar,
@@ -73,34 +74,15 @@ export class AddServingDialogComponent implements OnInit, AfterViewInit {
 
 	ngOnInit(): void {
 		this.form.valueChanges.pipe(startWith(1)).subscribe(() => {
-			this.calculateNutritionAmounts();
+			this.servingGrams.set(this.form.value.servingSize.gramWeight * this.form.value.amount);
 		});
 	}
 
 	ngAfterViewInit(): void {
-		this.amount?.nativeElement.select();
-		this.amount?.nativeElement.focus();
-	}
-
-	calculateNutritionAmounts(): void {
-		const amount = this.form.get("amount")?.value || 0;
-		this.food.nutritions.forEach((nutrition) => {
-			this.nutritions[nutrition.type] = this.getNutritionAmount(nutrition) * amount;
-		});
-	}
-
-	getNutritionAmount(nutrition: Nutrition): number {
-		const servingSize = this.form.get("servingSize")?.value as ServingSize;
-		if (!servingSize) return 0;
-
-		const multiplier = servingSize.gramWeight / 100;
-		return parseFloat((nutrition.amount * multiplier).toFixed(2));
-	}
-
-	getSortedNutritionList(): Nutrition[] {
-		const sorted = this.food.nutritions.sort((a, b) => this.getAbsoluteAmount(b) - this.getAbsoluteAmount(a));
-
-		return sorted.filter((n) => n.type !== "Calories");
+		setTimeout(() => {
+			this.amountField?.nativeElement.select();
+			this.amountField?.nativeElement.focus();
+		}, 0);
 	}
 
 	onAddServing(): void {
@@ -127,25 +109,6 @@ export class AddServingDialogComponent implements OnInit, AfterViewInit {
 
 	onClose(): void {
 		this.dialogRef.close(false);
-	}
-
-	private getAbsoluteAmount(nutrition: Nutrition): number {
-		const { amount, unit } = nutrition;
-
-		switch (unit) {
-			case "g":
-				return amount * 1_000_000; // 1g = 1,000,000 µg
-			case "mg":
-				return amount * 1_000; // 1mg = 1,000 µg
-			case "µg":
-				return amount; // Already in µg
-			case "IU":
-			case "ml":
-			case "%":
-				return amount;
-			default:
-				return amount;
-		}
 	}
 
 	private getDefaultCategory(): ServingCategory {
