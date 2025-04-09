@@ -1,11 +1,12 @@
-import { Food, FoodCategory, foodCategories } from "@aicoach/shared";
+import { Food, foodCategories, FoodCategory } from "@aicoach/shared";
 import { isPlatformServer } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, inject, OnInit, PLATFORM_ID, signal, ViewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatDialog } from "@angular/material/dialog";
+import { MatRippleModule } from "@angular/material/core";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
@@ -15,13 +16,11 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { ActivatedRoute, RouterModule } from "@angular/router";
 import { combineLatest, debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from "rxjs";
-import { AddServingDialogComponent } from "../add-serving-dialog/add-serving-dialog.component";
+import { OverlayService } from "../overlay/overlay.service";
+import { AuthService } from "../services/auth.service";
 import { FoodSearchResult, FoodSearchService, SearchOptions, SearchResponse } from "../services/food-search.service";
 import { FoodService } from "../services/food.service";
 import { FoodSearchResultComponent } from "./food-search-result/food-search-result.component";
-import { MatRippleModule } from "@angular/material/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { AuthService } from "../services/auth.service";
 
 @Component({
 	selector: "app-food-list",
@@ -60,7 +59,7 @@ export class FoodListComponent implements OnInit, AfterViewInit {
 	private activatedRoute = inject(ActivatedRoute);
 	private foodSearchService = inject(FoodSearchService);
 	private foodService = inject(FoodService);
-	private dialog = inject(MatDialog);
+	private overlayService = inject(OverlayService);
 
 	currentPage = signal<number>(0);
 	totalPages = signal<number>(0);
@@ -188,11 +187,14 @@ export class FoodListComponent implements OnInit, AfterViewInit {
 		});
 	}
 
-	private openAddServingDialog(food: Food): void {
-		this.dialog.open(AddServingDialogComponent, {
-			width: "90vw",
-			maxWidth: "600px",
-			data: { food }
-		});
+	private async openAddServingDialog(food: Food): Promise<void> {
+		await this.overlayService.open(
+			() => import("../servings/edit-serving-form/edit-serving-form.component").then((m) => m.EditServingFormComponent),
+			{
+				data: {
+					foodId: food.id
+				}
+			}
+		);
 	}
 }

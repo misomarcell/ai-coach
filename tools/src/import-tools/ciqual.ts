@@ -19,7 +19,7 @@ async function main(): Promise<void> {
 		throw new Error("Invalid environment entered. Please enter either 'prod', 'dev' or leave blank for dev.");
 	}
 
-	console.log(`Importing ${numberOfRecords ?? "All"} records to ${envInput ?? "DEV"} environment...`);
+	console.log(`Importing ${numberOfRecords ?? "All"} records to ${envInput || "DEV"} environment...`);
 
 	const file = readFile(path.resolve(__dirname, "./sources/ciqual.xls"));
 	const sheetName = file.SheetNames[0];

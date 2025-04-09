@@ -1,33 +1,33 @@
-import { Serving, ServingCategory } from "@aicoach/shared";
-import { CommonModule, DatePipe } from "@angular/common";
-import { Component, DestroyRef, OnInit, inject, signal } from "@angular/core";
+import { Serving, ServingCategory, servingCategories } from "@aicoach/shared";
+import { DatePipe } from "@angular/common";
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
-import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { MatDialogModule } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { RouterModule } from "@angular/router";
 import { BehaviorSubject, Observable, catchError, distinctUntilChanged, map, switchMap, tap } from "rxjs";
-import { ServingsService } from "../services/servings.service";
-import { ServingDetailsComponent } from "./serving-details/serving-details.component";
-import { ServingItemComponent } from "./serving-item/serving-item.component";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ServingsService } from "../servings.service";
+import { ServingsGroupComponent } from "./servings-group/servings-group.component";
 
 @Component({
 	selector: "app-servings-list",
 	standalone: true,
 	imports: [
-		CommonModule,
+		ServingsGroupComponent,
 		DatePipe,
-		MatExpansionModule,
-		MatIconModule,
-		MatButtonModule,
-		MatProgressSpinnerModule,
+		RouterModule,
 		MatCardModule,
-		MatDividerModule,
+		MatIconModule,
 		MatDialogModule,
-		ServingItemComponent
+		MatButtonModule,
+		MatDividerModule,
+		MatExpansionModule,
+		MatProgressSpinnerModule
 	],
 	templateUrl: "./servings-list.component.html",
 	styleUrl: "./servings-list.component.scss"
@@ -37,13 +37,13 @@ export class ServingsListComponent implements OnInit {
 	isLoading = signal<boolean>(true);
 	isResultEmpty = signal<boolean>(true);
 
+	servingCategories = servingCategories;
 	categorizedServings = new Map<ServingCategory, Serving[]>();
-	servingCategories: ServingCategory[] = ["Uncategorized", "Breakfast", "Lunch", "Dinner", "Snacks"];
 	selectedDate = new BehaviorSubject<Date>(new Date());
 
+	private changeDetector = inject(ChangeDetectorRef);
 	private destroyRef = inject(DestroyRef);
 	private servingsService = inject(ServingsService);
-	private dialog = inject(MatDialog);
 
 	ngOnInit(): void {
 		this.selectedDate
@@ -54,7 +54,7 @@ export class ServingsListComponent implements OnInit {
 				switchMap((date) => this.servingsService.getServingsByDate(date)),
 				map((servings) => {
 					this.categorizedServings.clear();
-					this.servingCategories.forEach((category) => {
+					servingCategories.forEach((category) => {
 						this.categorizedServings.set(category, []);
 					});
 
@@ -75,6 +75,8 @@ export class ServingsListComponent implements OnInit {
 					this.isResultEmpty.set(servings.length === 0);
 					this.isLoading.set(false);
 
+					this.changeDetector.markForCheck();
+
 					return servings;
 				}),
 				catchError((error) => {
@@ -84,17 +86,6 @@ export class ServingsListComponent implements OnInit {
 				})
 			)
 			.subscribe();
-	}
-
-	getServingsByCategory(category: ServingCategory): Serving[] {
-		return this.categorizedServings.get(category) || [];
-	}
-
-	openServingDetails(serving: Serving): void {
-		this.dialog.open(ServingDetailsComponent, {
-			width: "600px",
-			data: serving
-		});
 	}
 
 	previousDay(): void {

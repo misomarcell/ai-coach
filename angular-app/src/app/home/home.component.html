@@ -1,12 +1,3 @@
-@if (userProfile$ | async; as userProfile) {
-	<app-user-card [user]="userProfile!" [telegramUsername]="(telegramUsername$ | async)!" />
-
-	<div class="servings-section">
-		<app-servings-list></app-servings-list>
-	</div>
-} @else {
-	<mat-card class="user-creation-progress" [appearance]="'outlined'">
-		<strong>Retrieving your user data...</strong>
-		<mat-spinner [diameter]="64" />
-	</mat-card>
-}
+<div class="servings-section">
+	<app-servings-list />
+</div>

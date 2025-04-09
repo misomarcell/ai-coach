@@ -38,7 +38,7 @@ export const routes: Routes = [
 				canActivate: [loggedInGuard]
 			},
 			{
-				path: "food-list",
+				path: "search-food",
 				loadComponent: () => import("./food-list/food-list.component").then((m) => m.FoodListComponent),
 				canActivate: [loggedInGuard]
 			},
@@ -53,6 +53,10 @@ export const routes: Routes = [
 				pathMatch: "full"
 			}
 		]
+	},
+	{
+		path: "not-found",
+		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
 	},
 	{
 		path: "login",

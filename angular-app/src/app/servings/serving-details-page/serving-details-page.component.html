@@ -1,0 +1,124 @@
+@let _serving = serving();
+@let _food = food();
+<h4 class="title">
+	@if (_serving?.food?.isApproved) {
+		<mat-icon class="approved-icon">verified</mat-icon>
+	}
+	{{ _serving?.food?.name }}
+</h4>
+
+<div class="details-section">
+	<div class="detail-row">
+		<span class="detail-label">Date:</span>
+		<span class="detail-value">{{ _serving?.created | date: "YYYY-MM-dd HH:mm" }}</span>
+	</div>
+
+	@if (serving()?.lastUpdatedAt) {
+		<div class="detail-row">
+			<span class="detail-label">Last Updated:</span>
+			<span class="detail-value">{{ _serving?.lastUpdatedAt | date: "YYYY-MM-dd HH:mm" }}</span>
+		</div>
+	}
+
+	<div class="detail-row">
+		<span class="detail-label">Category:</span>
+		<span class="detail-value">{{ _serving?.category }}</span>
+	</div>
+
+	@if (_serving?.comment) {
+		<div class="detail-row">
+			<span class="detail-label">Comment:</span>
+			<span class="detail-value">{{ _serving?.comment }}</span>
+		</div>
+	}
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="food-details-section">
+	<h4>Food Details</h4>
+
+	<div class="detail-row">
+		<span class="detail-label">Name:</span>
+		<span class="detail-value">{{ _serving?.food?.name }}</span>
+	</div>
+
+	@if (_serving?.food?.brand) {
+		<div class="detail-row">
+			<span class="detail-label">Brand:</span>
+			<span class="detail-value">{{ _serving?.food?.brand }}</span>
+		</div>
+	}
+
+	<div class="detail-row">
+		<span class="detail-label">Category:</span>
+		<span class="detail-value">{{ _serving?.food?.category }}</span>
+	</div>
+
+	<div class="detail-row">
+		<span class="detail-label">Data source:</span>
+		<span class="detail-value">{{ _food?.source }}</span>
+	</div>
+
+	@if (_serving) {
+		<div class="detail-row">
+			<span class="detail-label">Serving:</span>
+			<span class="detail-value">{{ getServingSizeText() }}</span>
+		</div>
+	}
+
+	@if (hasDietaryFlags()) {
+		<div class="detail-row">
+			<span class="detail-label">Dietary Info:</span>
+			<span class="detail-value flags-list">
+				@for (flag of getDietaryFlagsList(); track flag) {
+					<mat-chip color="accent">{{ flag }}</mat-chip>
+				}
+			</span>
+		</div>
+	}
+
+	<!-- @if (serving.food.tags && serving.food.tags.length > 0) {
+			<div class="detail-row">
+				<span class="detail-label">Tags:</span>
+				<span class="detail-value tags-list">
+					@for (tag of serving.food.tags; track tag) {
+						<mat-chip>{{ tag }}</mat-chip>
+					}
+				</span>
+			</div>
+		} -->
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="nutrition-section">
+	<h4>Nutrition Information</h4>
+
+	<!-- <div class="main-nutrients">
+			@for (nutrition of getMainNutrients(); track nutrition.type) {
+				<div class="main-nutrient-item">
+					<div class="nutrient-value">{{ nutrition.amount | number: "1.0-2" }}{{ nutrition.unit }}</div>
+					<div class="nutrient-type bold">{{ nutrition.type }}</div>
+				</div>
+			}
+		</div>
+
+		<div class="other-nutrients">
+			@for (nutrition of getOtherNutrients(); track nutrition.type) {
+				<div class="nutrient-item alternate">
+					<span class="nutrient-type">{{ nutrition.type }}:</span>
+					<span class="nutrient-value">{{ nutrition.amount }} {{ nutrition.unit }}</span>
+				</div>
+			}
+		</div> -->
+</div>
+
+<button mat-stroked-button>
+	<mat-icon>delete</mat-icon>
+	Remove
+</button>
+<button mat-stroked-button>
+	<mat-icon>edit</mat-icon>
+	Edit
+</button>

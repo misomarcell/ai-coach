@@ -1,0 +1,24 @@
+@let _servings = servings();
+@let _caloriesTotal = caloriesTotal();
+
+<mat-expansion-panel [expanded]="_servings.length > 0">
+	<mat-expansion-panel-header>
+		<mat-panel-title>
+			<span class="panel-title">{{ title() }} ({{ _servings.length }}) </span>
+			<span class="total-calories bold">{{ _caloriesTotal ? (_caloriesTotal | number: "1.0-0") + " kcal" : "" }}</span>
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	<div class="category-servings-list">
+		@for (serving of _servings; track serving.id) {
+			<div matRipple class="serving-item" (click)="onServingClick(serving)">
+				<div class="food-info w-100 d-flex ai-c">
+					<div class="food-name d-flex ai-c">
+						{{ serving.food.name || "Unknown food" }}
+					</div>
+					<div class="food-calories">{{ getCaloriesFor(serving) | number: "1.0-0" }} kcal</div>
+				</div>
+			</div>
+		}
+	</div>
+</mat-expansion-panel>

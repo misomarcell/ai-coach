@@ -1,0 +1,32 @@
+.panel-title {
+	flex-grow: 1;
+}
+
+.serving-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+	padding: 0.5rem;
+	transition: background-color 0.2s ease;
+	border-radius: 8px;
+
+	&:hover {
+		background-color: var(--mat-sys-secondary-container);
+	}
+
+	.food-info {
+		gap: 0.5rem;
+	}
+
+	.food-name {
+		gap: 0.5rem;
+		flex-grow: 1;
+	}
+}
+
+.food-calories,
+.total-calories {
+	flex-shrink: 0;
+	color: var(--tertiary-color);
+}

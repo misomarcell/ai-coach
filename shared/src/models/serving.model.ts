@@ -1,9 +1,9 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { DietaryFlag, Food, ServingSize } from "./food.model";
 
-export type ServingFood = Pick<Food, "name" | "brand" | "category" | "isApproved" | "tags" | "nutritions"> & {
+export type ServingFood = Pick<Food, "name" | "brand" | "category" | "source" | "isApproved" | "tags" | "nutritions"> & {
+	id?: string;
 	dietaryFlags?: DietaryFlag[];
-	foodId?: string;
 };
 export const servingCategories = ["Breakfast", "Snacks", "Lunch", "Dinner", "Uncategorized"] as const;
 export type ServingCategory = (typeof servingCategories)[number];
@@ -14,8 +14,8 @@ export interface Serving {
 	lastUpdatedAt?: Date;
 	category: ServingCategory;
 	food: ServingFood;
+	servingAmount: number;
 	servingSize: ServingSize;
-	isCustomized: boolean;
 	comment?: string;
 }
 

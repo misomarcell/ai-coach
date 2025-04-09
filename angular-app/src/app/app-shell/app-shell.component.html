@@ -14,7 +14,7 @@
 					<mat-icon>account_circle</mat-icon>
 					<span class="nav-label">Profile</span>
 				</a>
-				<a mat-list-item routerLinkActive="active-link" [routerLink]="['/food-list']" (click)="isMenuOpen = false">
+				<a mat-list-item routerLinkActive="active-link" [routerLink]="['/search-food']" (click)="isMenuOpen = false">
 					<mat-icon>list</mat-icon>
 					<span class="nav-label">Food List</span>
 				</a>
@@ -47,7 +47,6 @@
 				<span class="app-title" matRipple [routerLink]="['/home']">KombuchAI</span>
 			</mat-toolbar>
 			<router-outlet />
-			<div class="footer-placeholder" style="height: 20vh"></div>
 		</mat-sidenav-content>
 	</mat-sidenav-container>
 

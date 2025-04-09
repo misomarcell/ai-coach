@@ -1,0 +1,98 @@
+@let _food = food();
+
+<div class="add-serving-container">
+	<div class="title-bar d-flex ai-c jc-sb">
+		<h4>{{ _food?.name }}</h4>
+		<button mat-icon-button (click)="closeOverlay()">
+			<mat-icon>close</mat-icon>
+		</button>
+	</div>
+
+	<form [formGroup]="form" class="food-form">
+		<div class="form-row">
+			<mat-form-field>
+				<mat-label>Amount</mat-label>
+				<input #amount matInput (click)="amount.select()" type="number" formControlName="amount" step="0.01" min="0.01" />
+				@if (form.get("amount")?.invalid && form.get("amount")?.touched) {
+					<mat-error>Please enter a valid amount</mat-error>
+				}
+			</mat-form-field>
+
+			<mat-form-field>
+				<mat-label>Serving Size</mat-label>
+				<mat-select formControlName="servingSize">
+					@for (size of servingSizes; track size.name) {
+						<mat-option [value]="size">
+							{{ size.name }} {{ size.name !== "g" ? "(" + size.gramWeight + "g)" : "" }}
+						</mat-option>
+					}
+				</mat-select>
+			</mat-form-field>
+		</div>
+
+		<div class="form-row">
+			<mat-form-field>
+				<mat-label>Time</mat-label>
+				<input matInput formControlName="time" placeholder="HH:MM" />
+				@if (form.get("time")?.invalid && form.get("time")?.touched) {
+					<mat-error>Please enter a valid time (HH:MM)</mat-error>
+				}
+			</mat-form-field>
+
+			<mat-form-field>
+				<mat-label>Category</mat-label>
+				<mat-select formControlName="category">
+					@for (category of servingCategories; track category) {
+						<mat-option [value]="category">{{ category }}</mat-option>
+					}
+				</mat-select>
+			</mat-form-field>
+		</div>
+	</form>
+
+	<div class="food-details d-flex flex-column gap-1">
+		@if (_food && _food.nutritions.length > 0) {
+			<app-nutrition-label [food]="_food" [grams]="servingGrams() || 0" />
+
+			@if (dietaryFlags.length > 0) {
+				<div class="dietary-flags">
+					<mat-chip-set>
+						@for (flag of dietaryFlags; track flag) {
+							<mat-chip>{{ flag }}</mat-chip>
+						}
+					</mat-chip-set>
+				</div>
+			}
+
+			<app-nutrition-list [food]="_food" [grams]="servingGrams() || 0" />
+		}
+	</div>
+
+	@if (form) {
+		@let _isSubmitting = isSubmitting();
+		@let _serving = serving();
+		@if (_serving) {
+			<button mat-flat-button class="w-100 mt-3" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">
+				@if (_isSubmitting) {
+					Saving...
+				} @else {
+					Save
+				}
+			</button>
+		} @else {
+			<button
+				mat-flat-button
+				class="add-serving-button w-100 mt-3"
+				[disabled]="form.invalid || _isSubmitting"
+				(click)="onAddServing()"
+			>
+				<mat-icon>add</mat-icon>
+				@if (_isSubmitting) {
+					Adding...
+				} @else {
+					Add Serving
+				}
+			</button>
+		}
+	}
+</div>

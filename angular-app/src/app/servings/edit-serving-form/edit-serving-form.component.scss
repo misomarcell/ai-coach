@@ -3,6 +3,20 @@
 	--mdc-dialog-subhead-line-height: 1.2;
 }
 
+.add-serving-container {
+	padding: 1rem;
+
+	.title-bar {
+		margin-bottom: 1rem;
+
+		h4 {
+			font-size: 1.2rem;
+			line-height: 1.2;
+			margin: 0;
+		}
+	}
+}
+
 .form-row {
 	display: flex;
 	gap: 1rem;
@@ -25,10 +39,6 @@
 		color: rgba(0, 0, 0, 0.6);
 		margin: 0;
 	}
-}
-
-.dietary-flags {
-	margin: 0.5rem 0;
 }
 
 .add-serving-button {

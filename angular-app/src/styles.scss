@@ -1,5 +1,6 @@
 @use "@angular/material" as mat;
-@use "../theme-colors" as theme-colors;
+@use "./theme-colors" as theme-colors;
+@use "./classes";
 @import url("https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 $theme: mat.define-theme(
@@ -34,6 +35,12 @@ body {
 		--mat-menu-item-with-icon-trailing-spacing: 1rem;
 		--mat-menu-item-label-text-size: 1rem;
 	}
+
+	.fullscreen-overlay-pane {
+		display: block;
+		overflow: scroll;
+		background: var(--mat-app-background-color);
+	}
 }
 
 @include mat.typography-hierarchy($theme);
@@ -61,54 +68,4 @@ body {
 	--error-light: #ffb4ab;
 
 	--mat-divider-color: #3e484e;
-
-	.w-100 {
-		width: 100%;
-	}
-
-	$spacing-unit: 0.5rem;
-	$spacing-levels: 1, 2, 3, 4, 5;
-	@each $level in $spacing-levels {
-		.m-#{$level} {
-			margin: $level * $spacing-unit;
-		}
-
-		.mt-#{$level} {
-			margin-top: $level * $spacing-unit;
-		}
-
-		.mb-#{$level} {
-			margin-bottom: $level * $spacing-unit;
-		}
-
-		.ml-#{$level} {
-			margin-left: $level * $spacing-unit;
-		}
-
-		.mr-#{$level} {
-			margin-right: $level * $spacing-unit;
-		}
-	}
-
-	@each $level in $spacing-levels {
-		.p-#{$level} {
-			padding: $level * $spacing-unit;
-		}
-
-		.pt-#{$level} {
-			padding-top: $level * $spacing-unit;
-		}
-
-		.pb-#{$level} {
-			padding-bottom: $level * $spacing-unit;
-		}
-
-		.pl-#{$level} {
-			padding-left: $level * $spacing-unit;
-		}
-
-		.pr-#{$level} {
-			padding-right: $level * $spacing-unit;
-		}
-	}
 }

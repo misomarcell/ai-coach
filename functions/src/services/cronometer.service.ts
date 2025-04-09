@@ -113,10 +113,13 @@ export class CronometerService {
 					rowMap.set(header, row[index] || "");
 				});
 
-				const amount = rowMap.get("Amount") || "0";
-				const servingSize: ServingSize = amount.endsWith(" g")
-					? { name: "grams", gramWeight: parseFloat(amount.replace(" g", "")) }
-					: { name: amount, gramWeight: 0 };
+				const amountColumn = rowMap.get("Amount") || "0";
+				const [amountValue, amountName] = amountColumn.split(" ");
+
+				const amount = parseFloat(amountValue) || 1;
+				const servingSize: ServingSize = amountName.endsWith("g")
+					? { name: "grams", gramWeight: 1 }
+					: { name: amountName, gramWeight: 0 };
 
 				const dayStr = rowMap.get("Day") || "";
 				const createdDate = new Date(dayStr);
@@ -153,6 +156,7 @@ export class CronometerService {
 				return {
 					id: "",
 					created,
+					servingAmount: amount,
 					category: this.mapServingCategory(rowMap.get("Group")),
 					food,
 					servingSize,

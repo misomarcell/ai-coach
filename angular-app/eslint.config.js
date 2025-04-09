@@ -49,6 +49,7 @@ module.exports = tseslint.config(
 					style: "kebab-case",
 				},
 			],
+
 			"prettier/prettier": [
 				"error",
 				{
@@ -73,6 +74,9 @@ module.exports = tseslint.config(
 			...angular.configs.templateAccessibility,
 
 		],
-		rules: {}
+		rules: {
+			"@angular-eslint/template/click-events-have-key-events": 0,
+			"@angular-eslint/template/interactive-supports-focus": 0,
+		}
 	}
 );

@@ -1,0 +1,83 @@
+.bold {
+	font-weight: 700;
+}
+
+.w-100 {
+	width: 100%;
+}
+
+.d-flex {
+	display: flex;
+}
+
+.flex-column {
+	flex-direction: column;
+}
+
+.flex-row {
+	flex-direction: row;
+}
+
+.ai-c {
+	align-items: center;
+}
+
+.jc-sb {
+	justify-content: space-between;
+}
+
+.jc-c {
+	justify-content: center;
+}
+
+$spacing-unit: 0.5rem;
+$spacing-levels: 1, 2, 3, 4, 5;
+@each $level in $spacing-levels {
+	.m-#{$level} {
+		margin: $level * $spacing-unit;
+	}
+
+	.mt-#{$level} {
+		margin-top: $level * $spacing-unit;
+	}
+
+	.mb-#{$level} {
+		margin-bottom: $level * $spacing-unit;
+	}
+
+	.ml-#{$level} {
+		margin-left: $level * $spacing-unit;
+	}
+
+	.mr-#{$level} {
+		margin-right: $level * $spacing-unit;
+	}
+}
+
+@each $level in $spacing-levels {
+	.p-#{$level} {
+		padding: $level * $spacing-unit;
+	}
+
+	.pt-#{$level} {
+		padding-top: $level * $spacing-unit;
+	}
+
+	.pb-#{$level} {
+		padding-bottom: $level * $spacing-unit;
+	}
+
+	.pl-#{$level} {
+		padding-left: $level * $spacing-unit;
+	}
+
+	.pr-#{$level} {
+		padding-right: $level * $spacing-unit;
+	}
+}
+
+@each $level in $spacing-levels {
+	.gap-#{$level} {
+		gap: $level * $spacing-unit;
+	}
+}

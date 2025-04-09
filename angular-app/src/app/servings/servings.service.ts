@@ -4,20 +4,22 @@ import {
 	collection,
 	collectionData,
 	doc,
+	docData,
 	Firestore,
 	FirestoreDataConverter,
+	orderBy,
 	query,
 	serverTimestamp,
 	setDoc,
-	where,
 	Timestamp,
-	orderBy
+	where
 } from "@angular/fire/firestore";
 import { filter, from, map, Observable, switchMap, take } from "rxjs";
-import { AuthService } from "./auth.service";
+import { AuthService } from "../services/auth.service";
 
 export interface ServingOptions {
 	servingSize: ServingSize;
+	servingAmount: number;
 	category: ServingCategory;
 	isCustomized: boolean;
 }
@@ -59,9 +61,10 @@ export class ServingsService {
 					setDoc(docRef, {
 						...options,
 						servingSize: options.servingSize,
+						servingAmount: options.servingAmount,
 						created: new Date(),
 						food: {
-							foodId: id,
+							id,
 							dietaryFlags: Array.from(food.dietaryFlags || []),
 							name,
 							category,
@@ -77,6 +80,15 @@ export class ServingsService {
 		);
 	}
 
+	updateServing(servingId: string, serving: Partial<Serving>): Observable<string> {
+		return this.authService.uid.pipe(
+			filter((uid) => !!uid),
+			take(1),
+			map((uid) => doc(this.firestore, `users/${uid}/servings/${servingId}`).withConverter(this.servingsConverter)),
+			switchMap((docRef) => from(setDoc(docRef, { ...serving, lastUpdatedAt: new Date() }, { merge: true }).then(() => docRef.id)))
+		);
+	}
+
 	getServingsByDate(date: Date): Observable<Serving[]> {
 		const startOfDay = new Date(date);
 		startOfDay.setHours(0, 0, 0, 0);
@@ -89,7 +101,6 @@ export class ServingsService {
 
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
-			take(1),
 			map((uid) => {
 				const servingsCollection = collection(this.firestore, `users/${uid}/servings`).withConverter(this.servingsConverter);
 
@@ -104,11 +115,11 @@ export class ServingsService {
 		);
 	}
 
-	getServings(): Observable<Serving[]> {
+	getServingById(servingId: string): Observable<Serving | undefined> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
-			map((uid) => collection(this.firestore, `users/${uid}/servings`).withConverter(this.servingsConverter)),
-			switchMap((collectionRef) => collectionData(collectionRef, { idField: "id" }))
+			map((uid) => doc(this.firestore, `users/${uid}/servings/${servingId}`).withConverter(this.servingsConverter)),
+			switchMap((docRef) => docData(docRef))
 		);
 	}
 }

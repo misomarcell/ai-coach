@@ -29,6 +29,7 @@ angular-app/dist
 functions/downloads
 functions/dist
 functions/lib/**
+functions/firebase-export-*
 
 # Firebase
 .firebase
