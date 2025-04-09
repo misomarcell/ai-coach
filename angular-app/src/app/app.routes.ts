@@ -43,6 +43,12 @@ export const routes: Routes = [
 				canActivate: [loggedInGuard]
 			},
 			{
+				path: "profile",
+				loadComponent: () => import("./user-profile/user-profile.component").then((m) => m.UserProfileComponent),
+				canActivate: [loggedInGuard],
+				resolve: { userProfile: userProfileResolver }
+			},
+			{
 				path: "integrations",
 				loadComponent: () => import("./integrations-page/integrations-page.component").then((m) => m.IntegrationsPageComponent),
 				canActivate: [loggedInGuard]
