@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 import { loggedInGuard, loggedOutGuard } from "./auth.guard";
-import { userProfileResolver } from "./user-profile.resolver";
+import { servingsResolver } from "./resolvers/servings.resolver";
+import { userProfileResolver } from "./resolvers/user-profile.resolver";
 
 export const routes: Routes = [
 	{
@@ -16,7 +17,9 @@ export const routes: Routes = [
 				path: "home",
 				loadComponent: () => import("./home/home.component").then((m) => m.HomeComponent),
 				canActivate: [loggedInGuard],
-				resolve: { userProfile: userProfileResolver }
+				resolve: {
+					servings: servingsResolver
+				}
 			},
 			{
 				path: "calorie-vision",
