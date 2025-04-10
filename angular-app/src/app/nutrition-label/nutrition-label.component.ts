@@ -1,4 +1,4 @@
-import { Food } from "@aicoach/shared";
+import { Food, ServingFood } from "@aicoach/shared";
 import { DecimalPipe } from "@angular/common";
 import { Component, effect, input } from "@angular/core";
 
@@ -9,7 +9,7 @@ import { Component, effect, input } from "@angular/core";
 	styleUrl: "./nutrition-label.component.scss"
 })
 export class NutritionLabelComponent {
-	food = input<Food | undefined>(undefined);
+	food = input<Food | ServingFood | undefined>(undefined);
 	grams = input<number>(100);
 	calculated: Record<string, number> = {};
 
@@ -19,7 +19,7 @@ export class NutritionLabelComponent {
 
 	private calculateNutritionAmounts(): void {
 		this.food()?.nutritions.forEach((nutrition) => {
-			this.calculated[nutrition.type] = nutrition.amount * (this.grams() / 100);
+			this.calculated[nutrition.type] = nutrition.amount * (this.grams() || 100 / 100);
 		});
 	}
 }

@@ -1,6 +1,6 @@
 import { slideInOut } from "@aicoach/animations";
 import { FULLSCREEN_OVERLAY_DATA, FullscreenOverlayRef } from "@aicoach/overlay";
-import { Food, Serving, servingCategories, ServingCategory, ServingSize } from "@aicoach/shared";
+import { Food, Serving, servingCategories, ServingCategory, ServingFood, ServingSize } from "@aicoach/shared";
 import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -20,6 +20,8 @@ import { NutritionListComponent } from "../../nutrition-list/nutrition-list.comp
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
+import { time } from "node:console";
+import { D } from "@angular/cdk/keycodes";
 
 @Component({
 	standalone: true,
@@ -51,7 +53,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	isSubmitting = signal<boolean>(false);
 	servingGrams = signal<number>(0);
-	food = signal<Food | undefined>(undefined);
+	food = signal<Food | ServingFood | undefined>(undefined);
 	serving = signal<Serving | undefined>(undefined);
 
 	get dietaryFlags(): string[] {
@@ -89,19 +91,20 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	ngAfterViewInit(): void {
 		setTimeout(() => {
-			// this.amountField?.nativeElement?.focus();
 			this.amountField?.nativeElement?.select();
 		}, 0);
 	}
 
 	ngOnInit(): void {
+		this.serving.set(this.overlayData.serving);
+
 		if (!this.overlayData.foodId) {
-			this.snackService.open("No food data available", "Close", { duration: 3000 });
+			this.prefillForm(this.overlayData.serving);
+			this.food.set(this.overlayData.serving?.food);
 
 			return;
 		}
 
-		this.serving.set(this.overlayData.serving);
 		this.foodService
 			.getFood(this.overlayData.foodId)
 			.pipe(
@@ -124,10 +127,17 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			});
 		}
 
+		const formattedTime = serving?.created.toLocaleTimeString("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: false
+		});
+
 		this.form.patchValue({
 			amount: serving?.servingAmount || 100,
 			servingSize: serving?.servingSize || this.servingSizes[0],
-			category: serving?.category || this.getDefaultCategory()
+			category: serving?.category || this.getDefaultCategory(),
+			time: formattedTime
 		});
 	}
 
@@ -157,19 +167,19 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	onSaveServing(): void {
 		const _serving = this.serving();
-		console.log("Serving", _serving);
-
 		if (!_serving || this.form?.invalid || this.isSubmitting()) {
 			return;
 		}
 
 		this.isSubmitting.set(true);
 
+		const createdTime = this.parseTimeStringToTodayDate(this.form!.value.time);
 		const servingData: Partial<Serving> = {
 			...this.serving(),
 			servingSize: this.form!.value.servingSize,
 			servingAmount: this.form!.value.amount,
-			category: this.form!.value.category as ServingCategory
+			category: this.form!.value.category as ServingCategory,
+			created: createdTime || new Date()
 		};
 
 		this.servingsService
@@ -194,8 +204,6 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 				buttonLayout: "yes-no"
 			}
 		});
-
-		console.log({ serving });
 
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result === "yes") {
@@ -229,5 +237,25 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 		} else {
 			return "Dinner";
 		}
+	}
+
+	private parseTimeStringToTodayDate(timeString: string): Date | null {
+		if (!timeString || !/^\d{2}:\d{2}$/.test(timeString)) {
+			return null;
+		}
+
+		const parts = timeString.split(":");
+		const hours = parseInt(parts[0], 10);
+		const minutes = parseInt(parts[1], 10);
+
+		if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+			console.error("Invalid hours or minutes value in the time string.");
+			return null;
+		}
+
+		const resultDate = new Date(); // e.g., 2025-04-10T19:24:34 (using current time from context)
+		resultDate.setHours(hours, minutes, 0, 0);
+
+		return resultDate;
 	}
 }

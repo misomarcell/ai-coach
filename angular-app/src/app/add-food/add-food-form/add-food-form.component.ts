@@ -93,7 +93,6 @@ export class AddFoodFormComponent implements OnInit {
 	onSubmit(): void {
 		const foodId = this.food()?.id;
 		if (!this.foodForm.valid || !foodId) {
-			console.log("Form is invalid or foodId is not set", { valid: this.foodForm.valid, foodId: this.food()?.id });
 			return;
 		}
 

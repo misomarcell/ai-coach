@@ -31,7 +31,7 @@ export class ServingsGroupComponent {
 	getCaloriesFor(serving: Serving): number {
 		const foodCalories = serving.food.nutritions.find((nutrition) => nutrition.type === "Calories")?.amount ?? 0;
 
-		return (foodCalories * (serving.servingAmount ?? 1) * (serving.servingSize.gramWeight ?? 1)) / 100;
+		return (foodCalories * (serving.servingAmount ?? 1) * (serving.servingSize.gramWeight || 100)) / 100;
 	}
 
 	onAddClick(event: Event) {

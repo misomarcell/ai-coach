@@ -123,7 +123,6 @@ export class LabelAnalyzerComponent {
 			return;
 		}
 
-		console.log("Uploading imanges...");
 		this.loadingStatus.set(LoadingStatus.UploadingImages);
 
 		const labelUpload = this.foodService.uploadProductImage(this.foodId()!, this.labelImage().file!, "label");

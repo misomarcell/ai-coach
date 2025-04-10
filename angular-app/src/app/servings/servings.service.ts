@@ -1,4 +1,4 @@
-import { Food, Serving, ServingCategory, ServingDb, ServingSize } from "@aicoach/shared";
+import { Serving, ServingCategory, ServingDb, ServingFood, ServingSize } from "@aicoach/shared";
 import { inject, Injectable } from "@angular/core";
 import {
 	collection,
@@ -50,7 +50,7 @@ export class ServingsService {
 		}
 	};
 
-	addServing(food: Food, options: ServingOptions): Observable<string> {
+	addServing(food: ServingFood, options: ServingOptions): Observable<string> {
 		const { id, name, brand, category, nutritions, tags, isApproved } = food;
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),

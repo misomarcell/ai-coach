@@ -6,6 +6,7 @@ import { ref, Storage, uploadBytesResumable } from "@angular/fire/storage";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatDialog } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -16,6 +17,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { filter, finalize, map, switchMap, take, takeWhile, tap } from "rxjs";
+import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { AuthService } from "../../services/auth.service";
 import { Credentials, CronometerCredentialsService } from "../../services/cronometer-credentials.service";
 import { CronometerService } from "../../services/cronometer.service";
@@ -54,6 +56,7 @@ export class CronometerIntegrationComponent implements OnInit {
 		consent: new FormControl<boolean>(false, [Validators.requiredTrue])
 	});
 
+	private dialogService = inject(MatDialog);
 	private cronometerService = inject(CronometerService);
 	private cronoCredentialsService = inject(CronometerCredentialsService);
 	private authService = inject(AuthService);
@@ -103,10 +106,20 @@ export class CronometerIntegrationComponent implements OnInit {
 	}
 
 	requestServingsExport(source: CronometerExportSource) {
-		this.exportStatus.set("pending");
-		this.cronometerService
-			.requestServingsExport(source)
+		const dialogRef = this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
+			data: {
+				title: "Export Cronometer Data",
+				message: "This will delete any previous exported data from cronometer. Do you want to continue?",
+				buttonLayout: "yes-no"
+			}
+		});
+
+		dialogRef
+			.afterClosed()
 			.pipe(
+				filter((result) => result === "yes"),
+				tap(() => this.exportStatus.set("pending")),
+				switchMap(() => this.cronometerService.requestServingsExport(source)),
 				takeUntilDestroyed(this.destroyRef),
 				switchMap((requestId) => this.cronometerService.getExportRequest(requestId)),
 				filter((request) => !!request),

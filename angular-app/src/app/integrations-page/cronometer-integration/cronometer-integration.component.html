@@ -53,13 +53,13 @@
 					</ul>
 				}
 
-				<button mat-flat-button color="primary" (click)="onConnectClick()">Connect Cronometer</button>
+				<button mat-flat-button color="primary mb-2" (click)="onConnectClick()">Connect Cronometer</button>
 			</form>
 
-			<mat-divider class="mt-2 mb-2" />
+			<mat-divider />
 
 			<input #fileInput type="file" accept=".csv" (change)="onFileSelected($event)" style="display: none" />
-			<button mat-stroked-button class="w-100" (click)="fileInput.click()" [disabled]="!!uploadProgress()">
+			<button mat-stroked-button class="w-100 mt-2" (click)="fileInput.click()" [disabled]="!!uploadProgress()">
 				<mat-icon>file_upload</mat-icon>
 				Upload CSV
 			</button>

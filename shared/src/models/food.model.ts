@@ -121,7 +121,7 @@ export interface Nutrition {
 
 export interface ServingSize {
 	name: string;
-	gramWeight: number;
+	gramWeight?: number;
 }
 
 export interface ProductImage {

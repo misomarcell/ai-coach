@@ -1,4 +1,4 @@
-import { Food, Nutrition, NutritionUnit } from "@aicoach/shared";
+import { Food, Nutrition, NutritionUnit, ServingFood } from "@aicoach/shared";
 import { DecimalPipe } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
 import { MatExpansionModule } from "@angular/material/expansion";
@@ -35,7 +35,7 @@ const UNIT_PRIORITY: Record<NutritionUnit, number> = {
 	styleUrl: "./nutrition-list.component.scss"
 })
 export class NutritionListComponent {
-	food = input.required<Food>();
+	food = input.required<Food | ServingFood>();
 	grams = input<number>(100);
 	sortedNutritions = signal<Nutrition[]>([]);
 
@@ -48,7 +48,7 @@ export class NutritionListComponent {
 
 	private calculateNutritionAmounts(nutritions: Nutrition[]): Nutrition[] {
 		return nutritions.map((nutrition) => {
-			const scaledAmount = nutrition.amount * (this.grams() / 100);
+			const scaledAmount = nutrition.amount * ((this.grams() || 100) / 100);
 			return this.toSmallestWholeUnit({
 				...nutrition,
 				amount: scaledAmount

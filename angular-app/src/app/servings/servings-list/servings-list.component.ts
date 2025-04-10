@@ -10,7 +10,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { RouterModule } from "@angular/router";
-import { BehaviorSubject, Observable, catchError, distinctUntilChanged, startWith, switchMap, tap } from "rxjs";
+import { BehaviorSubject, catchError, distinctUntilChanged, startWith, switchMap, tap } from "rxjs";
 import { ServingsService } from "../servings.service";
 import { ServingsGroupComponent } from "./servings-group/servings-group.component";
 
@@ -35,7 +35,6 @@ import { ServingsGroupComponent } from "./servings-group/servings-group.componen
 export class ServingsListComponent implements OnInit {
 	initialServings = input<Serving[]>([]);
 
-	servings$: Observable<Serving[]> | undefined;
 	isLoading = signal<boolean>(false);
 	isResultEmpty = signal<boolean>(true);
 

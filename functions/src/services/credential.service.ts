@@ -4,14 +4,13 @@ import { FieldValue } from "firebase-admin/firestore";
 
 export class CronometerCredentialService {
 	async getCredentials(uid: string, type: string): Promise<CronometerCredentialDb> {
-		const credentialDocs = await firestore()
-			.collection(`users/${uid}/credentials`)
-			.where("type", "==", type)
-			.orderBy("verifiedAt", "desc")
-			.limit(1)
-			.get();
+		const docRef = await firestore().doc(`users/${uid}/credentials/${type}`).get();
 
-		return credentialDocs.docs[0].data() as CronometerCredentialDb;
+		if (!docRef.exists) {
+			throw new Error("Credentials not found");
+		}
+
+		return docRef.data() as CronometerCredentialDb;
 	}
 
 	async setVerificationStatus(uid: string, status: CronometerCredentialStatus): Promise<void> {

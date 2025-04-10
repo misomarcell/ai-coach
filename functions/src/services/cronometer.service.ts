@@ -113,13 +113,14 @@ export class CronometerService {
 					rowMap.set(header, row[index] || "");
 				});
 
-				const amountColumn = rowMap.get("Amount") || "0";
-				const [amountValue, amountName] = amountColumn.split(" ");
+				const amountColumn = rowMap.get("Amount")?.split(" ") || ["0"];
+				const amountValue = amountColumn[0];
+				const amountName = amountColumn.slice(1).join(" ");
 
 				const amount = parseFloat(amountValue) || 1;
-				const servingSize: ServingSize = amountName.endsWith("g")
+				const servingSize: ServingSize = amountName?.endsWith("g")
 					? { name: "grams", gramWeight: 1 }
-					: { name: amountName, gramWeight: 0 };
+					: { name: amountName, gramWeight: undefined };
 
 				const dayStr = rowMap.get("Day") || "";
 				const createdDate = new Date(dayStr);
@@ -141,7 +142,7 @@ export class CronometerService {
 					}
 				}
 
-				const nutritions: Nutrition[] = Array.from(nutritionsMap.values());
+				const nutritions: Nutrition[] = Array.from(nutritionsMap.values()).filter((n) => n.amount > 0);
 
 				const food: ServingFood = {
 					name: rowMap.get("Food Name") || "",
