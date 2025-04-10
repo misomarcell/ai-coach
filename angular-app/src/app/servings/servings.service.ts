@@ -3,6 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import {
 	collection,
 	collectionData,
+	deleteDoc,
 	doc,
 	docData,
 	Firestore,
@@ -120,6 +121,15 @@ export class ServingsService {
 			filter((uid) => !!uid),
 			map((uid) => doc(this.firestore, `users/${uid}/servings/${servingId}`).withConverter(this.servingsConverter)),
 			switchMap((docRef) => docData(docRef))
+		);
+	}
+
+	detele(servingId: string): Observable<void> {
+		return this.authService.uid.pipe(
+			filter((uid) => !!uid),
+			take(1),
+			map((uid) => doc(this.firestore, `users/${uid}/servings/${servingId}`)),
+			switchMap((docRef) => from(deleteDoc(docRef)))
 		);
 	}
 }

@@ -73,14 +73,8 @@
 		@let _serving = serving();
 		@if (_serving) {
 			<div class="mt-3 d-flex gap-2">
-				<button mat-icon-button color="warn"><mat-icon>delete</mat-icon></button>
-				<button mat-flat-button class="w-100" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">
-					@if (_isSubmitting) {
-						Saving...
-					} @else {
-						Save
-					}
-				</button>
+				<button mat-icon-button color="warn" (click)="onDeleteServing(_serving)"><mat-icon>delete</mat-icon></button>
+				<button mat-flat-button class="w-100" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">Save</button>
 			</div>
 		} @else {
 			<button

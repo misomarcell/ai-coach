@@ -5,7 +5,7 @@ import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
@@ -17,6 +17,7 @@ import { ActivatedRoute } from "@angular/router";
 import { filter, startWith, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
+import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
 
@@ -57,6 +58,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 		return this.food()?.dietaryFlags || [];
 	}
 
+	dialogService = inject(MatDialog);
 	overlayRef = inject(FullscreenOverlayRef<EditServingFormComponent>);
 	overlayData = inject<{ foodId: string; serving?: Serving }>(FULLSCREEN_OVERLAY_DATA);
 
@@ -178,6 +180,33 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 				this.isSubmitting.set(false);
 				this.closeOverlay();
 			});
+	}
+
+	onDeleteServing(serving: Serving) {
+		if (!serving || this.isSubmitting()) {
+			return;
+		}
+
+		const dialogRef = this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
+			data: {
+				title: "Delete Serving",
+				message: "Are you sure you want to delete this serving?",
+				buttonLayout: "yes-no"
+			}
+		});
+
+		console.log({ serving });
+
+		dialogRef.afterClosed().subscribe((result) => {
+			if (result === "yes") {
+				this.isSubmitting.set(true);
+				this.servingsService.detele(serving.id).subscribe(() => {
+					this.snackService.open("Serving deleted successfully!", "Close", { duration: 3000 });
+					this.isSubmitting.set(false);
+					this.closeOverlay();
+				});
+			}
+		});
 	}
 
 	closeOverlay(): void {

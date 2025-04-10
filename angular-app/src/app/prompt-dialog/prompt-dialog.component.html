@@ -1,0 +1,11 @@
+<h4>{{ data?.title }}</h4>
+<p>{{ data?.message }}</p>
+
+<div class="d-flex gap-2 jc-e pt-2">
+	@if (data?.buttonLayout === "ok") {
+		<button mat-flat-button (click)="onClick('ok')">Ok</button>
+	} @else if (data?.buttonLayout === "yes-no") {
+		<button mat-flat-button (click)="onClick('no')">No</button>
+		<button mat-flat-button (click)="onClick('yes')">Yes</button>
+	}
+</div>
