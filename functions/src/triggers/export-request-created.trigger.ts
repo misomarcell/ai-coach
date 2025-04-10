@@ -69,6 +69,7 @@ export const exportRequestCreated = onDocumentCreated(
 			await snapshot.ref.set({ status: "processing" } as CronometerExportRequestDb, { merge: true });
 			logger.info("Servings content read successfully. Converting to database format...");
 
+			await cronometerService.deleteCronometerExportedServings(userId);
 			const convertedServings = await cronometerService.convertExportToServings(servingsContent);
 			if (!convertedServings || convertedServings.length === 0) {
 				throw new Error("Failed to convert servings content");

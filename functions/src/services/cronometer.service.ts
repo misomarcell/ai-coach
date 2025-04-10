@@ -9,6 +9,7 @@ import {
 	ServingFood,
 	ServingSize
 } from "@aicoach/shared";
+import { firestore } from "firebase-admin";
 
 const foodCategoryMap: Record<string, FoodCategory> = {
 	"Baby Foods": "Baby Foods",
@@ -102,6 +103,8 @@ const nutritionMap: Record<string, { type: NutritionType; unit: NutritionUnit }>
 	"Valine (g)": { type: "Valine", unit: "g" }
 };
 
+const DELETE_BATCH_SIZE = 499;
+
 export class CronometerService {
 	async convertExportToServings(servingsContent: string): Promise<Serving[]> {
 		const headers = this.getCSVHeaders(servingsContent);
@@ -151,7 +154,8 @@ export class CronometerService {
 					nutritions,
 					isApproved: false,
 					dietaryFlags: [],
-					tags: ["cronometer-exported"]
+					tags: ["cronometer-exported"],
+					source: "Cronometer"
 				};
 
 				return {
@@ -161,13 +165,62 @@ export class CronometerService {
 					category: this.mapServingCategory(rowMap.get("Group")),
 					food,
 					servingSize,
-					isCustomized: false,
+					isCustomized: true,
 					comment: "Exported from Cronometer"
 				};
 			})
 			.filter((row) => row.food.name && row.food.nutritions.length > 0);
 
 		return result;
+	}
+
+	async deleteCronometerExportedServings(userId: string): Promise<void> {
+		if (!userId) {
+			throw new Error("User ID cannot be empty.");
+		}
+
+		console.log(`Starting deletion of 'cronometer-exported' servings for user: ${userId}`);
+
+		const servingsCollectionRef = firestore().collection(`users/${userId}/servings`);
+
+		const query = servingsCollectionRef.where("food.tags", "array-contains", "cronometer-exported");
+
+		try {
+			const snapshot = await query.get();
+			if (snapshot.empty) {
+				console.log(`No servings with 'cronometer-exported' tag found for user ${userId}. Nothing to delete.`);
+				return;
+			}
+
+			console.log(`Found ${snapshot.size} servings with 'cronometer-exported' tag to delete for user ${userId}.`);
+
+			let batch = firestore().batch();
+			let operationCount = 0;
+			let totalDeletedCount = 0;
+
+			for (let i = 0; i < snapshot.docs.length; i++) {
+				const doc = snapshot.docs[i];
+				batch.delete(doc.ref);
+				operationCount++;
+
+				if (operationCount === DELETE_BATCH_SIZE || i === snapshot.docs.length - 1) {
+					console.log(`Committing batch with ${operationCount} deletions...`);
+					await batch.commit();
+					totalDeletedCount += operationCount;
+					console.log(`Batch committed. Total deleted so far: ${totalDeletedCount}`);
+
+					if (i < snapshot.docs.length - 1) {
+						batch = firestore().batch();
+						operationCount = 0;
+					}
+				}
+			}
+
+			console.log(`Successfully deleted ${totalDeletedCount} 'cronometer-exported' servings for user ${userId}.`);
+		} catch (error) {
+			console.error(`Error during deletion process for user ${userId}:`, error);
+			throw error;
+		}
 	}
 
 	private getCSVHeaders(content: string): string[] {

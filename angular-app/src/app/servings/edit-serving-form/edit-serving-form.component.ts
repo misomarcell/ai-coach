@@ -20,8 +20,6 @@ import { NutritionListComponent } from "../../nutrition-list/nutrition-list.comp
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
-import { time } from "node:console";
-import { D } from "@angular/cdk/keycodes";
 
 @Component({
 	standalone: true,
