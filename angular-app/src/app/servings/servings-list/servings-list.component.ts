@@ -39,7 +39,7 @@ export class ServingsListComponent implements OnInit {
 	isLoading = signal<boolean>(false);
 	isResultEmpty = signal<boolean>(true);
 
-	servingCategories = servingCategories;
+	servingCategories: ServingCategory[] = ["Uncategorized", "Breakfast", "Lunch", "Dinner", "Snacks"];
 	categorizedServings = new Map<ServingCategory, Serving[]>();
 	selectedDate = new BehaviorSubject<Date>(new Date());
 

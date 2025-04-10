@@ -18,6 +18,19 @@ import { FullscreenOverlayRef } from "../../overlay/overlay-ref";
 import { FULLSCREEN_OVERLAY_DATA } from "../../overlay/overlay.token";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
+import { ActivatedRoute } from "@angular/router";
+import { animate, group, query, style, transition, trigger } from "@angular/animations";
+
+const slideInOut = trigger("slideInOut", [
+	transition(":enter", [
+		style({ transform: "translateX(-100%)", opacity: 0 }),
+		group([
+			query(":self", animate("1ms")),
+			animate("250ms cubic-bezier(0.0, 0.0, 0.2, 1)", style({ transform: "translateY(0)", opacity: 1 }))
+		])
+	]),
+	transition(":leave", [animate("200ms cubic-bezier(0.4, 0.0, 1, 1)", style({ transform: "translateX(100%)", opacity: 0 }))])
+]);
 
 @Component({
 	standalone: true,
@@ -35,6 +48,10 @@ import { ServingsService } from "../servings.service";
 		MatListModule,
 		MatChipsModule
 	],
+	animations: [slideInOut],
+	host: {
+		"[@slideInOut]": ""
+	},
 	templateUrl: "./edit-serving-form.component.html",
 	styleUrl: "./edit-serving-form.component.scss"
 })
@@ -55,6 +72,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 	overlayRef = inject(FullscreenOverlayRef<EditServingFormComponent>);
 	overlayData = inject<{ foodId: string; serving?: Serving }>(FULLSCREEN_OVERLAY_DATA);
 
+	private activatedRoute = inject(ActivatedRoute);
 	private formBuilder = inject(FormBuilder);
 	private snackService = inject(MatSnackBar);
 	private servingsService = inject(ServingsService);
@@ -179,6 +197,11 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 	}
 
 	private getDefaultCategory(): ServingCategory {
+		const preselectedCategorty = this.activatedRoute.snapshot.queryParams["group"];
+		if (preselectedCategorty) {
+			return preselectedCategorty;
+		}
+
 		const now = new Date();
 		const hour = now.getHours();
 

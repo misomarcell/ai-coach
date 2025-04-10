@@ -4,7 +4,8 @@
 <mat-expansion-panel [expanded]="_servings.length > 0">
 	<mat-expansion-panel-header>
 		<mat-panel-title>
-			<span class="panel-title">{{ title() }} ({{ _servings.length }}) </span>
+			<button mat-icon-button (click)="onAddClick($event)" [matMenuTriggerFor]="menu"><mat-icon>add</mat-icon></button>
+			<span class="panel-title">{{ groupName() }} ({{ _servings.length }}) </span>
 			<span class="total-calories bold">{{ _caloriesTotal ? (_caloriesTotal | number: "1.0-0") + " kcal" : "" }}</span>
 		</mat-panel-title>
 	</mat-expansion-panel-header>
@@ -22,3 +23,18 @@
 		}
 	</div>
 </mat-expansion-panel>
+
+<mat-menu #menu="matMenu">
+	<button mat-menu-item routerLink="/search-food" [queryParams]="{ focus: true, group: groupName() }">
+		<mat-icon>add</mat-icon>
+		<span>Add new entry</span>
+	</button>
+	<button mat-menu-item routerLink="/calorie-vision">
+		<mat-icon>visibility</mat-icon>
+		<span>Calorie vision</span>
+	</button>
+	<button mat-menu-item routerLink="/scan">
+		<mat-icon>qr_code_scanner</mat-icon>
+		<span>Scan barcode</span>
+	</button>
+</mat-menu>

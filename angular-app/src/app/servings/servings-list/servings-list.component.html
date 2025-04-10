@@ -1,7 +1,7 @@
 <div class="servings-list-container">
 	<div class="servings-date-header">
 		<strong>{{ selectedDate.value | date: "YYYY-MM-dd" }}</strong>
-		<div class="date-navigation">
+		<div class="date-navigation d-flex ai-c gap-1">
 			<button mat-icon-button color="primary" (click)="previousDay()">
 				<mat-icon>navigate_before</mat-icon>
 			</button>
@@ -16,25 +16,13 @@
 		<mat-card class="loading-card" appearance="outlined">
 			<p>Fetching diary...</p>
 		</mat-card>
-	} @else if (isResultEmpty()) {
-		<div class="empty-state">
-			<mat-card>
-				<mat-card-content>
-					<p>Nothing logged yet.</p>
-					<button mat-stroked-button [routerLink]="['/search-food']">
-						<mat-icon>add</mat-icon>
-						Add a food
-					</button>
-				</mat-card-content>
-			</mat-card>
-		</div>
-	} @else {
-		<div class="servings-by-category">
-			@for (category of servingCategories; track category) {
-				@if (categorizedServings.get(category); as servings) {
-					<app-servings-group [title]="category" [servings]="servings" />
-				}
-			}
-		</div>
 	}
+
+	<div class="servings-by-category">
+		@for (category of servingCategories; track category) {
+			@if (categorizedServings.get(category); as servings) {
+				<app-servings-group [groupName]="category" [servings]="servings" />
+			}
+		}
+	</div>
 </div>

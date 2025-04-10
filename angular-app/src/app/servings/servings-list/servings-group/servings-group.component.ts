@@ -4,20 +4,22 @@ import { Component, effect, inject, input, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
-import { RouterModule } from "@angular/router";
+import { MatMenuModule } from "@angular/material/menu";
+import { Router, RouterModule } from "@angular/router";
 import { OverlayService } from "../../../overlay/overlay.service";
 
 @Component({
 	selector: "app-servings-group",
-	imports: [DecimalPipe, RouterModule, MatButtonModule, MatIconModule, MatExpansionModule],
+	imports: [DecimalPipe, RouterModule, MatButtonModule, MatMenuModule, MatIconModule, MatExpansionModule],
 	templateUrl: "./servings-group.component.html",
 	styleUrl: "./servings-group.component.scss"
 })
 export class ServingsGroupComponent {
-	title = input.required<string>();
+	groupName = input.required<string>();
 	servings = input.required<Serving[]>();
 	caloriesTotal = signal<number>(0);
 
+	router = inject(Router);
 	overlayService = inject(OverlayService);
 
 	constructor() {
@@ -30,6 +32,10 @@ export class ServingsGroupComponent {
 		const foodCalories = serving.food.nutritions.find((nutrition) => nutrition.type === "Calories")?.amount ?? 0;
 
 		return (foodCalories * (serving.servingAmount ?? 1) * (serving.servingSize.gramWeight ?? 1)) / 100;
+	}
+
+	onAddClick(event: Event) {
+		event.stopPropagation();
 	}
 
 	async onServingClick(serving: Serving): Promise<void> {
