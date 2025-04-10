@@ -72,13 +72,16 @@
 		@let _isSubmitting = isSubmitting();
 		@let _serving = serving();
 		@if (_serving) {
-			<button mat-flat-button class="w-100 mt-3" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">
-				@if (_isSubmitting) {
-					Saving...
-				} @else {
-					Save
-				}
-			</button>
+			<div class="mt-3 d-flex gap-2">
+				<button mat-icon-button color="warn"><mat-icon>delete</mat-icon></button>
+				<button mat-flat-button class="w-100" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">
+					@if (_isSubmitting) {
+						Saving...
+					} @else {
+						Save
+					}
+				</button>
+			</div>
 		} @else {
 			<button
 				mat-flat-button
@@ -86,11 +89,10 @@
 				[disabled]="form.invalid || _isSubmitting"
 				(click)="onAddServing()"
 			>
-				<mat-icon>add</mat-icon>
 				@if (_isSubmitting) {
 					Adding...
 				} @else {
-					Add Serving
+					Add to {{ form.get("category")?.value || "diary" }}
 				}
 			</button>
 		}

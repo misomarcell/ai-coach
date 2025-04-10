@@ -1,3 +1,4 @@
+import { OverlayService } from "@aicoach/overlay";
 import { Food, foodCategories, FoodCategory } from "@aicoach/shared";
 import { isPlatformServer } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, inject, OnInit, PLATFORM_ID, signal, ViewChild } from "@angular/core";
@@ -16,7 +17,6 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { ActivatedRoute, RouterModule } from "@angular/router";
 import { combineLatest, debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from "rxjs";
-import { OverlayService } from "../overlay/overlay.service";
 import { AuthService } from "../services/auth.service";
 import { FoodSearchResult, FoodSearchService, SearchOptions, SearchResponse } from "../services/food-search.service";
 import { FoodService } from "../services/food.service";

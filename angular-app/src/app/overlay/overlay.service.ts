@@ -17,16 +17,31 @@ export class OverlayService {
 	private overlay = inject(Overlay);
 	private injector = inject(Injector);
 
-	/**
-	 * Opens a component in a fullscreen overlay.
-	 * @param componentLoader A function that returns a promise resolving to the component type (for lazy loading).
-	 * @param config Optional configuration for the overlay.
-	 * @returns A reference to the opened overlay.
-	 */
-	async open<T, R = any, D = any>(
+	open<T, R = any, D = any>(component: Type<T>, config?: FullscreenOverlayConfig<D>): Promise<FullscreenOverlayRef<T, R>>;
+	open<T, R = any, D = any>(
 		componentLoader: () => Promise<Type<T>>,
 		config?: FullscreenOverlayConfig<D>
+	): Promise<FullscreenOverlayRef<T, R>>;
+
+	async open<T, R = any, D = any>(
+		componentOrLoader: Type<T> | (() => Promise<Type<T>>),
+		config?: FullscreenOverlayConfig<D>
 	): Promise<FullscreenOverlayRef<T, R>> {
+		let componentTypePromise: Promise<Type<T>>;
+
+		if (
+			typeof componentOrLoader === "function" &&
+			!(componentOrLoader.prototype && componentOrLoader.prototype.constructor === componentOrLoader)
+		) {
+			componentTypePromise = (componentOrLoader as () => Promise<Type<T>>)();
+		} else if (typeof componentOrLoader === "function") {
+			componentTypePromise = Promise.resolve(componentOrLoader as Type<T>);
+		} else {
+			return Promise.reject(new Error("Invalid argument: Must provide a Component type or a loader function."));
+		}
+
+		const componentType = await componentTypePromise;
+
 		const positionStrategy: GlobalPositionStrategy = this.overlay.position().global().centerHorizontally().centerVertically();
 		const overlayConfig = new OverlayConfig({
 			positionStrategy,
@@ -52,7 +67,6 @@ export class OverlayService {
 			],
 			parent: this.injector
 		});
-		const componentType = await componentLoader();
 		const portal = new ComponentPortal(componentType, null, customInjector);
 		const componentRef = cdkOverlayRef.attach(portal);
 		fullscreenOverlayRef.componentInstance = componentRef.instance;

@@ -18,7 +18,9 @@
 		"target": "ES2022",
 		"module": "ES2022",
 		"paths": {
-			"@aicoach/shared": ["../shared/src"]
+			"@aicoach/shared": ["../shared/src"],
+			"@aicoach/animations": ["./src/app/animations"],
+			"@aicoach/overlay": ["./src/app/overlay"]
 		}
 	},
 	"angularCompilerOptions": {

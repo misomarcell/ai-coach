@@ -1,3 +1,5 @@
+import { slideInOut } from "@aicoach/animations";
+import { FULLSCREEN_OVERLAY_DATA, FullscreenOverlayRef } from "@aicoach/overlay";
 import { Food, Serving, servingCategories, ServingCategory, ServingSize } from "@aicoach/shared";
 import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -11,26 +13,12 @@ import { MatInputModule } from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { ActivatedRoute } from "@angular/router";
 import { filter, startWith, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
-import { FullscreenOverlayRef } from "../../overlay/overlay-ref";
-import { FULLSCREEN_OVERLAY_DATA } from "../../overlay/overlay.token";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
-import { ActivatedRoute } from "@angular/router";
-import { animate, group, query, style, transition, trigger } from "@angular/animations";
-
-const slideInOut = trigger("slideInOut", [
-	transition(":enter", [
-		style({ transform: "translateX(-100%)", opacity: 0 }),
-		group([
-			query(":self", animate("1ms")),
-			animate("250ms cubic-bezier(0.0, 0.0, 0.2, 1)", style({ transform: "translateY(0)", opacity: 1 }))
-		])
-	]),
-	transition(":leave", [animate("200ms cubic-bezier(0.4, 0.0, 1, 1)", style({ transform: "translateX(100%)", opacity: 0 }))])
-]);
 
 @Component({
 	standalone: true,

@@ -41,6 +41,11 @@ body {
 		overflow: scroll;
 		background: var(--mat-app-background-color);
 	}
+
+	.mat-mdc-outlined-button:not(:disabled).mat-warn {
+		--mdc-outlined-button-label-text-color: var(--mat-sys-error);
+		--mdc-outlined-button-outline-color: var(--mat-sys-error);
+	}
 }
 
 @include mat.typography-hierarchy($theme);
@@ -64,8 +69,6 @@ body {
 	--primary-light: #63d4fd;
 	--tertiary-color: #8e8db2;
 	--tertiary-light: #c4c3ea;
-	--error-color: #ff5449;
-	--error-light: #ffb4ab;
 
 	--mat-divider-color: #3e484e;
 }

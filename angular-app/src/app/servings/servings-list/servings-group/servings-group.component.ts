@@ -1,3 +1,4 @@
+import { OverlayService } from "@aicoach/overlay";
 import { Serving } from "@aicoach/shared";
 import { DecimalPipe } from "@angular/common";
 import { Component, effect, inject, input, signal } from "@angular/core";
@@ -6,7 +7,6 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { Router, RouterModule } from "@angular/router";
-import { OverlayService } from "../../../overlay/overlay.service";
 
 @Component({
 	selector: "app-servings-group",
