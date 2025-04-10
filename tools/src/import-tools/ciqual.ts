@@ -3,7 +3,7 @@ import { FoodCategory, FoodDb, FoodStatus, Nutrition, NutritionType } from "@aic
 import { FieldValue } from "firebase-admin/firestore";
 import { readFile, utils } from "xlsx";
 import { xlsHeaders, xlsToFoodCategoryMap, xlsToNutritionMap } from "./ciqual.model";
-import { addFoodsToDb, initFirestore } from "./import-base";
+import { FirestoreConnector } from "./import-base";
 import path from "path";
 var prompt = require("prompt-sync")();
 
@@ -31,8 +31,8 @@ async function main(): Promise<void> {
 
 	console.log(`Total of ${foods.length} converted foods to be saved...`);
 
-	await initFirestore(envInput === "prod");
-	await addFoodsToDb(foods);
+	const firestoreConnector = new FirestoreConnector(envInput === "prod");
+	await firestoreConnector.addFoodsToDb(foods);
 }
 
 function getNutritionValue(food: Partial<FoodDb>, type: NutritionType): number | undefined {
@@ -81,7 +81,7 @@ function mapXlsToNutritions(row: any): Nutrition[] {
 		}
 
 		let value = row[header]?.trim();
-		if (!value || value === "" || value === "-") {
+		if (!value || value === "" || value === "-" || value === "traces") {
 			// console.log(`Value is empty or invalid for header: ${header}. Skipping...`);
 			continue;
 		} else if (value.startsWith("< ")) {
@@ -91,7 +91,7 @@ function mapXlsToNutritions(row: any): Nutrition[] {
 		}
 
 		if (isNaN(value)) {
-			console.warn(`Parsed value is NaN for header: ${header}. Skipping...`);
+			console.warn(`Parsed value is NaN (${row[header]?.trim()}) for header: ${header}. Skipping...`);
 			continue;
 		}
 

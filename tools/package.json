@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"seed-algolia": "npx tsx src/seed-algolia.ts",
-		"import-foods": "npx tsx src/import-tools/ciqual.ts"
+		"import:ciqual": "npx tsx src/import-tools/ciqual.ts",
+		"import:usda": "npx tsx src/import-tools/usda.ts"
 	},
 	"keywords": [],
 	"author": "",

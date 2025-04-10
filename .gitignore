@@ -36,9 +36,12 @@ functions/firebase-export-*
 *-debug.log
 .runtimeconfig.json
 
-# Other
-servings.csv
-/functions/src/tools/*.js
-/functions/src/tools/import-tools/import-sources
+# Tools
+/tools/dist
 /tools/src/import-tools/sources
 /tools/src/import-tools/import-sources
+
+
+# Other
+servings.csv
+

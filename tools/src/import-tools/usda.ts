@@ -1,33 +1,36 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import fs from "fs";
 import { FoodCategory, FoodDb, FoodStatus, Nutrition, ServingSize } from "@aicoach/shared";
 import { FieldValue } from "firebase-admin/firestore";
-import { addFoodsToDb, initFirestore } from "./import-base";
+import fs from "fs";
+import path from "path";
+import { FirestoreConnector } from "./import-base";
 import { foodCategoryMap, nutritionMap } from "./usda.map";
 import { FoodNutrientsEntity, FoodPortionsEntity, FoundationFoodsEntity } from "./usda.model";
 
-async function main(isProd = true): Promise<void> {
-	await initFirestore(isProd);
+var prompt = require("prompt-sync")();
 
-	if (isProd) {
-		console.log("Are you sure you want to run this in production? (y/n)");
-		const answer = await new Promise<string>((resolve) => {
-			process.stdin.once("data", (data) => resolve(data.toString().trim()));
-		});
-
-		if (answer.toLowerCase() !== "y") {
-			process.exit(0);
-		}
+async function main(): Promise<void> {
+	const recordsInput = prompt("Number of records to import (blank = all): ");
+	const envInput = prompt("Environment (prod / blank = dev): ") ?? "dev";
+	const numberOfRecords = recordsInput ? parseInt(recordsInput, 10) : undefined;
+	if (numberOfRecords !== undefined && isNaN(numberOfRecords)) {
+		throw new Error("Invalid number entered. Please enter a valid number or leave blank.");
 	}
 
-	const file = fs.readFileSync("./import-sources/usda.json", "utf-8");
+	if (envInput && !["prod", "dev"].includes(envInput)) {
+		throw new Error("Invalid environment entered. Please enter either 'prod', 'dev' or leave blank for dev.");
+	}
+
+	console.log(`Importing ${numberOfRecords ?? "All"} records to ${envInput || "DEV"} environment...`);
+
+	const file = fs.readFileSync(path.resolve(__dirname, "./sources/usda.json"), "utf-8");
 	const data = JSON.parse(file);
 	const entries: FoundationFoodsEntity[] = data.FoundationFoods;
 
 	const convertedFoods = getConvertedFoods(entries);
-	await addFoodsToDb(convertedFoods);
 
-	// printAllNutritionTypes(entries);
+	const firestoreConnector = new FirestoreConnector(envInput === "prod");
+	await firestoreConnector.addFoodsToDb(convertedFoods);
 }
 
 function getConvertedFoods(entries: FoundationFoodsEntity[]): Partial<FoodDb>[] {

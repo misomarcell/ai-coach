@@ -2,6 +2,7 @@ import { Component, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { Router } from "@angular/router";
+import { first, from, switchMap } from "rxjs";
 import { AuthService } from "../services/auth.service";
 
 @Component({
@@ -15,9 +16,12 @@ export class LoginComponent {
 	router = inject(Router);
 
 	async onLoginClick(provider: "google" | "github"): Promise<void> {
-		await this.authService
-			.login(provider)
-			.then(() => this.router.navigate(["home"]))
-			.catch((error) => console.error("Login error:", error));
+		this.authService
+			.isLoggedIn$()
+			.pipe(
+				first(),
+				switchMap((isLoggedIn) => (isLoggedIn ? this.router.navigate(["home"]) : from(this.authService.login(provider))))
+			)
+			.subscribe();
 	}
 }
