@@ -70,15 +70,10 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	@ViewChild("amount", { static: false }) amountField: ElementRef<HTMLInputElement> | undefined;
 	constructor() {
-		const now = new Date();
-		const hours = now.getHours().toString().padStart(2, "0");
-		const minutes = now.getMinutes().toString().padStart(2, "0");
-		const currentTime = `${hours}:${minutes}`;
-
 		this.form = this.formBuilder.group({
 			amount: [100, [Validators.required, Validators.min(0.01)]],
 			servingSize: [[], Validators.required],
-			time: [currentTime, [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
+			time: ["", [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
 			category: [this.getDefaultCategory(), Validators.required]
 		});
 
@@ -125,7 +120,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			});
 		}
 
-		const formattedTime = serving?.created.toLocaleTimeString("en-US", {
+		const formattedTime = (serving?.created || new Date()).toLocaleTimeString("en-US", {
 			hour: "2-digit",
 			minute: "2-digit",
 			hour12: false
@@ -217,6 +212,14 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	closeOverlay(): void {
 		this.overlayRef?.close(false);
+	}
+
+	private getFormattedTime(date: Date): string {
+		return date.toLocaleTimeString("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			hour12: false
+		});
 	}
 
 	private getDefaultCategory(): ServingCategory {

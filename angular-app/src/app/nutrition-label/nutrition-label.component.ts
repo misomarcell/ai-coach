@@ -19,7 +19,7 @@ export class NutritionLabelComponent {
 
 	private calculateNutritionAmounts(): void {
 		this.food()?.nutritions.forEach((nutrition) => {
-			this.calculated[nutrition.type] = nutrition.amount * (this.grams() || 100 / 100);
+			this.calculated[nutrition.type] = (nutrition.amount * (this.grams() || 100)) / 100;
 		});
 	}
 }
