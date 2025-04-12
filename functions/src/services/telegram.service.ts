@@ -4,7 +4,6 @@ import { firestore } from "firebase-admin";
 import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { TelegramUpdate } from "../models/telegram-message.model";
-import userService from "./user.service";
 import communicationService from "./communication.service";
 
 const apiKey = defineSecret("TELEGRAM_BOT_TOKEN");
