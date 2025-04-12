@@ -1,8 +1,8 @@
 import { logger } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/firestore";
-import telegramService from "../services/telegram.service";
-import userService from "../services/user.service";
 import { Communication } from "../models/communication.model";
+import communicationService from "../services/communication.service";
+import telegramService from "../services/telegram.service";
 import { formatAnalysisResult } from "../utils/formatter.util";
 
 export const communicationCreated = onDocumentCreated(
@@ -19,11 +19,11 @@ export const communicationCreated = onDocumentCreated(
 		}
 
 		const uid = event.params.userId;
-		const userProfile = await userService.getUserProfile(uid);
 		const channel = communication.channel;
 		switch (channel) {
 			case "telegram":
-				const chatId = userProfile.telegramConnection?.chatId;
+				const telegramChannel = await communicationService.getTelegramChannel(uid);
+				const chatId = telegramChannel?.chatId;
 				if (!chatId) {
 					logger.warn("Communication couldn't be sent because user is missing chatId", { uid });
 

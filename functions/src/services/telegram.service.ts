@@ -5,6 +5,7 @@ import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { TelegramUpdate } from "../models/telegram-message.model";
 import userService from "./user.service";
+import communicationService from "./communication.service";
 
 const apiKey = defineSecret("TELEGRAM_BOT_TOKEN");
 const SOMETHING_WENT_WRONG_MESSAGE =
@@ -84,7 +85,7 @@ export class TelegramService {
 
 			const uid = userDoc.id;
 
-			await userService.updateUserProfile(uid, { telegramConnection: { connectCode, username, chatId } });
+			await communicationService.setTelegramChannel(uid, { connectCode, username, chatId });
 			await this.sendMessage(chatId, "You've successfully connected to your KombuchAI account.");
 			logger.info("ChatId saved to user document", chatId, username);
 		} catch (error) {

@@ -1,4 +1,4 @@
-import { AnalysisCommunicationChannel, AnalysisResultDb } from "@aicoach/shared";
+import { AnalysisResultDb, CommunicationChannel } from "@aicoach/shared";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 export const enum CommunicationMessageFormat {
@@ -15,7 +15,7 @@ export interface CommunicationMessage {
 export interface Communication {
 	id: string;
 	uid: string;
-	channel: AnalysisCommunicationChannel;
+	channel: CommunicationChannel;
 	message: CommunicationMessage;
 	created: FieldValue | Timestamp;
 }
