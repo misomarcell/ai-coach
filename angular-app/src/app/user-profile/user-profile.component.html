@@ -1,3 +1,6 @@
-<!-- <app-user-card [user]="userProfile()" /> -->
-<h4>{{ userProfile()?.displayName }} 👋</h4>
-<router-outlet />
+@if (userProfile()) {
+	<router-outlet />
+} @else {
+	<h4>Error</h4>
+	<p>User profile not found.</p>
+}

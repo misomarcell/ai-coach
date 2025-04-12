@@ -2,6 +2,14 @@
 	display: block;
 }
 
+.title-row {
+	.title {
+		font-size: 1.2rem;
+		line-height: 1.2;
+		margin: 0;
+	}
+}
+
 .gender-button-group {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);

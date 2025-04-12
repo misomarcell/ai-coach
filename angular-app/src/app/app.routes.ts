@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { loggedInGuard, loggedOutGuard } from "./auth.guard";
+import { healthProfileResolver } from "./resolvers/health-profile.resolver";
 import { servingsResolver } from "./resolvers/servings.resolver";
 import { userProfileResolver } from "./resolvers/user-profile.resolver";
 
@@ -52,9 +53,15 @@ export const routes: Routes = [
 				resolve: { userProfile: userProfileResolver },
 				children: [
 					{
+						path: "",
+						loadComponent: () =>
+							import("./user-profile/profile-menu/profile-menu.component").then((m) => m.ProfileMenuComponent)
+					},
+					{
 						path: "health-profile",
 						loadComponent: () =>
-							import("./user-profile/health-profile/health-profile.component").then((m) => m.HealthProfileComponent)
+							import("./user-profile/health-profile/health-profile.component").then((m) => m.HealthProfileComponent),
+						resolve: { healthProfile: healthProfileResolver }
 					}
 				]
 			},

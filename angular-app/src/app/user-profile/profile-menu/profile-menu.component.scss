@@ -1,0 +1,10 @@
+:host {
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+
+	.menu-item {
+		border-radius: 8px;
+		background-color: var(--mat-sys-on-secondary);
+	}
+}

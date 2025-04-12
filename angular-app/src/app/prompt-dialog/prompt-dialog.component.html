@@ -1,5 +1,5 @@
 <h4>{{ data?.title }}</h4>
-<p>{{ data?.message }}</p>
+<p [innerText]="data?.message"></p>
 
 <div class="d-flex gap-2 jc-e pt-2">
 	@if (data?.buttonLayout === "ok") {

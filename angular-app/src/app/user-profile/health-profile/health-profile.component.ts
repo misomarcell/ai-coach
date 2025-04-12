@@ -1,4 +1,4 @@
-import { ActivityLevel, calculateAge, calculateMaintenanceCalories } from "@aicoach/shared";
+import { ActivityLevel, calculateAge, calculateBmi, calculateMaintenanceCalories, HealthProfile } from "@aicoach/shared";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { DecimalPipe } from "@angular/common";
 import { Component, inject, signal } from "@angular/core";
@@ -8,6 +8,7 @@ import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
 import { MAT_DATE_FORMATS, MatNativeDateModule } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialog } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
@@ -15,9 +16,10 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { catchError, EMPTY, from, of, switchMap, take, tap } from "rxjs";
 import { HealthProfileService } from "../../services/health-profile.service";
+import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 
 @Component({
 	selector: "app-health-profile",
@@ -62,15 +64,18 @@ export class HealthProfileComponent {
 	isSubmitting = signal(false);
 
 	private router = inject(Router);
+	private actiavtedRoute = inject(ActivatedRoute);
 	private formBuilder = inject(FormBuilder);
 	private healthProfileService = inject(HealthProfileService);
 	private snackBar = inject(MatSnackBar);
+	private dialogService = inject(MatDialog);
 	readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
 	dietGoals = signal<string[]>([]);
 	dietRestrictions = signal<string[]>([]);
 	healthConditions = signal<string[]>([]);
 
+	bmi = signal<number | undefined>(undefined);
 	age = signal<number | undefined>(undefined);
 	maintanenceCalories = signal<number | undefined>(undefined);
 
@@ -94,23 +99,25 @@ export class HealthProfileComponent {
 			healthConditions: [[]]
 		});
 
-		this.formGroup.valueChanges.subscribe((value) => {
-			const age = calculateAge(value.birthDate);
-			if (!age || isNaN(age)) {
-				return;
-			}
+		const routeData = this.actiavtedRoute.snapshot.data["healthProfile"];
+		if (routeData) {
+			this.prefillForm(routeData);
+		}
 
-			this.age.set(age);
-			this.maintanenceCalories.set(
-				calculateMaintenanceCalories({
-					age,
-					activityLevel: value.activityLevel,
-					gender: value.gender,
-					heightCm: value.heightCm,
-					weightKg: value.weightKg
-				})
-			);
-		});
+		this.formGroup.valueChanges.subscribe((value) => this.setCalculatedData(value));
+	}
+
+	prefillForm(healthProfile?: HealthProfile): void {
+		if (!healthProfile) {
+			return;
+		}
+
+		this.formGroup.patchValue(healthProfile);
+		this.dietGoals.update(() => healthProfile.dietGoals || []);
+		this.dietRestrictions.update(() => healthProfile.dietaryRestrictions || []);
+		this.healthConditions.update(() => healthProfile.healthConditions || []);
+
+		this.setCalculatedData(healthProfile);
 	}
 
 	onSubmit(): void {
@@ -186,15 +193,27 @@ export class HealthProfileComponent {
 		}
 	}
 
-	getBmi(): number {
-		const weight = this.formGroup.get("weightKg")?.value;
-		const height = this.formGroup.get("heightCm")?.value / 100;
-
-		if (weight && height) {
-			return weight / (height * height);
+	setCalculatedData(profile: HealthProfile): void {
+		this.bmi.set(calculateBmi(profile.weightKg, profile.heightCm));
+		const age = calculateAge(profile.birthDate);
+		if (!age || isNaN(age)) {
+			return;
 		}
 
-		return 0;
+		this.age.set(age);
+		this.maintanenceCalories.set(
+			calculateMaintenanceCalories({
+				age,
+				activityLevel: profile.activityLevel,
+				gender: profile.gender,
+				heightCm: profile.heightCm,
+				weightKg: profile.weightKg
+			})
+		);
+	}
+
+	onBackClick(): void {
+		this.router.navigate(["/profile"]);
 	}
 
 	getErrorsFor(controlName: string): string {
@@ -224,5 +243,18 @@ export class HealthProfileComponent {
 		}
 
 		return "Invalid value";
+	}
+	async showCalculationHelp(): Promise<void> {
+		const promptDialogComponent = await import("../../prompt-dialog/prompt-dialog.component").then((m) => m.PromptDialogComponent);
+		this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(promptDialogComponent, {
+			data: {
+				title: "Calculated Data",
+				message: `To calculate your maintenance calories (BMR), we use the Mifflin-St Jeor equation, which is a widely accepted formula for estimating Basal Metabolic Rate.
+				\nBMR is the number of calories your body needs to maintain basic physiological functions at rest.
+				To estimate your Total Daily Energy Expenditure (TDEE), we multiply your BMR by an activity factor that corresponds to your lifestyle. This gives us the number of calories you need to maintain your current weight.
+				\nBMI is calculated using the formula: weight[kg] / (height[m] * height[m]).`,
+				buttonLayout: "ok"
+			}
+		});
 	}
 }

@@ -1,5 +1,10 @@
-<h4>Your health profile</h4>
-<p>Your information powers your personalized nutrition plan.</p>
+<div class="title-row mb-2 d-flex ai-c gap-2">
+	<button mat-icon-button class="back-button" (click)="onBackClick()">
+		<mat-icon>chevron_left</mat-icon>
+	</button>
+	<h4 class="title">Health Profile</h4>
+</div>
+<p class="text-center">Your information powers your personalized nutrition plan.</p>
 
 <mat-divider />
 
@@ -121,12 +126,14 @@
 		<mat-error>{{ getErrorsFor("healthConditions") }}</mat-error>
 	</mat-form-field>
 
-	@if (formGroup.valid) {
-		<div class="summary-wrapper d-flex jc-c">
-			<span>BMI: {{ getBmi() | number: "1.0-1" }} • BMR: ~{{ maintanenceCalories() | number: "1.0-0" }}kcal</span>
+	@let _bmi = bmi();
+	@let _maintanenceCalories = maintanenceCalories();
+	@if (formGroup.valid && _bmi && _maintanenceCalories) {
+		<div class="summary-wrapper text-underline d-flex jc-c ai-c" (click)="showCalculationHelp()">
+			<span> BMI: {{ _bmi | number: "1.0-1" }} • BMR: ~{{ _maintanenceCalories | number: "1.0-0" }}kcal </span>
 		</div>
 	}
 	<div class="button-container">
-		<button mat-flat-button type="submit" class="w-100" [disabled]="formGroup.invalid || isSubmitting()">Submit</button>
+		<button mat-flat-button type="submit" class="w-100" [disabled]="formGroup.invalid || isSubmitting()">Save</button>
 	</div>
 </form>

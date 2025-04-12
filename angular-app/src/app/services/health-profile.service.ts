@@ -31,11 +31,11 @@ export class HealthProfileService {
 		);
 	}
 
-	getHealthProfile(uid: string): Observable<HealthProfile | undefined> {
+	getHealthProfile(): Observable<HealthProfile | undefined> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			take(1),
-			map(() => doc(this.firestore, "users", uid!, "profiles", "health-profile").withConverter(this.healthProfileConverter)),
+			map((uid) => doc(this.firestore, "users", uid!, "profiles", "health-profile").withConverter(this.healthProfileConverter)),
 			switchMap((docRef) => docData(docRef))
 		);
 	}
