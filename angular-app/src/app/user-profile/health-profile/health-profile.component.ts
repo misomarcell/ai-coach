@@ -1,5 +1,5 @@
 import { ActivityLevel, calculateAge, calculateBmi, calculateMaintenanceCalories, HealthProfile } from "@aicoach/shared";
-import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { COMMA, ENTER, TAB } from "@angular/cdk/keycodes";
 import { DecimalPipe } from "@angular/common";
 import { Component, inject, signal } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -69,7 +69,7 @@ export class HealthProfileComponent {
 	private healthProfileService = inject(HealthProfileService);
 	private snackBar = inject(MatSnackBar);
 	private dialogService = inject(MatDialog);
-	readonly separatorKeysCodes = [ENTER, COMMA] as const;
+	readonly separatorKeysCodes = [ENTER, COMMA, TAB] as const;
 
 	dietGoals = signal<string[]>([]);
 	dietRestrictions = signal<string[]>([]);
