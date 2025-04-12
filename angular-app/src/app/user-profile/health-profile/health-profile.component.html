@@ -72,12 +72,20 @@
 			<input
 				required
 				placeholder="Add goals (e.g., Weight loss, Muscle gain)"
+				name="dietGoalsInput"
 				[matChipInputFor]="dietGoalsChipGrid"
 				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+				[matAutocomplete]="dietGoalAuto"
+				[formControl]="dietGoalCtrl"
 				(matChipInputTokenEnd)="addItem($event, 'dietGoals')"
 			/>
 		</mat-chip-grid>
-		<mat-hint>Press Enter to add a diet goal</mat-hint>
+		<mat-autocomplete #dietGoalAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'dietGoals')">
+			@for (goal of filteredDietGoals(); track goal) {
+				<mat-option [value]="goal">{{ goal }}</mat-option>
+			}
+		</mat-autocomplete>
+		<mat-hint>Select from the list or add your own</mat-hint>
 		<mat-error>{{ getErrorsFor("dietGoals") }}</mat-error>
 	</mat-form-field>
 
@@ -94,12 +102,20 @@
 			}
 			<input
 				placeholder="Add restriction (e.g., Vegetarian, Gluten-free)"
+				name="dietaryRestrictionsInput"
 				[matChipInputFor]="restrictionsChipGrid"
 				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+				[matAutocomplete]="dietRestrictionAuto"
+				[formControl]="dietRestrictionCtrl"
 				(matChipInputTokenEnd)="addItem($event, 'dietaryRestrictions')"
 			/>
 		</mat-chip-grid>
-		<mat-hint>(Optional) Press Enter to add a dietary restriction</mat-hint>
+		<mat-autocomplete #dietRestrictionAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'dietaryRestrictions')">
+			@for (restriction of filteredDietRestrictions(); track restriction) {
+				<mat-option [value]="restriction">{{ restriction }}</mat-option>
+			}
+		</mat-autocomplete>
+		<mat-hint>(Optional) Select from the list or add your own</mat-hint>
 		<mat-error>{{ getErrorsFor("dietaryRestrictions") }}</mat-error>
 	</mat-form-field>
 
@@ -117,12 +133,20 @@
 
 			<input
 				placeholder="Add condition (e.g., Diabetes, Hypertension)"
+				name="healthConditionsInput"
 				[matChipInputFor]="conditionsChipGrid"
 				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+				[matAutocomplete]="healthConditionAuto"
+				[formControl]="healthConditionCtrl"
 				(matChipInputTokenEnd)="addItem($event, 'healthConditions')"
 			/>
 		</mat-chip-grid>
-		<mat-hint>(Optional) Press Enter to add a health condition</mat-hint>
+		<mat-autocomplete #healthConditionAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'healthConditions')">
+			@for (condition of filteredHealthConditions(); track condition) {
+				<mat-option [value]="condition">{{ condition }}</mat-option>
+			}
+		</mat-autocomplete>
+		<mat-hint>(Optional) Select from the list or add your own</mat-hint>
 		<mat-error>{{ getErrorsFor("healthConditions") }}</mat-error>
 	</mat-form-field>
 

@@ -1,8 +1,10 @@
 import { ActivityLevel, calculateAge, calculateBmi, calculateMaintenanceCalories, HealthProfile } from "@aicoach/shared";
 import { COMMA, ENTER, TAB } from "@angular/cdk/keycodes";
 import { DecimalPipe } from "@angular/common";
-import { Component, inject, signal } from "@angular/core";
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Component, inject, Signal, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
@@ -17,9 +19,10 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
-import { catchError, EMPTY, from, of, switchMap, take, tap } from "rxjs";
-import { HealthProfileService } from "../../services/health-profile.service";
+import { catchError, EMPTY, from, map, of, startWith, switchMap, take, tap } from "rxjs";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
+import { HealthProfileService } from "../../services/health-profile.service";
+import { DIET_GOALS, DIETARY_RESTRICTIONS, HEALTH_CONDITIONS } from "./health-options";
 
 @Component({
 	selector: "app-health-profile",
@@ -37,7 +40,8 @@ import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../
 		MatIconModule,
 		MatSelectModule,
 		MatDatepickerModule,
-		MatNativeDateModule
+		MatNativeDateModule,
+		MatAutocompleteModule
 	],
 	providers: [
 		{
@@ -75,6 +79,18 @@ export class HealthProfileComponent {
 	dietRestrictions = signal<string[]>([]);
 	healthConditions = signal<string[]>([]);
 
+	dietGoalCtrl = new FormControl("");
+	dietRestrictionCtrl = new FormControl("");
+	healthConditionCtrl = new FormControl("");
+
+	filteredDietGoals: Signal<string[]>;
+	filteredDietRestrictions: Signal<string[]>;
+	filteredHealthConditions: Signal<string[]>;
+
+	predefinedDietGoals = DIET_GOALS;
+	predefinedDietRestrictions = DIETARY_RESTRICTIONS;
+	predefinedHealthConditions = HEALTH_CONDITIONS;
+
 	bmi = signal<number | undefined>(undefined);
 	age = signal<number | undefined>(undefined);
 	maintanenceCalories = signal<number | undefined>(undefined);
@@ -103,6 +119,30 @@ export class HealthProfileComponent {
 		if (routeData) {
 			this.prefillForm(routeData);
 		}
+
+		this.filteredDietGoals = toSignal(
+			this.dietGoalCtrl.valueChanges.pipe(
+				startWith(""),
+				map((value) => this.filterSelection(value || "", this.predefinedDietGoals))
+			),
+			{ initialValue: [] }
+		);
+
+		this.filteredDietRestrictions = toSignal(
+			this.dietRestrictionCtrl.valueChanges.pipe(
+				startWith(""),
+				map((value) => this.filterSelection(value || "", this.predefinedDietRestrictions))
+			),
+			{ initialValue: [] }
+		);
+
+		this.filteredHealthConditions = toSignal(
+			this.healthConditionCtrl.valueChanges.pipe(
+				startWith(""),
+				map((value) => this.filterSelection(value || "", this.predefinedHealthConditions))
+			),
+			{ initialValue: [] }
+		);
 
 		this.formGroup.valueChanges.subscribe((value) => this.setCalculatedData(value));
 	}
@@ -159,14 +199,20 @@ export class HealthProfileComponent {
 		switch (controlName) {
 			case "dietGoals":
 				this.dietGoals.update((prev) => [...prev, value]);
+				this.formGroup.controls["dietGoals"].setValue(this.dietRestrictions());
+
+				this.dietGoalCtrl.setValue("");
 				break;
 			case "dietaryRestrictions":
-				(this.formGroup.get("dietaryRestrictions") as FormArray).push(new FormControl(value));
 				this.dietRestrictions.update((prev) => [...prev, value]);
+				this.formGroup.controls["dietaryRestrictions"].setValue(this.dietRestrictions());
+
+				this.dietRestrictionCtrl.setValue("");
 				break;
 			case "healthConditions":
-				(this.formGroup.get("healthConditions") as FormArray).push(new FormControl(value));
 				this.healthConditions.update((prev) => [...prev, value]);
+				this.formGroup.controls["healthConditions"].setValue(this.healthConditions());
+				this.healthConditionCtrl.setValue("");
 				break;
 			default:
 				break;
@@ -175,18 +221,60 @@ export class HealthProfileComponent {
 		event.chipInput?.clear();
 	}
 
+	selectedItem(event: MatAutocompleteSelectedEvent, controlName: string): void {
+		const value = event.option.viewValue;
+
+		event.option.deselect();
+		switch (controlName) {
+			case "dietGoals":
+				if (!this.dietGoals().includes(value)) {
+					this.dietGoals.update((prev) => [...prev, value]);
+					this.formGroup.controls["dietGoals"].setValue(this.healthConditions());
+				}
+
+				(document.querySelector("[name='dietGoalsInput']") as HTMLInputElement).value = "";
+				this.dietGoalCtrl.setValue("");
+
+				break;
+			case "dietaryRestrictions":
+				if (!this.dietRestrictions().includes(value)) {
+					this.dietRestrictions.update((prev) => [...prev, value]);
+					this.formGroup.controls["dietaryRestrictions"].setValue(this.healthConditions());
+				}
+
+				(document.querySelector("[name='dietaryRestrictionsInput']") as HTMLInputElement).value = "";
+				this.dietRestrictionCtrl.setValue("");
+
+				this.dietRestrictionCtrl.setValue("");
+				break;
+			case "healthConditions":
+				if (!this.healthConditions().includes(value)) {
+					this.healthConditions.update((prev) => [...prev, value]);
+					this.formGroup.controls["healthConditions"].setValue(this.healthConditions());
+				}
+
+				(document.querySelector("[name='healthConditionsInput']") as HTMLInputElement).value = "";
+				this.healthConditionCtrl.setValue("");
+
+				break;
+			default:
+				break;
+		}
+	}
+
 	removeItem(index: number, controlName: string): void {
 		switch (controlName) {
 			case "dietGoals":
 				this.dietGoals.update((prev) => prev.filter((_, i) => i !== index));
+				this.formGroup.controls["dietGoals"].setValue(this.dietRestrictions());
 				break;
 			case "dietaryRestrictions":
-				(this.formGroup.get("dietaryRestrictions") as FormArray).removeAt(index);
 				this.dietRestrictions.update((prev) => prev.filter((_, i) => i !== index));
+				this.formGroup.controls["dietaryRestrictions"].setValue(this.dietRestrictions());
 				break;
 			case "healthConditions":
-				(this.formGroup.get("healthConditions") as FormArray).removeAt(index);
 				this.healthConditions.update((prev) => prev.filter((_, i) => i !== index));
+				this.formGroup.controls["healthConditions"].setValue(this.dietRestrictions());
 				break;
 			default:
 				break;
@@ -194,6 +282,8 @@ export class HealthProfileComponent {
 	}
 
 	setCalculatedData(profile: HealthProfile): void {
+		console.log({ profile });
+
 		this.bmi.set(calculateBmi(profile.weightKg, profile.heightCm));
 		const age = calculateAge(profile.birthDate);
 		if (!age || isNaN(age)) {
@@ -244,6 +334,7 @@ export class HealthProfileComponent {
 
 		return "Invalid value";
 	}
+
 	async showCalculationHelp(): Promise<void> {
 		const promptDialogComponent = await import("../../prompt-dialog/prompt-dialog.component").then((m) => m.PromptDialogComponent);
 		this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(promptDialogComponent, {
@@ -256,5 +347,16 @@ export class HealthProfileComponent {
 				buttonLayout: "ok"
 			}
 		});
+	}
+
+	private filterSelection(value: string, options: string[]): string[] {
+		const filterValue = value.toLowerCase();
+		const filtered = options.filter((option) => option.toLowerCase().includes(filterValue));
+
+		if (filtered.length === 0 && value) {
+			return [value];
+		}
+
+		return filtered;
 	}
 }
