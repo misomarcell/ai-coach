@@ -7,7 +7,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatRadioModule } from "@angular/material/radio";
-import { map, Subscription, take } from "rxjs";
+import { map, Subscription } from "rxjs";
 import { AnalysisService } from "../services/analysis.service";
 
 @Component({
@@ -32,13 +32,12 @@ export class AnalysisRequestFormComponent implements OnInit {
 		service: new FormControl<AiModel>("gpt-4o")
 	});
 
+	private analysisService = inject(AnalysisService);
 	private destroyRef = inject(DestroyRef);
-
-	constructor(private analysisService: AnalysisService) {}
 
 	ngOnInit(): void {
 		this.analysisService
-			.getAnalysesByStatus$([AnalysisRequestStatus.Created, AnalysisRequestStatus.Processing])
+			.getAnalysesByStatus([AnalysisRequestStatus.Created, AnalysisRequestStatus.Processing])
 			.pipe(
 				takeUntilDestroyed(this.destroyRef),
 				map((ongoing) => ongoing.length > 0)
@@ -58,6 +57,6 @@ export class AnalysisRequestFormComponent implements OnInit {
 
 		this.isDisabled = true;
 
-		return this.analysisService.createAnalysisRequest$(service).pipe(take(1)).subscribe();
+		return this.analysisService.createRequest(service).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
 	}
 }

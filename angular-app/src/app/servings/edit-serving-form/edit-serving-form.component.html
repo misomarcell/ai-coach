@@ -1,8 +1,8 @@
 @let _food = food();
 
-<div class="add-serving-container">
-	<div class="title-bar d-flex ai-c jc-sb">
-		<h4>{{ _food?.name }}</h4>
+<div class="add-serving-container p-2">
+	<div class="title-bar d-flex ai-c jc-sb mb-2">
+		<h4 class="title">{{ _food?.name }}</h4>
 		<button mat-icon-button (click)="closeOverlay()">
 			<mat-icon>close</mat-icon>
 		</button>

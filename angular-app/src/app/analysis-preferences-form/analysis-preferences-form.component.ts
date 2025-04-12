@@ -1,4 +1,4 @@
-import { AnalysisCommunicationChannel, AnalysisCommunicationFrequency, AnalysisPreferences } from "@aicoach/shared";
+import { CommunicationChannel, CommunicationFrequency, CommunicationPreferences } from "@aicoach/shared";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { CommonModule, isPlatformServer } from "@angular/common";
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, OnInit, Output, PLATFORM_ID } from "@angular/core";
@@ -39,7 +39,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 	styleUrl: "./analysis-preferences-form.component.scss"
 })
 export class AnalysisPreferencesFormComponent implements OnInit {
-	dialogData: AnalysisPreferences | null = null;
+	dialogData: CommunicationPreferences | null = null;
 	dialogRef: MatDialogRef<AnalysisPreferencesFormComponent>;
 
 	formGroup: FormGroup;
@@ -60,8 +60,8 @@ export class AnalysisPreferencesFormComponent implements OnInit {
 	}
 
 	readonly separatorKeysCodes = [ENTER, COMMA] as const;
-	readonly communicationFrequencies = Object.values(AnalysisCommunicationFrequency);
-	readonly communicationChannels = Object.values(AnalysisCommunicationChannel);
+	readonly communicationFrequencies = Object.values(CommunicationFrequency);
+	readonly communicationChannels = Object.values(CommunicationChannel);
 
 	@Output() requestSent = new EventEmitter<void>();
 
@@ -72,15 +72,15 @@ export class AnalysisPreferencesFormComponent implements OnInit {
 		private snackBar: MatSnackBar
 	) {
 		this.dialogRef = inject<MatDialogRef<AnalysisPreferencesFormComponent>>(MatDialogRef);
-		this.dialogData = inject<AnalysisPreferences>(MAT_DIALOG_DATA);
+		this.dialogData = inject<CommunicationPreferences>(MAT_DIALOG_DATA);
 
 		this.formGroup = this.formBuilder.group({
 			description: ["", [Validators.required, Validators.maxLength(500)]],
 			goals: this.formBuilder.array([], Validators.required),
 			dietaryRestrictions: this.formBuilder.array([]),
 			healthConditions: this.formBuilder.array([]),
-			communicationFrequency: [AnalysisCommunicationFrequency.Weekly],
-			communicationChannel: [AnalysisCommunicationChannel.Telegram]
+			communicationFrequency: [CommunicationFrequency.Weekly],
+			communicationChannel: [CommunicationChannel.Telegram]
 		});
 	}
 
@@ -149,7 +149,7 @@ export class AnalysisPreferencesFormComponent implements OnInit {
 	onCloseClick(): void {
 		this.dialogRef.close();
 	}
-	private populateFormFromRequest(preferences: AnalysisPreferences): void {
+	private populateFormFromRequest(preferences: CommunicationPreferences): void {
 		if (preferences.description) {
 			this.formGroup.get("description")?.setValue(preferences.description);
 		}

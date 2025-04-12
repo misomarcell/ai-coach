@@ -1,4 +1,4 @@
-import { AnalysisPreferences, CalorieVisionResult } from "@aicoach/shared";
+import { CalorieVisionResult, HealthProfileDb } from "@aicoach/shared";
 import { AiModel } from "@aicoach/shared/models/ai-shared.model";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
@@ -13,7 +13,7 @@ import {
 	SYSTEM_PRODUCT_IMAGE_PROMPT
 } from "../const/ai-service.const";
 import { AnalysisResultBase } from "../models/ai-service.model";
-import { buildPreferences } from "../utils/prompt-builder.util";
+import { generateHealthProfileSummary } from "../utils/prompt-builder.util";
 import { LabelAnalysis } from "./label-analyzer.service";
 
 export type AiModelConfig = {
@@ -29,7 +29,7 @@ const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 const ANTHROPIC_API_KEY = defineSecret("ANTHROPIC_API_KEY");
 
 export class AiService {
-	async getAnalysisResult(servings: string, preferences: AnalysisPreferences, config: AiModelConfig): Promise<AnalysisResultBase | null> {
+	async getAnalysisResult(servings: string, healthProfile: HealthProfileDb, config: AiModelConfig): Promise<AnalysisResultBase | null> {
 		if (!servings) {
 			logger.error("Servings content could not be retrieved");
 
@@ -43,7 +43,15 @@ export class AiService {
 			["assistant", "{servings}"]
 		]);
 
-		const compiledPreferences = buildPreferences(preferences);
+		const compiledPreferences = generateHealthProfileSummary(healthProfile);
+		if (!compiledPreferences) {
+			logger.error("Health profile summary could not be retrieved");
+
+			throw new Error("Health profile summary could not be retrieved");
+		}
+
+		console.log("Health profile summary for Analysis", compiledPreferences);
+
 		const structuredLlm = model.withStructuredOutput(DietaryAnalysis, { name: "dietary-suggestion" });
 		const parsedResponse = await prompt.pipe(structuredLlm).invoke({ compiledPreferences, servings });
 

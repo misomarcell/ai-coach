@@ -7,7 +7,8 @@ import { TelegramUpdate } from "../models/telegram-message.model";
 import userService from "./user.service";
 
 const apiKey = defineSecret("TELEGRAM_BOT_TOKEN");
-const SOMETHING_WENT_WRONG_MESSAGE = "Something went wrong while connecting your account. Please refresh the website and click on the connect button again.";
+const SOMETHING_WENT_WRONG_MESSAGE =
+	"Something went wrong while connecting your account. Please refresh the website and click on the connect button again.";
 
 export class TelegramService {
 	private _client: AxiosInstance | undefined;
@@ -83,7 +84,7 @@ export class TelegramService {
 
 			const uid = userDoc.id;
 
-			await userService.updateUser(uid, { telegramConnection: { connectCode, username, chatId } });
+			await userService.updateUserProfile(uid, { telegramConnection: { connectCode, username, chatId } });
 			await this.sendMessage(chatId, "You've successfully connected to your KombuchAI account.");
 			logger.info("ChatId saved to user document", chatId, username);
 		} catch (error) {

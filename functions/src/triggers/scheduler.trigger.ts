@@ -1,7 +1,7 @@
 import { firestore } from "firebase-admin";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { logger } from "firebase-functions";
-import analysisService from "../services/analysis.service";
+import analysisService from "../services/diet-analysis.service";
 
 export const scheduledRun = onSchedule(
 	{

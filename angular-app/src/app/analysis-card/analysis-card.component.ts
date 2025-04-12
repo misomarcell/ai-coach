@@ -33,6 +33,6 @@ export class AnalysisCardComponent {
 			return;
 		}
 
-		this.analysisService.deleteAnalysis$(this.analysis.id).pipe(take(1)).subscribe();
+		this.analysisService.deleteAnalysis(this.analysis.id).pipe(take(1)).subscribe();
 	}
 }

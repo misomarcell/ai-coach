@@ -6,11 +6,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angula
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
-import { MatListModule } from "@angular/material/list";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute } from "@angular/router";
@@ -32,9 +30,7 @@ import { ServingsService } from "../servings.service";
 		MatFormFieldModule,
 		MatInputModule,
 		MatSelectModule,
-		MatExpansionModule,
 		MatIconModule,
-		MatListModule,
 		MatChipsModule
 	],
 	animations: [slideInOut],
@@ -90,7 +86,6 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	ngOnInit(): void {
 		this.serving.set(this.overlayData.serving);
-
 		if (!this.overlayData.foodId) {
 			this.prefillForm(this.overlayData.serving);
 			this.food.set(this.overlayData.serving?.food);
@@ -185,12 +180,13 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			});
 	}
 
-	onDeleteServing(serving: Serving) {
+	async onDeleteServing(serving: Serving) {
 		if (!serving || this.isSubmitting()) {
 			return;
 		}
 
-		const dialogRef = this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
+		const dialogComponent = await import("../../prompt-dialog/prompt-dialog.component").then((m) => m.PromptDialogComponent);
+		const dialogRef = this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(dialogComponent, {
 			data: {
 				title: "Delete Serving",
 				message: "Are you sure you want to delete this serving?",

@@ -25,12 +25,4 @@ export class UserCardComponent {
 	async onLogoutClick(): Promise<void> {
 		await this.authService.logout();
 	}
-
-	async onEditPreferencesClick() {
-		const { AnalysisPreferencesFormComponent } = await import("../analysis-preferences-form/analysis-preferences-form.component");
-		this.dialog.open(AnalysisPreferencesFormComponent, {
-			data: this.user?.analysisPreferences,
-			maxHeight: "80vh"
-		});
-	}
 }

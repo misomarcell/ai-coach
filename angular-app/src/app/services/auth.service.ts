@@ -23,8 +23,6 @@ export class AuthService implements OnDestroy {
 	private readonly auth = inject(Auth);
 	protected readonly authState = authState(this.auth);
 
-	private platformId = inject(PLATFORM_ID);
-
 	private readonly unsubscribeFromOnIdTokenChanged: (() => void) | undefined;
 	private readonly unsubscribeFromBeforeAuthStateChanged: (() => void) | undefined;
 

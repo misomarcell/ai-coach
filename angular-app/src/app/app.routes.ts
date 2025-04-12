@@ -49,7 +49,14 @@ export const routes: Routes = [
 				path: "profile",
 				loadComponent: () => import("./user-profile/user-profile.component").then((m) => m.UserProfileComponent),
 				canActivate: [loggedInGuard],
-				resolve: { userProfile: userProfileResolver }
+				resolve: { userProfile: userProfileResolver },
+				children: [
+					{
+						path: "health-profile",
+						loadComponent: () =>
+							import("./user-profile/health-profile/health-profile.component").then((m) => m.HealthProfileComponent)
+					}
+				]
 			},
 			{
 				path: "integrations",

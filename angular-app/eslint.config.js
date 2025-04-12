@@ -77,6 +77,7 @@ module.exports = tseslint.config(
 		rules: {
 			"@angular-eslint/template/click-events-have-key-events": 0,
 			"@angular-eslint/template/interactive-supports-focus": 0,
+			"@angular-eslint/template/label-has-associated-control": 0
 		}
 	}
 );

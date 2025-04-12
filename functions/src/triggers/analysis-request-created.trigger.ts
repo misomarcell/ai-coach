@@ -1,10 +1,10 @@
-import { AnalysisDb, AnalysisPreferences, AnalysisRequestStatus } from "@aicoach/shared";
+import { AnalysisDb, AnalysisRequestStatus } from "@aicoach/shared";
 import { logger } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import analysisService from "../services/analysis.service";
-import userService from "../services/user.service";
 import aiService, { AiModelConfig } from "../services/ai.service";
+import analysisService from "../services/diet-analysis.service";
 import servingsService from "../services/servings.service";
+import userService from "../services/user.service";
 import { formatServings } from "../utils/formatter.util";
 
 export const analysisRequestCreated = onDocumentCreated(
@@ -39,18 +39,17 @@ export const analysisRequestCreated = onDocumentCreated(
 
 			await analysisService.updateAnalysisStatus(userId, analysisId, AnalysisRequestStatus.Processing);
 
-			const userProfile = await userService.getUserProfile(userId);
-			if (!userProfile.analysisPreferences) {
-				throw new Error("User has no analysis preferences");
+			const healthProfile = await userService.getHealthProfile(userId);
+			if (!healthProfile) {
+				throw new Error("User has no health profile");
 			}
 
 			const now = new Date();
 			const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-			const preferences = userProfile.analysisPreferences as AnalysisPreferences;
 			const servings = await servingsService.getUserServings(userId, { before: now, after: weekAgo });
 			const formattedServings = await formatServings(servings);
 			const modelConfig: AiModelConfig = { model: analysis.request.model };
-			const analysisResult = await aiService.getAnalysisResult(formattedServings, preferences, modelConfig);
+			const analysisResult = await aiService.getAnalysisResult(formattedServings, healthProfile, modelConfig);
 			if (!analysisResult) {
 				throw new Error(`Failed to get analysis from ${analysis.request.model}`);
 			}

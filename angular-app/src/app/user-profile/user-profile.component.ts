@@ -1,11 +1,10 @@
 import { Component, inject } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { UserService } from "../services/user.service";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { UserCardComponent } from "../user-card/user-card.component";
+import { ActivatedRoute, RouterOutlet } from "@angular/router";
+import { UserService } from "../services/user.service";
 
 @Component({
-	imports: [UserCardComponent],
+	imports: [RouterOutlet],
 	templateUrl: "./user-profile.component.html",
 	styleUrl: "./user-profile.component.scss"
 })

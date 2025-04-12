@@ -1,4 +1,4 @@
-import { AnalysisCommunicationChannel, AnalysisDb, AnalysisRequestDb, AnalysisRequestStatus } from "@aicoach/shared";
+import { AnalysisDb, AnalysisRequestDb, AnalysisRequestStatus } from "@aicoach/shared";
 import { AiModel } from "@aicoach/shared/models/ai-shared.model";
 import { firestore } from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
@@ -8,7 +8,7 @@ import { CommunicationMessageFormat } from "../models/communication.model";
 import communicationService from "./communication.service";
 import userService from "./user.service";
 
-export class AnalysisService {
+export class DietAnalysisService {
 	async createAnalysisRequest(uid: string, model: AiModel): Promise<string> {
 		const document = firestore().collection(`users/${uid}/analyses`).doc();
 		const analysisId = document.id;
@@ -100,18 +100,14 @@ export class AnalysisService {
 			return;
 		}
 
-		const user = await userService.getUserProfile(uid);
-		if (!user) {
-			logger.error("User not found", { uid });
-			return;
+		const channels = await userService.getUserCommunicationChannels(uid);
+		for (const channel of channels) {
+			await communicationService.createCommunication(uid, channel, {
+				analysisResult: analysis.result,
+				format: CommunicationMessageFormat.HTML
+			});
 		}
-
-		const channel = user.analysisPreferences?.communicationChannel ?? AnalysisCommunicationChannel.None;
-		await communicationService.createCommunication(uid, channel, {
-			analysisResult: analysis.result,
-			format: CommunicationMessageFormat.HTML
-		});
 	}
 }
 
-export default new AnalysisService();
+export default new DietAnalysisService();

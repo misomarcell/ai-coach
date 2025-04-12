@@ -1,10 +1,10 @@
-import { AnalysisCommunicationChannel } from "@aicoach/shared";
+import { CommunicationChannel } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { Communication, CommunicationMessage } from "../models/communication.model";
 
 export class CommunicationService {
-	async createCommunication(uid: string, channel: AnalysisCommunicationChannel, message: CommunicationMessage): Promise<void> {
+	async createCommunication(uid: string, channel: CommunicationChannel, message: CommunicationMessage): Promise<void> {
 		if (!uid || !message) {
 			throw new Error("Failed to create communication, uid or message is missing.");
 		}

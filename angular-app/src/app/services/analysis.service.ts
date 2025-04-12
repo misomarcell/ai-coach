@@ -1,5 +1,5 @@
-import { AiModel, Analysis, AnalysisDb, AnalysisPreferences, AnalysisRequestStatus } from "@aicoach/shared";
-import { Injectable } from "@angular/core";
+import { AiModel, Analysis, AnalysisDb, AnalysisRequestStatus } from "@aicoach/shared";
+import { inject, Injectable } from "@angular/core";
 import {
 	collection,
 	collectionData,
@@ -15,15 +15,15 @@ import {
 	Timestamp,
 	where
 } from "@angular/fire/firestore";
-import { filter, from, map, Observable, switchMap } from "rxjs";
-
+import { filter, from, map, Observable, switchMap, take } from "rxjs";
 import { AuthService } from "./auth.service";
-import { UserService } from "./user.service";
 
 @Injectable({
 	providedIn: "root"
 })
 export class AnalysisService {
+	private firestore = inject(Firestore);
+	private authService = inject(AuthService);
 	private analysesConverted: FirestoreDataConverter<Analysis, AnalysisDb> = {
 		toFirestore(model: Analysis): AnalysisDb {
 			return {
@@ -60,24 +60,7 @@ export class AnalysisService {
 		}
 	};
 
-	constructor(
-		private firestore: Firestore,
-		private authService: AuthService,
-		private userService: UserService
-	) {}
-
-	setAnalysisPreferences$(analysisPreferences: AnalysisPreferences): Observable<void> {
-		return this.userService.updateUserProfile$({ analysisPreferences });
-	}
-
-	getAnalysisPreferences$(): Observable<AnalysisPreferences | undefined> {
-		return this.userService.getUserProfile$().pipe(
-			filter((user) => !!user),
-			map((userProfile) => userProfile.analysisPreferences)
-		);
-	}
-
-	getAnaylses$(): Observable<Analysis[]> {
+	getAnaylses(): Observable<Analysis[]> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			switchMap((uid) => {
@@ -92,7 +75,7 @@ export class AnalysisService {
 		);
 	}
 
-	getAnalysesByStatus$(status: AnalysisRequestStatus[]): Observable<Analysis[]> {
+	getAnalysesByStatus(status: AnalysisRequestStatus[]): Observable<Analysis[]> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			switchMap((uid) => {
@@ -108,29 +91,28 @@ export class AnalysisService {
 		);
 	}
 
-	createAnalysisRequest$(model: AiModel): Observable<void> {
+	createRequest(model: AiModel): Observable<void> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
-			map((uid) => {
-				const analysisRequestCollection = collection(this.firestore, "users", uid!, "analyses").withConverter(
-					this.analysesConverted
-				);
-				const analysisRequestDoc = doc(analysisRequestCollection);
-
-				return setDoc(analysisRequestDoc, {
-					id: analysisRequestDoc.id,
-					request: {
-						model,
-						created: new Date(),
-						status: AnalysisRequestStatus.Created
-					}
-				});
-			}),
-			from
+			take(1),
+			map((uid) => collection(this.firestore, "users", uid!, "analyses").withConverter(this.analysesConverted)),
+			map((collectionRef) => doc(collectionRef)),
+			switchMap((docRef) =>
+				from(
+					setDoc(docRef, {
+						id: docRef.id,
+						request: {
+							model,
+							created: new Date(),
+							status: AnalysisRequestStatus.Created
+						}
+					})
+				)
+			)
 		);
 	}
 
-	deleteAnalysis$(analysisId: string): Observable<void> {
+	deleteAnalysis(analysisId: string): Observable<void> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			switchMap((uid) => {

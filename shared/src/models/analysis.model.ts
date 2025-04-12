@@ -13,26 +13,6 @@ export enum AnalysisRequestStatus {
 	Failed = "failed"
 }
 
-export enum AnalysisCommunicationFrequency {
-	Weekly = "weekly",
-	BiWeekly = "bi-weekly",
-	Monthly = "monthly"
-}
-
-export enum AnalysisCommunicationChannel {
-	Telegram = "telegram",
-	None = "none"
-}
-
-export interface AnalysisPreferences {
-	description: string;
-	goals: string[];
-	dietaryRestrictions?: string[];
-	healthConditions?: string[];
-	communicationFrequency?: AnalysisCommunicationFrequency;
-	communicationChannel?: AnalysisCommunicationChannel;
-}
-
 export interface Analysis {
 	id: string;
 	request: AnalysisRequest;

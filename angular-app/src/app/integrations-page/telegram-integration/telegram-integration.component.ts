@@ -5,7 +5,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { environment } from "../../../environments/environment";
-import { TelegramConnectorService } from "../../services/telegram-connector.service";
+import { CommunicationChannelService } from "../../services/communication-channel.service";
 
 @Component({
 	selector: "app-telegram-integration",
@@ -14,10 +14,10 @@ import { TelegramConnectorService } from "../../services/telegram-connector.serv
 	styleUrl: "./telegram-integration.component.scss"
 })
 export class TelegramIntegrationComponent {
-	private telegramService = inject(TelegramConnectorService);
+	private commChannelService = inject(CommunicationChannelService);
 
-	connectCode = toSignal(this.telegramService.addConnectCode$(this.getRandomCode()));
-	telegramUsername = toSignal(this.telegramService.getUsername$());
+	connectCode = toSignal(this.commChannelService.setTelegramConnectCode(this.getRandomCode()));
+	telegramUsername = toSignal(this.commChannelService.getTelegramUsername());
 
 	private getRandomCode(): string {
 		return Math.floor(100000 + Math.random() * 900000).toString();

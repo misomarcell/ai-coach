@@ -1,21 +1,18 @@
-import { Analysis } from "@aicoach/shared";
-import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { MatCardModule } from "@angular/material/card";
-import { Observable } from "rxjs";
 import { AnalysisCardComponent } from "../analysis-card/analysis-card.component";
+import { AnalysisRequestFormComponent } from "../analysis-request-form/analysis-request-form.component";
 import { AnalysisService } from "../services/analysis.service";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
 	selector: "app-analysis-result-list",
-	imports: [CommonModule, AnalysisCardComponent, MatCardModule],
+	imports: [AnalysisRequestFormComponent, AnalysisCardComponent, MatCardModule],
 	templateUrl: "./analysis-result-list.component.html",
 	styleUrl: "./analysis-result-list.component.scss"
 })
 export class AnalysisResultListComponent {
-	analyses$: Observable<(Analysis | undefined)[]>;
+	private analysisRequestService = inject(AnalysisService);
 
-	constructor(private analysisRequestService: AnalysisService) {
-		this.analyses$ = this.analysisRequestService.getAnaylses$();
-	}
+	analyses = toSignal(this.analysisRequestService.getAnaylses());
 }

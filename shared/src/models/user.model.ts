@@ -1,23 +1,27 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { AnalysisPreferences } from "./analysis.model";
 
-export interface TelegramConnection {
-	connectCode: string;
-	username?: string;
-	chatId?: number;
+export enum CommunicationFrequency {
+	Weekly = "weekly",
+	BiWeekly = "bi-weekly",
+	Monthly = "monthly"
 }
 
-export interface UserProfileDb {
+export type CommunicationChannel = "email" | "telegram" | "none";
+export interface CommunicationPreferences {
+	communicationFrequency?: CommunicationFrequency;
+	communicationChannel?: CommunicationChannel;
+}
+
+export interface UserProfile {
 	id: string;
-	created: FieldValue;
 	providerId: string;
+	created: Date;
+	communicationPreferences?: CommunicationPreferences;
 	email?: string;
 	displayName?: string;
 	photoURL?: string;
-	analysisPreferences?: AnalysisPreferences;
-	telegramConnection?: TelegramConnection;
 }
 
-export interface UserProfile extends Omit<UserProfileDb, "created"> {
-	created: Date;
+export interface UserProfileDb extends Omit<UserProfile, "created"> {
+	created: FieldValue;
 }

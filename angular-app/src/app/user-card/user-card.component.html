@@ -1,29 +1,26 @@
 <mat-card>
 	<mat-card-header>
 		@if (user?.photoURL) {
-		<div mat-card-avatar class="user-avatar" [ngStyle]="{ 'background-image': 'url(' +  user?.photoURL + ')' }">
-		</div>
-		}@else {
-		<div mat-card-avatar class="user-avatar" [ngStyle]="{ 'background-image': 'url(assets/user-default.svg)' }">
-		</div>
+			<div mat-card-avatar class="user-avatar" [ngStyle]="{ 'background-image': 'url(' + user?.photoURL + ')' }"></div>
+		} @else {
+			<div mat-card-avatar class="user-avatar" [ngStyle]="{ 'background-image': 'url(assets/user-default.svg)' }"></div>
 		}
 
 		<mat-card-title>
 			<span class="user-name">{{ user?.displayName }}</span>
 			<div class="status-icons">
-				<mat-icon *ngIf="telegramUsername" svgIcon="telegram"
-					[matTooltip]="'Telegram account connected (@' + telegramUsername + ')'"></mat-icon>
-				<mat-icon *ngIf="isCronometerConnected" svgIcon="cronometer"
-					matTooltip="Cronometer account connected"></mat-icon>
+				<mat-icon
+					*ngIf="telegramUsername"
+					svgIcon="telegram"
+					[matTooltip]="'Telegram account connected (@' + telegramUsername + ')'"
+				></mat-icon>
+				<mat-icon *ngIf="isCronometerConnected" svgIcon="cronometer" matTooltip="Cronometer account connected"></mat-icon>
 			</div>
 		</mat-card-title>
 		<mat-card-subtitle>{{ user?.email }}</mat-card-subtitle>
 	</mat-card-header>
 	<mat-card-actions class="user-card-actions" [align]="'end'">
 		<button mat-icon-button><mat-icon>help_outline</mat-icon></button>
-		<button mat-stroked-button (click)="onEditPreferencesClick()">
-			Edit preferences
-		</button>
 		<button mat-stroked-button (click)="onLogoutClick()">Logout</button>
 	</mat-card-actions>
 </mat-card>

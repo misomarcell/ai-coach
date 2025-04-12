@@ -2,6 +2,10 @@
 	font-weight: 700;
 }
 
+.text-center {
+	text-align: center;
+}
+
 .w-100 {
 	width: 100%;
 }
@@ -18,6 +22,10 @@
 	flex-direction: row;
 }
 
+.flex-grow {
+	flex-grow: 1;
+}
+
 .ai-c {
 	align-items: center;
 }
@@ -32,10 +40,6 @@
 
 .jc-e {
 	justify-content: flex-end;
-}
-
-.text-center {
-	text-align: center;
 }
 
 $spacing-unit: 0.5rem;
