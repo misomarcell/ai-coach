@@ -1,7 +1,7 @@
 import { CronometerCredential, CronometerCredentialDb, CronometerCredentialStatus } from "@aicoach/shared";
 import { inject, Injectable } from "@angular/core";
 import { deleteDoc, doc, docData, Firestore, FirestoreDataConverter, serverTimestamp, setDoc, Timestamp } from "@angular/fire/firestore";
-import { filter, from, Observable, switchMap, take } from "rxjs";
+import { filter, from, map, Observable, switchMap, take } from "rxjs";
 import { AuthService } from "./auth.service";
 
 export interface Credentials {
@@ -65,11 +65,8 @@ export class CronometerCredentialsService {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			take(1),
-			switchMap((uid) => {
-				const docRef = doc(this.firestore, "users", uid!, "credentials", "cronometer").withConverter(this.credentialTypeConverter);
-
-				return from(deleteDoc(docRef));
-			})
+			map((uid) => doc(this.firestore, "users", uid!, "credentials", "cronometer").withConverter(this.credentialTypeConverter)),
+			switchMap((docRef) => from(deleteDoc(docRef)))
 		);
 	}
 }

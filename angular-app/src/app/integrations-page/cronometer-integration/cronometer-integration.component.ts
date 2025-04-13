@@ -100,6 +100,26 @@ export class CronometerIntegrationComponent implements OnInit {
 			.subscribe();
 	}
 
+	onDisconnectClick() {
+		const dialogRef = this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
+			data: {
+				title: "Disconnect Cronometer",
+				message: "Are you sure you want to disconnect from Cronometer?",
+				buttonLayout: "yes-no"
+			}
+		});
+
+		dialogRef
+			.afterClosed()
+			.pipe(
+				filter((result) => result === "yes"),
+				tap(() => this.credentials.set(null)),
+				switchMap(() => this.cronoCredentialsService.deleteCredentials$()),
+				takeUntilDestroyed(this.destroyRef)
+			)
+			.subscribe();
+	}
+
 	onTryAgainClick() {
 		this.credentials.set(null);
 		this.cronoCredentialsService.deleteCredentials$().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();

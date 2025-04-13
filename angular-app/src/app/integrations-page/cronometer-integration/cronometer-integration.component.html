@@ -22,9 +22,10 @@
 					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
 				</div>
 			} @else {
-				<div class="status-message column">
+				<div class="status-message column gap-2">
 					<span>Connected ({{ credentials.username }})</span>
 					<button mat-flat-button (click)="requestServingsExport('cronometer')">Export servings</button>
+					<button mat-stroked-button (click)="onDisconnectClick()">Disconnect</button>
 				</div>
 			}
 		} @else {

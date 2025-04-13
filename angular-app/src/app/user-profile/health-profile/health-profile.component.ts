@@ -282,8 +282,6 @@ export class HealthProfileComponent {
 	}
 
 	setCalculatedData(profile: HealthProfile): void {
-		console.log({ profile });
-
 		this.bmi.set(calculateBmi(profile.weightKg, profile.heightCm));
 		const age = calculateAge(profile.birthDate);
 		if (!age || isNaN(age)) {
