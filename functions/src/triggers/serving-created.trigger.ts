@@ -11,6 +11,7 @@ export const servingCreatedTrigger = onDocumentCreated(
 		document: "users/{userId}/servings/{servingId}",
 		memory: "1GiB",
 		timeoutSeconds: 300,
+		secrets: ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"],
 		region: "europe-west1"
 	},
 	async (event) => {
