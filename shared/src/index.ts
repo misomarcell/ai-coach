@@ -5,6 +5,7 @@ export * from "./models/communication-channel.model";
 export * from "./models/credential.model";
 export * from "./models/cronometer-export.model";
 export * from "./models/cronometer-food.model";
+export * from "./models/daily-targets.model";
 export * from "./models/food.model";
 export * from "./models/health-profile.model";
 export * from "./models/serving.model";

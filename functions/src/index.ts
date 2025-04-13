@@ -7,6 +7,7 @@ import { communicationCreated } from "./triggers/communication-created.trigger";
 import { credentialsCreated } from "./triggers/credential-created.trigger";
 import { exportRequestCreated } from "./triggers/export-request-created.trigger";
 import { scheduledRun } from "./triggers/scheduler.trigger";
+import { servingCreatedTrigger } from "./triggers/serving-created.trigger";
 import { storageTrigger } from "./triggers/storage.trigger";
 
 const FIREBASE_APP = initializeApp();
@@ -22,3 +23,4 @@ exports.exportRequestCreated = exportRequestCreated;
 exports.api = expressApiHandler;
 exports.scheduler = scheduledRun;
 exports.storage = storageTrigger;
+exports.servingCreated = servingCreatedTrigger;

@@ -1,22 +1,24 @@
 import { calculateAge, calculateMaintenanceCalories, HealthProfileDb } from "@aicoach/shared";
 import { Timestamp } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
 
 export function generateHealthProfileSummary(healthProfile: HealthProfileDb): string | undefined {
 	if (!healthProfile) {
-		return "Error: Health profile data is missing.";
+		logger.error("Health profile is undefined or null.");
+		return;
 	}
 
 	const { gender, weightKg, heightCm, activityLevel } = healthProfile;
 	const dob = (healthProfile.birthDate as Timestamp)?.toDate();
 	const age = calculateAge(dob);
 	if (!age || isNaN(age)) {
-		console.error("Invalid age calculated from birth date.");
+		logger.error("Invalid age calculated from birth date.");
 		return;
 	}
 
 	const bmi = calculateMaintenanceCalories({ age, gender, heightCm, activityLevel, weightKg });
 	if (!bmi) {
-		console.error("Invalid BMI calculated from health profile data.");
+		logger.error("Invalid BMI calculated from health profile data.");
 		return;
 	}
 

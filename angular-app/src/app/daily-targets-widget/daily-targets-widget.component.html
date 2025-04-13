@@ -1,0 +1,18 @@
+<mat-card [appearance]="'outlined'" class="pt-2 pl-2 pr-2 pb-0">
+	@let _targets = targets();
+	@for (target of _targets; track target.nutrition.type) {
+		@if ($index === 6) {
+			<button mat-button class="mt-2 mb-2" (click)="showExplanation()">Calculation factors</button>
+		}
+		<div class="d-flex jc-sb">
+			<span>{{ target.nutrition.type }}</span>
+			<span>{{ target.nutrition.amount }} {{ target.nutrition.unit }}</span>
+		</div>
+		<mat-progress-bar [value]="target.percentage" />
+	}
+	<div class="d-flex flex-column ai-c">
+		<button mat-icon-button (click)="showAllNutritions.set(!showAllNutritions())">
+			<mat-icon>{{ showAllNutritions() ? "expand_less" : "expand_more" }}</mat-icon>
+		</button>
+	</div>
+</mat-card>

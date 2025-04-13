@@ -1,14 +1,16 @@
-import { CalorieVisionResult, HealthProfileDb } from "@aicoach/shared";
+import { CalorieVisionResult, DailyTargetsResult, HealthProfileDb } from "@aicoach/shared";
 import { AiModel } from "@aicoach/shared/models/ai-shared.model";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import {
+	DailyIntakeRecommendation,
 	DietaryAnalysis,
 	FoodPictureAnalysis,
 	ProductImageAnalysis,
 	SYSTEM_CALORIE_VISION_PROMPT,
+	SYSTEM_DAILY_INTAKE_PROMPT,
 	SYSTEM_DIET_ANALYSIS_PROMPT,
 	SYSTEM_PRODUCT_IMAGE_PROMPT
 } from "../const/ai-service.const";
@@ -114,6 +116,32 @@ export class AiService {
 			logger.error("Error analyzing image with OpenAI vision:", error);
 			return null;
 		}
+	}
+
+	async getDailyNutritionTargets(healthProfile: HealthProfileDb): Promise<DailyTargetsResult | null> {
+		if (!healthProfile) {
+			logger.error("Health profile is undefined or null.");
+
+			throw new Error("Health profile is undefined or null.");
+		}
+
+		const model = this.getModelInstance();
+		const prompt = ChatPromptTemplate.fromMessages([
+			["system", SYSTEM_DAILY_INTAKE_PROMPT],
+			["user", "{compiledPreferences}"]
+		]);
+
+		const compiledPreferences = generateHealthProfileSummary(healthProfile);
+		if (!compiledPreferences) {
+			logger.error("Health profile summary could not be retrieved");
+
+			throw new Error("Health profile summary could not be retrieved");
+		}
+
+		const structuredLlm = model.withStructuredOutput(DailyIntakeRecommendation, { name: "daily-nutrition-targets" });
+		const parsedResponse = await prompt.pipe(structuredLlm).invoke({ compiledPreferences });
+
+		return { nutritons: parsedResponse.nutritions, explanation: parsedResponse.explanation, model: model.getName() };
 	}
 
 	private getModelInstance(config?: AiModelConfig) {
