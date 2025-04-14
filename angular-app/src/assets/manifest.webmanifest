@@ -7,7 +7,7 @@
 	"background_color": "#fafafa",
 	"display": "standalone",
 	"orientation": "portrait",
-	"scope": "./",
+	"scope": "/",
 	"start_url": "/home",
 	"screenshots": [
 		{
