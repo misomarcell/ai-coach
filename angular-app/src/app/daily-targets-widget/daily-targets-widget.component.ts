@@ -1,4 +1,4 @@
-import { DailyTargetsResult, Nutrition, NutritionType, nutritionTypes } from "@aicoach/shared";
+import { DailyTargets, Nutrition, NutritionType, nutritionTypes } from "@aicoach/shared";
 import { Component, effect, inject, input, signal } from "@angular/core";
 import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
@@ -36,7 +36,7 @@ export class DailyTargetsWidgetComponent {
 		toObservable(this.displayedNutrition).pipe(
 			switchMap((displayedNutrition) =>
 				this.dailyTargetsService.getDailyTargets().pipe(
-					startWith(this.activatedRoute.snapshot.data["dailyTargets"] as DailyTargetsResult),
+					startWith(this.activatedRoute.snapshot.data["dailyTargets"] as DailyTargets),
 					tap((result) => this.explanation.set(result?.explanation)),
 					map((result) =>
 						result?.nutritons

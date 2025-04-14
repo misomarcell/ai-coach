@@ -1,4 +1,4 @@
-import { DailyTargetsResult, DailyTargetsResultDb, Nutrition } from "@aicoach/shared";
+import { DailyTargetsDb, DailyTargetsResult, Nutrition } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 
@@ -26,7 +26,7 @@ export class DailyTargetsService {
 				nutritons: result.nutritons,
 				explanation: result.explanation,
 				lastUpdated: FieldValue.serverTimestamp()
-			} as DailyTargetsResultDb);
+			} as DailyTargetsDb);
 	}
 }
 
