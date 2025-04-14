@@ -8,6 +8,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
 import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions, withIncrementalHydration } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { PreloadAllModules, provideRouter, withPreloading } from "@angular/router";
+import { provideServiceWorker } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
 
@@ -45,6 +46,10 @@ export const appConfig: ApplicationConfig = {
 			}
 
 			return storage;
+		}),
+		provideServiceWorker("ngsw-worker.js", {
+			enabled: !isDevMode(),
+			registrationStrategy: "registerWhenStable:30000"
 		})
 	]
 };
