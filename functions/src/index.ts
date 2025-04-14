@@ -23,4 +23,4 @@ exports.exportRequestCreated = exportRequestCreated;
 exports.api = expressApiHandler;
 exports.scheduler = scheduledRun;
 exports.storage = storageTrigger;
-exports.servingCreated = healthProfileWrittenTrigger;
+exports.healthProfileWritten = healthProfileWrittenTrigger;
