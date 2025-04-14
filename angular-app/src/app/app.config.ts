@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
-import { ApplicationConfig, inject, provideExperimentalZonelessChangeDetection } from "@angular/core";
+import { ApplicationConfig, inject, isDevMode, provideExperimentalZonelessChangeDetection } from "@angular/core";
 import { FirebaseApp } from "@angular/fire/app";
 import { connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
 import { connectFirestoreEmulator, initializeFirestore, provideFirestore } from "@angular/fire/firestore";
