@@ -1,17 +1,5 @@
+<app-date-selector (dateChanged)="selectedDate.set($event)" />
 <div class="servings-list-container">
-	<div class="servings-date-header">
-		<strong>{{ selectedDate.value | date: "YYYY-MM-dd" }}</strong>
-		<div class="date-navigation d-flex ai-c gap-1">
-			<button mat-icon-button color="primary" (click)="previousDay()">
-				<mat-icon>navigate_before</mat-icon>
-			</button>
-			<button mat-stroked-button color="primary" (click)="today()">Today</button>
-			<button mat-icon-button color="primary" (click)="nextDay()">
-				<mat-icon>navigate_next</mat-icon>
-			</button>
-		</div>
-	</div>
-
 	@if (isLoading()) {
 		<mat-card class="loading-card" appearance="outlined">
 			<p>Fetching diary...</p>

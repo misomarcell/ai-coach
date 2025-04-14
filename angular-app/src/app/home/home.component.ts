@@ -33,9 +33,12 @@ export class HomeComponent {
 			for (const nutrition of serving.food.nutritions) {
 				const existingNutrition = totalNutritionAmounts.find((n) => n.type === nutrition.type);
 				if (existingNutrition) {
-					existingNutrition.amount += nutrition.amount * (serving.servingSize.gramWeight || 1);
+					existingNutrition.amount += nutrition.amount * (((serving.servingSize.gramWeight || 1) * serving.servingAmount) / 100);
 				} else {
-					totalNutritionAmounts.push({ ...nutrition, amount: nutrition.amount * (serving.servingSize.gramWeight || 1) });
+					totalNutritionAmounts.push({
+						...nutrition,
+						amount: nutrition.amount * (((serving.servingSize.gramWeight || 1) * serving.servingAmount) / 100)
+					});
 				}
 			}
 		}

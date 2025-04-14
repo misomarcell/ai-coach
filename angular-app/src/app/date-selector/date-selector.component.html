@@ -1,0 +1,10 @@
+<strong>{{ selectedDate() | date: "YYYY-MM-dd" }}</strong>
+<div class="date-navigation d-flex ai-c gap-1">
+	<button mat-icon-button color="primary" (click)="previousDay()">
+		<mat-icon>navigate_before</mat-icon>
+	</button>
+	<button mat-stroked-button color="primary" (click)="today()">Today</button>
+	<button mat-icon-button color="primary" (click)="nextDay()">
+		<mat-icon>navigate_next</mat-icon>
+	</button>
+</div>

@@ -1,14 +1,12 @@
-import { ServingDb } from "@aicoach/shared";
-import { Timestamp } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { onDocumentCreated } from "firebase-functions/firestore";
+import { onDocumentWritten } from "firebase-functions/firestore";
 import aiService from "../services/ai.service";
 import dailyTargetsService from "../services/daily-targets.service";
 import userService from "../services/user.service";
 
-export const servingCreatedTrigger = onDocumentCreated(
+export const healthProfileWrittenTrigger = onDocumentWritten(
 	{
-		document: "users/{userId}/servings/{servingId}",
+		document: "users/{userId}/profiles/health-profile",
 		memory: "1GiB",
 		timeoutSeconds: 300,
 		secrets: ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"],
@@ -22,19 +20,6 @@ export const servingCreatedTrigger = onDocumentCreated(
 			logger.error("Serving data not found");
 			return;
 		}
-
-		const servingData = snapshot.data() as ServingDb;
-		const servingDate = (servingData.created as Timestamp)?.toDate() || new Date();
-		logger.info(`📅 serving date: ${servingDate}`);
-
-		const dailyTargets = await dailyTargetsService.getDailyTagets(userId, servingDate);
-		if (dailyTargets) {
-			logger.info("⛔ Daily targets already exist, skipping...");
-
-			return;
-		}
-
-		logger.info("🎯 No daily targets found, proceeding...");
 
 		const healthProfile = await userService.getHealthProfile(userId);
 		if (!healthProfile) {
@@ -53,6 +38,6 @@ export const servingCreatedTrigger = onDocumentCreated(
 		logger.info(`✅ Daily nutrition (${targetsResult.nutritons.length}) targets retrieved successfully. Proceeding...`);
 		logger.info(targetsResult);
 
-		await dailyTargetsService.setDailyTargets(userId, servingDate, targetsResult);
+		await dailyTargetsService.setDailyTargets(userId, targetsResult);
 	}
 );

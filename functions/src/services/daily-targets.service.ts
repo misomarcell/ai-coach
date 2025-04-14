@@ -1,12 +1,11 @@
-import { DailyTargetsResult, Nutrition } from "@aicoach/shared";
+import { DailyTargetsResult, DailyTargetsResultDb, Nutrition } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 export class DailyTargetsService {
-	async getDailyTagets(userId: string, date: Date): Promise<Nutrition[] | undefined> {
-		const dateKey = this.formatDate(date);
-
+	async getDailyTagets(userId: string): Promise<Nutrition[] | undefined> {
 		return firestore()
-			.doc(`users/${userId}/daily-targets/${dateKey}`)
+			.doc(`users/${userId}/profiles/targets-profile`)
 			.get()
 			.then((snapshot) => {
 				if (!snapshot.exists) {
@@ -19,19 +18,15 @@ export class DailyTargetsService {
 			});
 	}
 
-	async setDailyTargets(userId: string, date: Date, result: DailyTargetsResult): Promise<void> {
-		const dateKey = this.formatDate(date);
+	async setDailyTargets(userId: string, result: DailyTargetsResult): Promise<void> {
 		await firestore()
-			.doc(`users/${userId}/daily-targets/${dateKey}`)
-			.set({ nutritons: result.nutritons, explanation: result.explanation } as DailyTargetsResult);
-	}
-
-	private formatDate(date: Date): string {
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, "0");
-		const day = String(date.getDate()).padStart(2, "0");
-
-		return `${year}-${month}-${day}`;
+			.doc(`users/${userId}/profiles/targets-profile`)
+			.set({
+				model: result.model,
+				nutritons: result.nutritons,
+				explanation: result.explanation,
+				lastUpdated: FieldValue.serverTimestamp()
+			} as DailyTargetsResultDb);
 	}
 }
 

@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { loggedInGuard, loggedOutGuard } from "./auth.guard";
+import { dailyTargetsResolver } from "./resolvers/daily-targets.resolver";
 import { healthProfileResolver } from "./resolvers/health-profile.resolver";
 import { servingsResolver } from "./resolvers/servings.resolver";
 import { userProfileResolver } from "./resolvers/user-profile.resolver";
@@ -19,7 +20,8 @@ export const routes: Routes = [
 				loadComponent: () => import("./home/home.component").then((m) => m.HomeComponent),
 				canActivate: [loggedInGuard],
 				resolve: {
-					servings: servingsResolver
+					servings: servingsResolver,
+					dailyTargets: dailyTargetsResolver
 				}
 			},
 			{

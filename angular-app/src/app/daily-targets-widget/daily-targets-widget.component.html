@@ -9,10 +9,16 @@
 			<span>{{ target.nutrition.amount }} {{ target.nutrition.unit }}</span>
 		</div>
 		<mat-progress-bar [value]="target.percentage" />
+	} @empty {
+		<div class="d-flex jc-c">Complete profile to see daily targets.</div>
+		<button mat-button class="mt-2 mb-2" [routerLink]="['/profile/health-profile']">Health profile</button>
 	}
-	<div class="d-flex flex-column ai-c">
-		<button mat-icon-button (click)="showAllNutritions.set(!showAllNutritions())">
-			<mat-icon>{{ showAllNutritions() ? "expand_less" : "expand_more" }}</mat-icon>
-		</button>
-	</div>
+
+	@if (_targets && _targets.length > 0) {
+		<div class="d-flex flex-column ai-c">
+			<button mat-icon-button (click)="showAllNutritions.set(!showAllNutritions())">
+				<mat-icon>{{ showAllNutritions() ? "expand_less" : "expand_more" }}</mat-icon>
+			</button>
+		</div>
+	}
 </mat-card>

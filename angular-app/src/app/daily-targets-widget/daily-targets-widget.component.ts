@@ -1,14 +1,15 @@
-import { Nutrition, NutritionType, nutritionTypes } from "@aicoach/shared";
+import { DailyTargetsResult, Nutrition, NutritionType, nutritionTypes } from "@aicoach/shared";
 import { Component, effect, inject, input, signal } from "@angular/core";
 import { toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
+import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { map, switchMap, tap } from "rxjs";
-import { DailyTargetsService } from "../services/daily-targets.service";
-import { MatButtonModule } from "@angular/material/button";
-import { MatDialog } from "@angular/material/dialog";
+import { ActivatedRoute, RouterModule } from "@angular/router";
+import { map, startWith, switchMap, tap } from "rxjs";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../prompt-dialog/prompt-dialog.component";
+import { DailyTargetsService } from "../services/daily-targets.service";
 
 export interface Target {
 	nutrition: Nutrition;
@@ -17,17 +18,16 @@ export interface Target {
 
 @Component({
 	selector: "app-daily-targets-widget",
-	imports: [MatProgressBarModule, MatCardModule, MatButtonModule, MatIconModule],
+	imports: [RouterModule, MatProgressBarModule, MatCardModule, MatButtonModule, MatIconModule],
 	templateUrl: "./daily-targets-widget.component.html",
 	styleUrl: "./daily-targets-widget.component.scss"
 })
 export class DailyTargetsWidgetComponent {
 	private dialog = inject(MatDialog);
 	private dailyTargetsService = inject(DailyTargetsService);
+	private activatedRoute = inject(ActivatedRoute);
 
 	actualNutritions = input.required<Nutrition[]>();
-	date = input(new Date());
-
 	explanation = signal<string | undefined>(undefined);
 
 	showAllNutritions = signal(false);
@@ -35,7 +35,8 @@ export class DailyTargetsWidgetComponent {
 	targets = toSignal<Target[] | undefined>(
 		toObservable(this.displayedNutrition).pipe(
 			switchMap((displayedNutrition) =>
-				this.dailyTargetsService.getDailyTargets(this.date()).pipe(
+				this.dailyTargetsService.getDailyTargets().pipe(
+					startWith(this.activatedRoute.snapshot.data["dailyTargets"] as DailyTargetsResult),
 					tap((result) => this.explanation.set(result?.explanation)),
 					map((result) =>
 						result?.nutritons
@@ -63,8 +64,6 @@ export class DailyTargetsWidgetComponent {
 	}
 
 	showExplanation(): void {
-		console.log({ actual: this.actualNutritions() });
-
 		this.dialog.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
 			data: {
 				title: "Nutrition Targets",

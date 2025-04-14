@@ -1,7 +1,6 @@
 import { Serving, ServingCategory, servingCategories } from "@aicoach/shared";
-import { DatePipe } from "@angular/common";
-import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, input, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ChangeDetectorRef, Component, DestroyRef, inject, input, signal } from "@angular/core";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -10,7 +9,8 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { RouterModule } from "@angular/router";
-import { BehaviorSubject, catchError, distinctUntilChanged, startWith, switchMap, tap } from "rxjs";
+import { catchError, distinctUntilChanged, startWith, switchMap, tap } from "rxjs";
+import { DateSelectorComponent } from "../../date-selector/date-selector.component";
 import { ServingsService } from "../servings.service";
 import { ServingsGroupComponent } from "./servings-group/servings-group.component";
 
@@ -18,8 +18,8 @@ import { ServingsGroupComponent } from "./servings-group/servings-group.componen
 	selector: "app-servings-list",
 	standalone: true,
 	imports: [
+		DateSelectorComponent,
 		ServingsGroupComponent,
-		DatePipe,
 		RouterModule,
 		MatCardModule,
 		MatIconModule,
@@ -32,22 +32,22 @@ import { ServingsGroupComponent } from "./servings-group/servings-group.componen
 	templateUrl: "./servings-list.component.html",
 	styleUrl: "./servings-list.component.scss"
 })
-export class ServingsListComponent implements OnInit {
+export class ServingsListComponent {
 	initialServings = input<Serving[]>([]);
 
 	isLoading = signal<boolean>(false);
 	isResultEmpty = signal<boolean>(true);
 
+	selectedDate = signal<Date>(new Date());
 	servingCategories: ServingCategory[] = ["Uncategorized", "Breakfast", "Lunch", "Dinner", "Snacks"];
 	categorizedServings = new Map<ServingCategory, Serving[]>();
-	selectedDate = new BehaviorSubject<Date>(new Date());
 
 	private changeDetector = inject(ChangeDetectorRef);
 	private destroyRef = inject(DestroyRef);
 	private servingsService = inject(ServingsService);
 
-	ngOnInit(): void {
-		this.selectedDate
+	constructor() {
+		toObservable(this.selectedDate)
 			.pipe(
 				takeUntilDestroyed(this.destroyRef),
 				distinctUntilChanged((prev, curr) => prev.getDate() === curr.getDate()),
@@ -87,23 +87,5 @@ export class ServingsListComponent implements OnInit {
 		this.isLoading.set(false);
 
 		this.changeDetector.markForCheck();
-	}
-
-	previousDay(): void {
-		const currentDate = this.selectedDate.value;
-		const previousDate = new Date(currentDate);
-		previousDate.setDate(previousDate.getDate() - 1);
-		this.selectedDate.next(previousDate);
-	}
-
-	nextDay(): void {
-		const currentDate = this.selectedDate.value;
-		const nextDate = new Date(currentDate);
-		nextDate.setDate(nextDate.getDate() + 1);
-		this.selectedDate.next(nextDate);
-	}
-
-	today(): void {
-		this.selectedDate.next(new Date());
 	}
 }
