@@ -1,4 +1,4 @@
-import { Serving, ServingCategory, ServingDb, ServingFood, ServingSize } from "@aicoach/shared";
+import { Nutrition, Serving, ServingCategory, ServingDb, ServingFood, ServingSize } from "@aicoach/shared";
 import { inject, Injectable } from "@angular/core";
 import {
 	collection,
@@ -131,5 +131,23 @@ export class ServingsService {
 			map((uid) => doc(this.firestore, `users/${uid}/servings/${servingId}`)),
 			switchMap((docRef) => from(deleteDoc(docRef)))
 		);
+	}
+
+	getTotalNutritionAmounts(servings: Serving[] = []): Nutrition[] {
+		const nutritionMap = new Map<string, Nutrition>();
+
+		servings.forEach(({ food, servingSize, servingAmount }) => {
+			const weightMultiplier = ((servingSize.gramWeight || 1) * servingAmount) / 100;
+
+			food.nutritions.forEach(({ type, amount, ...rest }) => {
+				if (!nutritionMap.has(type)) {
+					nutritionMap.set(type, { type, amount: 0, ...rest });
+				}
+				const existingNutrition = nutritionMap.get(type)!;
+				existingNutrition.amount += amount * weightMultiplier;
+			});
+		});
+
+		return Array.from(nutritionMap.values());
 	}
 }

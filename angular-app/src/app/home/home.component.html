@@ -1,4 +1,10 @@
-<app-daily-targets-widget [actualNutritions]="actualNutritions" />
-<div class="servings-section">
-	<app-servings-list [initialServings]="currentServings()!" />
-</div>
+<app-daily-targets-widget [actualNutritions]="totalNutrition()" />
+<app-date-selector (dateChanged)="selectedDate.set($event)" />
+
+@if (isLoading()) {
+	Loading...
+} @else {
+	<div class="servings-section">
+		<app-servings-list [servings]="servings() || []" />
+	</div>
+}

@@ -1,48 +1,47 @@
-import { Component, inject } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { Nutrition, Serving } from "@aicoach/shared";
+import { Component, effect, inject, PLATFORM_ID, signal } from "@angular/core";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute } from "@angular/router";
-import { map } from "rxjs";
 import { DailyTargetsWidgetComponent } from "../daily-targets-widget/daily-targets-widget.component";
+import { DateSelectorComponent } from "../date-selector/date-selector.component";
 import { ServingsListComponent } from "../servings/servings-list/servings-list.component";
-import { Nutrition, Serving } from "@aicoach/shared";
+import { ServingsService } from "../servings/servings.service";
+import { finalize, take } from "rxjs";
+import { isPlatformServer } from "@angular/common";
 
 @Component({
 	selector: "app-home",
 	standalone: true,
-	imports: [ServingsListComponent, DailyTargetsWidgetComponent, MatProgressSpinnerModule, MatCardModule],
+	imports: [DateSelectorComponent, ServingsListComponent, DailyTargetsWidgetComponent, MatProgressSpinnerModule, MatCardModule],
 	templateUrl: "./home.component.html",
 	styleUrl: "./home.component.scss"
 })
 export class HomeComponent {
 	private route = inject(ActivatedRoute);
-	currentServings = toSignal<Serving[]>(this.route.data.pipe(map((data) => data["servings"] ?? [])));
+	private servingsService = inject(ServingsService);
+	private platformId = inject(PLATFORM_ID);
 
-	get actualNutritions() {
-		return this.getTotalNutritionAmounts(this.currentServings()!);
-	}
+	isLoading = signal<boolean>(false);
+	selectedDate = signal<Date>(new Date());
+	totalNutrition = signal<Nutrition[]>([]);
+	servings = signal<Serving[]>(this.route.snapshot.data["servings"] ?? []);
 
-	private getTotalNutritionAmounts(servings: Serving[]): Nutrition[] {
-		if (!servings) {
-			return [];
+	fetchServingsEffect = effect(() => {
+		if (isPlatformServer(this.platformId)) {
+			return;
 		}
 
-		const totalNutritionAmounts: Nutrition[] = [];
-		for (const serving of servings) {
-			for (const nutrition of serving.food.nutritions) {
-				const existingNutrition = totalNutritionAmounts.find((n) => n.type === nutrition.type);
-				if (existingNutrition) {
-					existingNutrition.amount += nutrition.amount * (((serving.servingSize.gramWeight || 1) * serving.servingAmount) / 100);
-				} else {
-					totalNutritionAmounts.push({
-						...nutrition,
-						amount: nutrition.amount * (((serving.servingSize.gramWeight || 1) * serving.servingAmount) / 100)
-					});
-				}
-			}
-		}
-
-		return totalNutritionAmounts;
-	}
+		this.isLoading.set(true);
+		this.servingsService
+			.getServingsByDate(this.selectedDate())
+			.pipe(
+				take(1),
+				finalize(() => this.isLoading.set(false))
+			)
+			.subscribe((data) => {
+				this.servings.set(data);
+				this.totalNutrition.set(this.servingsService.getTotalNutritionAmounts(data));
+			});
+	});
 }

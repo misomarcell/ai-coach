@@ -1,13 +1,12 @@
 import { DailyTargets, Nutrition, NutritionType, nutritionTypes } from "@aicoach/shared";
-import { Component, effect, inject, input, signal } from "@angular/core";
-import { toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { DecimalPipe, isPlatformServer } from "@angular/common";
+import { Component, computed, effect, inject, input, PLATFORM_ID, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { ActivatedRoute, RouterModule } from "@angular/router";
-import { map, startWith, switchMap, tap } from "rxjs";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../prompt-dialog/prompt-dialog.component";
 import { DailyTargetsService } from "../services/daily-targets.service";
 
@@ -16,9 +15,11 @@ export interface Target {
 	percentage: number;
 }
 
+const DEFAULT_NUTRITION_TYPES: NutritionType[] = ["Calories", "Carbohydrates", "Total Fat", "Protein"];
+
 @Component({
 	selector: "app-daily-targets-widget",
-	imports: [RouterModule, MatProgressBarModule, MatCardModule, MatButtonModule, MatIconModule],
+	imports: [DecimalPipe, RouterModule, MatProgressBarModule, MatCardModule, MatButtonModule, MatIconModule],
 	templateUrl: "./daily-targets-widget.component.html",
 	styleUrl: "./daily-targets-widget.component.scss"
 })
@@ -26,40 +27,48 @@ export class DailyTargetsWidgetComponent {
 	private dialog = inject(MatDialog);
 	private dailyTargetsService = inject(DailyTargetsService);
 	private activatedRoute = inject(ActivatedRoute);
+	private platformId = inject(PLATFORM_ID);
 
+	private dailyTargets = signal<DailyTargets | undefined>(this.activatedRoute.snapshot.data["dailyTargets"]);
 	actualNutritions = input.required<Nutrition[]>();
 	explanation = signal<string | undefined>(undefined);
 
 	showAllNutritions = signal(false);
-	displayedNutrition = signal<NutritionType[]>([]);
-	targets = toSignal<Target[] | undefined>(
-		toObservable(this.displayedNutrition).pipe(
-			switchMap((displayedNutrition) =>
-				this.dailyTargetsService.getDailyTargets().pipe(
-					startWith(this.activatedRoute.snapshot.data["dailyTargets"] as DailyTargets),
-					tap((result) => this.explanation.set(result?.explanation)),
-					map((result) =>
-						result?.nutritons
-							.filter((nutrition) => displayedNutrition.includes(nutrition.type))
-							.map((nutrition) => ({
-								nutrition,
-								percentage:
-									this.calculateNutritionPercentage(
-										this.actualNutritions().find((n) => n.type === nutrition.type),
-										nutrition
-									) || 0
-							}))
-					)
-				)
-			)
-		)
-	);
+	displayedNutrition = signal<NutritionType[]>(DEFAULT_NUTRITION_TYPES);
+
+	targets = computed(() => {
+		const result = this.dailyTargets();
+		const displayedNutrition = this.displayedNutrition();
+		if (!result) return undefined;
+
+		return result.nutritons
+			.filter((nutrition) => displayedNutrition.includes(nutrition.type))
+			.map((nutrition) => {
+				const actualNutrition = this.actualNutritions().find((n) => n.type === nutrition.type);
+
+				return {
+					nutrition,
+					actualAmount: actualNutrition ? actualNutrition.amount : 0,
+					actualUnit: actualNutrition ? actualNutrition.unit : nutrition.unit,
+					targetAmount: nutrition.amount,
+					targetUnit: nutrition.unit,
+					percentage: this.calculateNutritionPercentage(actualNutrition, nutrition) || 0
+				};
+			});
+	});
 
 	constructor() {
 		effect(() => {
-			this.displayedNutrition.set(
-				this.showAllNutritions() ? [...nutritionTypes] : ["Calories", "Carbohydrates", "Total Fat", "Protein"]
-			);
+			if (isPlatformServer(this.platformId)) {
+				return;
+			}
+
+			this.displayedNutrition.set(this.showAllNutritions() ? [...nutritionTypes] : DEFAULT_NUTRITION_TYPES);
+		});
+
+		this.dailyTargetsService.getDailyTargets().subscribe((result) => {
+			this.dailyTargets.set(result);
+			this.explanation.set(result?.explanation);
 		});
 	}
 
@@ -73,7 +82,7 @@ export class DailyTargetsWidgetComponent {
 		});
 	}
 
-	calculateNutritionPercentage(actualNutrition?: Nutrition, targetNutrition?: Nutrition): number {
+	private calculateNutritionPercentage(actualNutrition?: Nutrition, targetNutrition?: Nutrition): number {
 		if (!actualNutrition || !targetNutrition || actualNutrition.type !== targetNutrition.type) {
 			return 0;
 		}

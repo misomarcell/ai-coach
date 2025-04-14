@@ -6,7 +6,12 @@
 		}
 		<div class="d-flex jc-sb">
 			<span>{{ target.nutrition.type }}</span>
-			<span>{{ target.nutrition.amount }} {{ target.nutrition.unit }}</span>
+			<span class="d-flex gap-1 ai-c amounts">
+				{{ target.actualAmount | number: "1.0-0" }} / {{ target.targetAmount | number: "1.0-0" }} {{ target.targetUnit }}
+				@if (target.percentage >= 100) {
+					<mat-icon [inline]="true">check</mat-icon>
+				}
+			</span>
 		</div>
 		<mat-progress-bar [value]="target.percentage" />
 	} @empty {

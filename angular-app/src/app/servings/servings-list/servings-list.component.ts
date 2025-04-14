@@ -1,6 +1,5 @@
 import { Serving, ServingCategory, servingCategories } from "@aicoach/shared";
-import { ChangeDetectorRef, Component, DestroyRef, inject, input, signal } from "@angular/core";
-import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
+import { ChangeDetectorRef, Component, effect, inject, input, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -9,16 +8,12 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { RouterModule } from "@angular/router";
-import { catchError, distinctUntilChanged, startWith, switchMap, tap } from "rxjs";
-import { DateSelectorComponent } from "../../date-selector/date-selector.component";
-import { ServingsService } from "../servings.service";
 import { ServingsGroupComponent } from "./servings-group/servings-group.component";
 
 @Component({
 	selector: "app-servings-list",
 	standalone: true,
 	imports: [
-		DateSelectorComponent,
 		ServingsGroupComponent,
 		RouterModule,
 		MatCardModule,
@@ -33,34 +28,19 @@ import { ServingsGroupComponent } from "./servings-group/servings-group.componen
 	styleUrl: "./servings-list.component.scss"
 })
 export class ServingsListComponent {
-	initialServings = input<Serving[]>([]);
-
 	isLoading = signal<boolean>(false);
 	isResultEmpty = signal<boolean>(true);
 
-	selectedDate = signal<Date>(new Date());
+	servings = input.required<Serving[]>();
 	servingCategories: ServingCategory[] = ["Uncategorized", "Breakfast", "Lunch", "Dinner", "Snacks"];
 	categorizedServings = new Map<ServingCategory, Serving[]>();
 
 	private changeDetector = inject(ChangeDetectorRef);
-	private destroyRef = inject(DestroyRef);
-	private servingsService = inject(ServingsService);
 
 	constructor() {
-		toObservable(this.selectedDate)
-			.pipe(
-				takeUntilDestroyed(this.destroyRef),
-				distinctUntilChanged((prev, curr) => prev.getDate() === curr.getDate()),
-				switchMap((date) => this.servingsService.getServingsByDate(date)),
-				startWith(this.initialServings()),
-				tap((servings) => this.processServings(servings)),
-				catchError((error) => {
-					console.error("Error fetching servings", error);
-					this.isLoading.set(false);
-					return [];
-				})
-			)
-			.subscribe();
+		effect(() => {
+			this.processServings(this.servings());
+		});
 	}
 
 	private processServings(servings: Serving[]): void {
