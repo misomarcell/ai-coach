@@ -1,0 +1,40 @@
+:host {
+	display: block;
+	max-width: 650px;
+	transform: translateY(2rem);
+	margin: 0 auto;
+}
+
+.spinner-inline {
+	display: inline-block;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+
+h3 {
+	font-weight: 900;
+}
+
+.btn-google {
+	--mdc-filled-button-container-color: #db4437;
+	--mdc-filled-button-label-text-color: #e6e6e6;
+}
+
+.btn-github {
+	--mdc-filled-button-container-color: #2b3137;
+	--mdc-filled-button-label-text-color: #fafbfc;
+}
+
+.divider {
+	&::before,
+	&::after {
+		content: "";
+		flex: 1;
+		border-bottom: 1px solid #666;
+	}
+
+	span {
+		padding: 0 10px;
+		color: #666;
+	}
+}

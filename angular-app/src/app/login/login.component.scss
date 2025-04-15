@@ -1,5 +1,17 @@
+:host {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+.spinner-inline {
+	display: inline-block;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+
 .login-wrapper {
-	transform: translateY(50%);
 	max-width: 650px;
 	padding: 0 1rem;
 	margin: 0 auto;
@@ -23,9 +35,18 @@
 		display: flex;
 		gap: 1rem;
 
-		.login-disclaimer {
-			font-size: 0.8rem;
-			color: #666;
+		.divider {
+			&::before,
+			&::after {
+				content: "";
+				flex: 1;
+				border-bottom: 1px solid #666;
+			}
+
+			span {
+				padding: 0 10px;
+				color: #666;
+			}
 		}
 	}
 

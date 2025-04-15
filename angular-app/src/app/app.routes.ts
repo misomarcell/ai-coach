@@ -90,6 +90,11 @@ export const routes: Routes = [
 		canActivate: [loggedOutGuard]
 	},
 	{
+		path: "register",
+		loadComponent: () => import("./register/register.component").then((m) => m.RegisterComponent),
+		canActivate: [loggedOutGuard]
+	},
+	{
 		path: "**",
 		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
 	}

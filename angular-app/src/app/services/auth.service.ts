@@ -4,14 +4,19 @@ import {
 	Auth,
 	authState,
 	beforeAuthStateChanged,
+	createUserWithEmailAndPassword,
 	getRedirectResult,
 	GithubAuthProvider,
 	GoogleAuthProvider,
 	onIdTokenChanged,
+	signInWithEmailAndPassword,
 	signInWithPopup,
+	updateProfile,
 	User,
 	UserCredential
 } from "@angular/fire/auth";
+import { doc, Firestore, setDoc } from "@angular/fire/firestore";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import cookies from "js-cookie";
 import { map, Observable, startWith, tap } from "rxjs";
@@ -20,6 +25,9 @@ import { map, Observable, startWith, tap } from "rxjs";
 	providedIn: "root"
 })
 export class AuthService implements OnDestroy {
+	private snackBar = inject(MatSnackBar);
+	private firestore = inject(Firestore);
+
 	private readonly auth = inject(Auth);
 	protected readonly authState = authState(this.auth);
 
@@ -90,14 +98,89 @@ export class AuthService implements OnDestroy {
 		return getRedirectResult(this.auth);
 	}
 
-	async login(providerName: "google" | "github"): Promise<UserCredential> {
-		const provider = providerName === "google" ? new GoogleAuthProvider() : new GithubAuthProvider();
+	async register(email: string, password: string, displayName: string): Promise<UserCredential | undefined> {
+		try {
+			const credential = await createUserWithEmailAndPassword(this.auth, email, password);
+			if (credential.user) {
+				cookies.set("__session", await credential.user.getIdToken());
+				await this.addDisplayName(credential.user.uid, displayName);
+				await updateProfile(credential.user, {
+					displayName
+				});
 
-		return signInWithPopup(this.auth, provider);
+				await this.router.navigate(["profile", "health-profile"]);
+			}
+
+			return credential;
+		} catch (error) {
+			this.handleAuthError(error);
+			return undefined;
+		}
+	}
+
+	async normalLogin(email: string, password: string): Promise<UserCredential | undefined> {
+		const credential = await signInWithEmailAndPassword(this.auth, email, password).catch((error) => this.handleAuthError(error));
+
+		if (credential?.user) {
+			cookies.set("__session", await credential.user.getIdToken());
+			await this.router.navigate(["home"]);
+		}
+
+		return credential;
+	}
+
+	async providerLogin(providerName: "google" | "github"): Promise<UserCredential> {
+		const provider = providerName === "google" ? new GoogleAuthProvider() : new GithubAuthProvider();
+		const credential = await signInWithPopup(this.auth, provider);
+
+		if (credential.user) {
+			cookies.set("__session", await credential.user.getIdToken());
+			this.router.navigate(["home"]);
+		}
+
+		return credential;
 	}
 
 	async logout() {
 		await this.auth.signOut();
 		await this.router.navigate(["login"]);
+	}
+
+	private addDisplayName(uid: string, displayName: string): Promise<void> {
+		const docRef = doc(this.firestore, "users", uid);
+
+		return setDoc(docRef, { displayName }, { merge: true });
+	}
+
+	private handleAuthError(error: any): any {
+		let message = "Authentication failed. Please try again.";
+		switch (error.code) {
+			case "auth/user-not-found":
+				message = "User not found. Please check your email address.";
+				break;
+			case "auth/invalid-credential":
+				message = "Invalid credentials. Please check your email and password.";
+				break;
+			case "auth/invalid-email":
+				message = "Invalid email address. Please check your email address.";
+				break;
+			case "auth/invalid-display-name":
+				message = "Invalid display name. Please check your display name.";
+				break;
+			case "auth/wrong-password":
+				message = "Invalid password. Please check your password.";
+				break;
+			case "auth/operation-not-allowed":
+				message = "Account creation is disabled. Please contact support.";
+				break;
+			default:
+				console.error("Auth error:", error);
+				break;
+		}
+
+		this.snackBar.open(message, "Close", {
+			duration: 3000,
+			panelClass: ["snackbar-error"]
+		});
 	}
 }

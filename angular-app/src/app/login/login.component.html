@@ -1,11 +1,54 @@
 <div class="login-wrapper">
 	<h3>Kombuch <span class="ai-highlight">AI</span></h3>
 	<p>Unlock a smarter way to optimize your nutrition today!</p>
-	<mat-card appearance="outlined" class="login-card">
-		<button mat-flat-button class="btn-google" (click)="onLoginClick('google')">Login with Google</button>
-		<button mat-flat-button class="btn-github" (click)="onLoginClick('github')">Login with GitHub</button>
-		<span class="login-disclaimer">
-			At the time being, we support authentication using Google only. Stay tuned for more!
-		</span>
+	<mat-card appearance="outlined" class="login-card" (submit)="onNormalLogin()">
+		<form [formGroup]="formGroup">
+			<mat-form-field class="w-100">
+				<mat-label>Email</mat-label>
+				<input matInput required type="email" formControlName="email" />
+
+				@if (formGroup.controls.email.errors) {
+					<mat-error>{{ getErrorMessagesFor("email") }}</mat-error>
+				}
+			</mat-form-field>
+
+			<mat-form-field class="w-100 mt-2">
+				<mat-label>Password</mat-label>
+				<input
+					matInput
+					required
+					[type]="showPassword() ? 'text' : 'password'"
+					formControlName="password"
+					(keyup.enter)="onNormalLogin()"
+				/>
+				<mat-icon matSuffix (click)="showPassword.set(!showPassword())" [attr.aria-label]="'Toggle password visibility'">
+					{{ showPassword() ? "visibility" : "visibility_off" }}
+				</mat-icon>
+
+				@if (formGroup.controls.password.errors) {
+					<mat-error>{{ getErrorMessagesFor("password") }}</mat-error>
+				}
+			</mat-form-field>
+
+			<button mat-flat-button class="w-100 mt-2" type="submit" [disabled]="formGroup.invalid || isLoggingIn()">
+				@if (isLoggingIn()) {
+					<mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+				}
+				Sign in
+			</button>
+		</form>
+
+		<div class="divider d-flex ai-c">
+			<span>OR</span>
+		</div>
+
+		<button mat-flat-button class="btn-google" type="button" (click)="onProviderLogin('google')" [disabled]="isLoggingIn()">
+			Login with Google
+		</button>
+		<button mat-flat-button class="btn-github" type="button" (click)="onProviderLogin('github')" [disabled]="isLoggingIn()">
+			Login with GitHub
+		</button>
 	</mat-card>
+
+	<button mat-button type="button" class="w-100 mt-2" [routerLink]="['/register']">Not registered yet? Create an account!</button>
 </div>

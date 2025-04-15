@@ -1,0 +1,77 @@
+<div class="text-center mb-2">
+	<h3>KombuchAI</h3>
+	<button mat-button type="button" [routerLink]="['/login']">Already have an account? Sign in!</button>
+</div>
+<form class="d-flex flex-column p-2" [formGroup]="formGroup" (submit)="onRegister()">
+	<mat-form-field class="w-100">
+		<mat-label>Name</mat-label>
+		<input matInput required type="text" autocomplete="name" formControlName="displayName" />
+
+		@if (formGroup.controls.email.errors) {
+			<mat-error>{{ getErrorMessagesFor("displayName", "Name") }}</mat-error>
+		}
+	</mat-form-field>
+
+	<mat-form-field class="w-100 mt-2">
+		<mat-label>Email</mat-label>
+		<input matInput required type="email" autocomplete="email" formControlName="email" />
+
+		@if (formGroup.controls.email.errors) {
+			<mat-error>{{ getErrorMessagesFor("email", "E-mail") }}</mat-error>
+		}
+	</mat-form-field>
+
+	<mat-form-field class="w-100 mt-2">
+		<mat-label>Password</mat-label>
+		<input matInput required [type]="showPassword() ? 'text' : 'password'" autocomplete="new-password" formControlName="password" />
+		<mat-icon matSuffix (click)="showPassword.set(!showPassword())" [attr.aria-label]="'Toggle password visibility'">
+			{{ showPassword() ? "visibility" : "visibility_off" }}
+		</mat-icon>
+
+		@if (formGroup.controls.password.errors) {
+			<mat-error>{{ getErrorMessagesFor("password", "Password") }}</mat-error>
+		}
+	</mat-form-field>
+
+	<mat-form-field class="w-100 mt-2">
+		<mat-label>Confirm Password</mat-label>
+		<input
+			matInput
+			required
+			[type]="showPassword() ? 'text' : 'password'"
+			autocomplete="new-password"
+			formControlName="confirmPassword"
+			(keyup.enter)="onRegister()"
+		/>
+		<mat-icon matSuffix (click)="showPassword.set(!showPassword())" [attr.aria-label]="'Toggle password visibility'">
+			{{ showPassword() ? "visibility" : "visibility_off" }}
+		</mat-icon>
+
+		@if (formGroup.controls.confirmPassword.errors || formGroup.hasError("passwordMismatch")) {
+			<mat-error> {{ getErrorMessagesFor("confirmPassword", "Confirm password") }} </mat-error>
+		}
+	</mat-form-field>
+
+	@if (formGroup.hasError("passwordMismatch")) {
+		<mat-error> Passwords are not the same </mat-error>
+	}
+
+	<button mat-flat-button class="w-100 mt-2" type="submit" [disabled]="formGroup.invalid || isRegistering()">
+		@if (isRegistering()) {
+			<mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+		}
+		Register
+	</button>
+</form>
+<div class="divider d-flex ai-c">
+	<span>OR</span>
+</div>
+
+<div class="d-flex flex-column p-2 gap-2">
+	<button mat-flat-button class="btn-google" type="button" (click)="onProviderLogin('google')" [disabled]="isRegistering()">
+		Register with Google
+	</button>
+	<button mat-flat-button class="btn-github" type="button" (click)="onProviderLogin('github')" [disabled]="isRegistering()">
+		Register with GitHub
+	</button>
+</div>

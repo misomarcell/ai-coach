@@ -175,7 +175,7 @@ export class HealthProfileComponent {
 						duration: 3000
 					});
 
-					return from(this.router.navigate(["/profile"]));
+					return from(this.router.navigate(["/home"]));
 				}),
 				catchError((error) => {
 					this.snackBar.open(`Failed to submit analysis request: ${error.message}`, "Close", {

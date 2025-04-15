@@ -4,7 +4,7 @@ import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterModule } from "@angular/router";
 import { map } from "rxjs";
-import { UserService } from "../../services/user.service";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
 	selector: "app-profile-menu",
@@ -13,7 +13,7 @@ import { UserService } from "../../services/user.service";
 	styleUrl: "./profile-menu.component.scss"
 })
 export class ProfileMenuComponent {
-	private userService = inject(UserService);
+	private authService = inject(AuthService);
 
-	name = toSignal(this.userService.getUserProfile$().pipe(map((profile) => profile?.displayName)), { initialValue: "" });
+	name = toSignal(this.authService.getCurrentUser$().pipe(map((u) => u?.displayName)), { initialValue: "" });
 }
