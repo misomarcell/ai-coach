@@ -17,6 +17,7 @@ export const nutritionTypes = [
 	"Omega-6 LA",
 	"Omega-6 DGLA",
 	"Carbohydrates",
+	"Net Carbs",
 	"Sugar",
 	"Fiber",
 	"Starch",

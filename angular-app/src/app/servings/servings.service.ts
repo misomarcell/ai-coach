@@ -1,4 +1,15 @@
-import { Nutrition, Serving, ServingCategory, ServingDb, ServingFood, ServingSize } from "@aicoach/shared";
+import {
+	calculateNetCarbs,
+	calculateOmega3Total,
+	calculateOmega6Total,
+	Nutrition,
+	NutritionType,
+	Serving,
+	ServingCategory,
+	ServingDb,
+	ServingFood,
+	ServingSize
+} from "@aicoach/shared";
 import { inject, Injectable } from "@angular/core";
 import {
 	collection,
@@ -133,18 +144,39 @@ export class ServingsService {
 		);
 	}
 
+	getNutritionAmounts(serving: Serving): Nutrition[] {
+		const multiplier = serving.isFinalized ? 1 : ((serving.servingSize.gramWeight || 1) * (serving.servingAmount || 1)) / 100;
+
+		const nutritionMap = new Map<NutritionType, Nutrition>();
+
+		for (const nutrition of serving.food.nutritions) {
+			const scaledAmount = nutrition.amount * multiplier;
+
+			if (nutritionMap.has(nutrition.type)) {
+				nutritionMap.get(nutrition.type)!.amount += scaledAmount;
+			} else {
+				nutritionMap.set(nutrition.type, { ...nutrition, amount: scaledAmount });
+			}
+		}
+
+		const calculatedNutritions: Nutrition[] = [
+			{ type: "Net Carbs", unit: "g", amount: calculateNetCarbs(Array.from(nutritionMap.values())) },
+			{ type: "Omega-3 Total", unit: "g", amount: calculateOmega3Total(Array.from(nutritionMap.values())) },
+			{ type: "Omega-6 Total", unit: "g", amount: calculateOmega6Total(Array.from(nutritionMap.values())) }
+		];
+
+		return [...nutritionMap.values(), ...calculatedNutritions];
+	}
+
 	getTotalNutritionAmounts(servings: Serving[] = []): Nutrition[] {
 		const nutritionMap = new Map<string, Nutrition>();
-
-		servings.forEach(({ food, servingSize, servingAmount }) => {
-			const weightMultiplier = ((servingSize.gramWeight || 1) * servingAmount) / 100;
-
-			food.nutritions.forEach(({ type, amount, ...rest }) => {
+		servings.forEach((serving) => {
+			this.getNutritionAmounts(serving).forEach(({ type, amount, unit }) => {
 				if (!nutritionMap.has(type)) {
-					nutritionMap.set(type, { type, amount: 0, ...rest });
+					nutritionMap.set(type, { type, amount: 0, unit });
 				}
 				const existingNutrition = nutritionMap.get(type)!;
-				existingNutrition.amount += amount * weightMultiplier;
+				existingNutrition.amount += amount;
 			});
 		});
 

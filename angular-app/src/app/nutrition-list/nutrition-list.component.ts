@@ -1,7 +1,8 @@
-import { Food, Nutrition, NutritionUnit, ServingFood } from "@aicoach/shared";
+import { Nutrition, NutritionUnit, Serving } from "@aicoach/shared";
 import { DecimalPipe } from "@angular/common";
-import { Component, effect, input, signal } from "@angular/core";
+import { Component, effect, inject, input, signal } from "@angular/core";
 import { MatExpansionModule } from "@angular/material/expansion";
+import { ServingsService } from "../servings/servings.service";
 
 const CONVERSION_FACTORS: Record<NutritionUnit, number> = {
 	"g": 1_000_000, // 1g = 1,000,000 µg
@@ -35,24 +36,20 @@ const UNIT_PRIORITY: Record<NutritionUnit, number> = {
 	styleUrl: "./nutrition-list.component.scss"
 })
 export class NutritionListComponent {
-	food = input.required<Food | ServingFood>();
-	grams = input<number>(100);
+	serving = input<Serving | undefined>(undefined);
 	sortedNutritions = signal<Nutrition[]>([]);
+
+	private servingsService = inject(ServingsService);
 
 	constructor() {
 		effect(() => {
-			const calculated = this.calculateNutritionAmounts(this.food().nutritions);
-			this.sortedNutritions.set(this.getSortedNutritionList(calculated));
-		});
-	}
+			const serving = this.serving();
+			if (!serving) {
+				return;
+			}
 
-	private calculateNutritionAmounts(nutritions: Nutrition[]): Nutrition[] {
-		return nutritions.map((nutrition) => {
-			const scaledAmount = nutrition.amount * ((this.grams() || 100) / 100);
-			return this.toSmallestWholeUnit({
-				...nutrition,
-				amount: scaledAmount
-			});
+			const calculated = this.servingsService.getNutritionAmounts(serving);
+			this.sortedNutritions.set(this.getSortedNutritionList(calculated).map((n) => this.toSmallestWholeUnit(n)));
 		});
 	}
 

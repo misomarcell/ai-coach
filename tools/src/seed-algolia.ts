@@ -26,6 +26,8 @@ async function main() {
 	const indexName = "foods";
 
 	await client.clearObjects({ indexName });
+	console.log("🧹 Cleared Algolia index: " + indexName);
+
 	await pushDocumentsInBatches(FIRESTORE, indexName, batchSize, client, indexName);
 	console.log("All documents pushed to Algolia");
 }

@@ -1,6 +1,7 @@
-import { Food, ServingFood } from "@aicoach/shared";
+import { Serving } from "@aicoach/shared";
 import { DecimalPipe } from "@angular/common";
-import { Component, effect, input } from "@angular/core";
+import { Component, effect, inject, input, signal } from "@angular/core";
+import { ServingsService } from "../servings/servings.service";
 
 @Component({
 	selector: "app-nutrition-label",
@@ -9,17 +10,25 @@ import { Component, effect, input } from "@angular/core";
 	styleUrl: "./nutrition-label.component.scss"
 })
 export class NutritionLabelComponent {
-	food = input<Food | ServingFood | undefined>(undefined);
-	grams = input<number>(100);
-	calculated: Record<string, number> = {};
+	serving = input<Serving | undefined>(undefined);
+	calculated = signal<Record<string, number>>({});
+
+	private servingsService = inject(ServingsService);
 
 	constructor() {
-		effect(() => this.calculateNutritionAmounts());
-	}
+		effect(() => {
+			const serving = this.serving();
+			if (!serving) {
+				return;
+			}
 
-	private calculateNutritionAmounts(): void {
-		this.food()?.nutritions.forEach((nutrition) => {
-			this.calculated[nutrition.type] = (nutrition.amount * (this.grams() || 100)) / 100;
+			const nutritionsArray = this.servingsService.getNutritionAmounts(serving);
+			const nutritionRecord = nutritionsArray.reduce<Record<string, number>>((acc, nutrition) => {
+				acc[nutrition.type] = nutrition.amount;
+				return acc;
+			}, {});
+
+			this.calculated.set(nutritionRecord);
 		});
 	}
 }

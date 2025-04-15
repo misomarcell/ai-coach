@@ -17,7 +17,11 @@
 					<div class="food-name d-flex ai-c">
 						{{ serving.food.name || "Unknown food" }}
 					</div>
-					<div class="food-calories">{{ getCaloriesFor(serving) | number: "1.0-0" }} kcal</div>
+					@if (getCaloriesFor(serving); as calories) {
+						<div class="food-calories">{{ calories | number: "1.0-0" }} kcal</div>
+					} @else {
+						<div class="food-calories">N/A</div>
+					}
 				</div>
 			</div>
 		}

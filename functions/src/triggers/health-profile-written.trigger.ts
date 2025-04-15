@@ -36,7 +36,6 @@ export const healthProfileWrittenTrigger = onDocumentWritten(
 		}
 
 		logger.info(`✅ Daily nutrition (${targetsResult.nutritons.length}) targets retrieved successfully. Proceeding...`);
-		logger.info(targetsResult);
 
 		await dailyTargetsService.setDailyTargets(userId, targetsResult);
 	}

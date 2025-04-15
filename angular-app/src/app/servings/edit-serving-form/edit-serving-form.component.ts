@@ -11,8 +11,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ActivatedRoute } from "@angular/router";
-import { filter, startWith, take, tap } from "rxjs";
+import { ActivatedRoute, Router } from "@angular/router";
+import { filter, startWith, switchMap, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
@@ -46,7 +46,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 	servingSizes: ServingSize[] = [];
 
 	isSubmitting = signal<boolean>(false);
-	servingGrams = signal<number>(0);
+	servingGrams = signal<number | undefined>(undefined);
 	food = signal<Food | ServingFood | undefined>(undefined);
 	serving = signal<Serving | undefined>(undefined);
 
@@ -58,6 +58,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 	overlayRef = inject(FullscreenOverlayRef<EditServingFormComponent>);
 	overlayData = inject<{ foodId: string; serving?: Serving }>(FULLSCREEN_OVERLAY_DATA);
 
+	private router = inject(Router);
 	private activatedRoute = inject(ActivatedRoute);
 	private formBuilder = inject(FormBuilder);
 	private snackService = inject(MatSnackBar);
@@ -127,6 +128,10 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			category: serving?.category || this.getDefaultCategory(),
 			time: formattedTime
 		});
+
+		if (serving?.isEditable === false) {
+			this.form.disable();
+		}
 	}
 
 	onAddServing(): void {
@@ -145,12 +150,16 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 		this.servingsService
 			.addServing(this.food()!, servingData)
-			.pipe(take(1))
-			.subscribe(() => {
-				this.snackService.open("Serving added successfully!", "Close", { duration: 3000 });
-				this.isSubmitting.set(false);
-				this.closeOverlay();
-			});
+			.pipe(
+				take(1),
+				tap(() => {
+					this.snackService.open("Serving added successfully!", "Close", { duration: 3000 });
+					this.isSubmitting.set(false);
+					this.closeOverlay();
+				}),
+				switchMap(() => this.router.navigate(["/home"]))
+			)
+			.subscribe();
 	}
 
 	onSaveServing(): void {

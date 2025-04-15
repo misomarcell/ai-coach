@@ -17,6 +17,8 @@ export interface Serving {
 	servingAmount: number;
 	servingSize: ServingSize;
 	comment?: string;
+	isFinalized?: boolean;
+	isEditable?: boolean;
 }
 
 export interface ServingDb extends Omit<Serving, "created" | "lastUpdatedAt"> {

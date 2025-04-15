@@ -6,7 +6,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
-import { Router, RouterModule } from "@angular/router";
+import { RouterModule } from "@angular/router";
+import { ServingsService } from "../../servings.service";
 
 @Component({
 	selector: "app-servings-group",
@@ -19,8 +20,8 @@ export class ServingsGroupComponent {
 	servings = input.required<Serving[]>();
 	caloriesTotal = signal<number>(0);
 
-	router = inject(Router);
-	overlayService = inject(OverlayService);
+	private overlayService = inject(OverlayService);
+	private servingsService = inject(ServingsService);
 
 	constructor() {
 		effect(() => {
@@ -28,10 +29,8 @@ export class ServingsGroupComponent {
 		});
 	}
 
-	getCaloriesFor(serving: Serving): number {
-		const foodCalories = serving.food.nutritions.find((nutrition) => nutrition.type === "Calories")?.amount ?? 0;
-
-		return (foodCalories * (serving.servingAmount ?? 1) * (serving.servingSize.gramWeight || 100)) / 100;
+	getCaloriesFor(serving: Serving): number | undefined {
+		return this.servingsService.getNutritionAmounts(serving).find((n) => n.type === "Calories")?.amount;
 	}
 
 	onAddClick(event: Event) {
@@ -51,6 +50,6 @@ export class ServingsGroupComponent {
 	}
 
 	private getTotalCalories(): number {
-		return this.servings().reduce((total, serving) => total + this.getCaloriesFor(serving), 0);
+		return this.servings().reduce((total, serving) => total + (this.getCaloriesFor(serving) || 0), 0);
 	}
 }

@@ -52,7 +52,7 @@
 
 	<div class="food-details d-flex flex-column gap-1">
 		@if (_food && _food.nutritions.length > 0) {
-			<app-nutrition-label [food]="_food" [grams]="servingGrams() || 0" />
+			<app-nutrition-label [serving]="serving()" />
 
 			@if (dietaryFlags.length > 0) {
 				<div class="dietary-flags">
@@ -64,7 +64,7 @@
 				</div>
 			}
 
-			<app-nutrition-list [food]="_food" [grams]="servingGrams() || 0" />
+			<app-nutrition-list [serving]="serving()" />
 		}
 	</div>
 

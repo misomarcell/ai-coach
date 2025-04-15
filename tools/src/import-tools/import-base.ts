@@ -24,6 +24,7 @@ export class FirestoreConnector {
 		console.log(process.env["FIRESTORE_EMULATOR_HOST"]);
 		console.log("Reading serving account from ", serviceAccountPath);
 		const FIREBASE_APP = initializeApp({
+			projectId: "kombuch-ai",
 			credential: isProd ? cert(serviceAccountPath) : applicationDefault()
 		});
 

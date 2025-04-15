@@ -1,31 +1,36 @@
 <h4 class="title">Nutrition Information</h4>
 <div class="macros-list">
+	@let _calculated = calculated();
 	<div class="macro-item">
 		<span class="macro-label">{{ "Energy" }}</span>
-		<span class="macro-value">{{ calculated["Calories"] | number: "1.0-2" }} kcal</span>
+		<span class="macro-value">{{ _calculated["Calories"] | number: "1.0-2" }} kcal</span>
 	</div>
 	<div class="macro-item">
 		<span class="macro-label">{{ "Total fat" }}</span>
-		<span class="macro-value">{{ calculated["Total Fat"] | number: "1.0-2" }} g</span>
+		<span class="macro-value">{{ _calculated["Total Fat"] | number: "1.0-2" }} g</span>
 	</div>
 	<div class="macro-item">
 		<span class="macro-label indent">{{ "of which saturated" }}</span>
-		<span class="macro-value">{{ calculated["Saturated Fat"] | number: "1.0-2" }} g</span>
+		<span class="macro-value">{{ _calculated["Saturated Fat"] | number: "1.0-2" }} g</span>
 	</div>
 	<div class="macro-item">
-		<span class="macro-label">{{ "Carbohydrates" }}</span>
-		<span class="macro-value">{{ calculated["Carbohydrates"] | number: "1.0-2" }} g</span>
+		<span class="macro-label">{{ "Net Carbs" }}</span>
+		<span class="macro-value">{{ _calculated["Net Carbs"] | number: "1.0-2" }} g</span>
 	</div>
 	<div class="macro-item">
 		<span class="macro-label indent">{{ "of which sugars" }}</span>
-		<span class="macro-value">{{ calculated["Sugar"] | number: "1.0-2" }} g</span>
+		<span class="macro-value">{{ _calculated["Sugar"] | number: "1.0-2" }} g</span>
+	</div>
+	<div class="macro-item">
+		<span class="macro-label">{{ "Fiber" }}</span>
+		<span class="macro-value">{{ _calculated["Fiber"] | number: "1.0-2" }} g</span>
 	</div>
 	<div class="macro-item">
 		<span class="macro-label">{{ "Protein" }}</span>
-		<span class="macro-value">{{ calculated["Protein"] | number: "1.0-2" }} g</span>
+		<span class="macro-value">{{ _calculated["Protein"] | number: "1.0-2" }} g</span>
 	</div>
 	<div class="macro-item">
 		<span class="macro-label">{{ "Sodium" }}</span>
-		<span class="macro-value">{{ calculated["Sodium"] | number: "1.0-2" }} mg</span>
+		<span class="macro-value">{{ _calculated["Sodium"] | number: "1.0-2" }} mg</span>
 	</div>
 </div>

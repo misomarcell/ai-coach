@@ -12,3 +12,4 @@ export * from "./models/serving.model";
 export * from "./models/user.model";
 export * from "./utils/csv-parser";
 export * from "./utils/health-utils";
+export * from "./utils/nutrition-utils";

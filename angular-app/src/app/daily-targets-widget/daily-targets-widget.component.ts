@@ -15,7 +15,7 @@ export interface Target {
 	percentage: number;
 }
 
-const DEFAULT_NUTRITION_TYPES: NutritionType[] = ["Calories", "Carbohydrates", "Total Fat", "Protein"];
+const DEFAULT_NUTRITION_TYPES: NutritionType[] = ["Calories", "Net Carbs", "Total Fat", "Protein"];
 
 @Component({
 	selector: "app-daily-targets-widget",

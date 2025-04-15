@@ -158,16 +158,19 @@ export class CronometerService {
 					source: "Cronometer"
 				};
 
-				return {
+				const serving: Serving = {
 					id: "",
 					created,
 					servingAmount: amount,
 					category: this.mapServingCategory(rowMap.get("Group")),
 					food,
 					servingSize,
-					isCustomized: true,
+					isFinalized: true,
+					isEditable: false,
 					comment: "Exported from Cronometer"
 				};
+
+				return serving;
 			})
 			.filter((row) => row.food.name && row.food.nutritions.length > 0);
 
