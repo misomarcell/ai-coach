@@ -33,6 +33,16 @@
 		</div>
 
 		<div class="form-row">
+			<mat-form-field (click)="picker.open()">
+				<mat-label>Date</mat-label>
+				<input matInput [matDatepicker]="picker" formControlName="date" />
+				<mat-datepicker-toggle matIconSuffix [for]="picker" />
+				<mat-datepicker #picker />
+				@if (form.get("date")?.invalid && form.get("date")?.touched) {
+					<mat-error>Please select a valid date</mat-error>
+				}
+			</mat-form-field>
+
 			<mat-form-field>
 				<mat-label>Time</mat-label>
 				<input matInput formControlName="time" placeholder="HH:MM" />
@@ -40,7 +50,9 @@
 					<mat-error>Please enter a valid time (HH:MM)</mat-error>
 				}
 			</mat-form-field>
+		</div>
 
+		<div class="form-row full-width">
 			<mat-form-field>
 				<mat-label>Category</mat-label>
 				<mat-select formControlName="category">
@@ -82,13 +94,17 @@
 				<button mat-icon-button (click)="onDeleteServing(_serving)"><mat-icon>delete</mat-icon></button>
 				<button mat-icon-button (click)="onCopyServing(_serving)"><mat-icon>content_copy</mat-icon></button>
 				<button mat-flat-button class="w-100" [disabled]="form.invalid || form.disabled || _isSubmitting" (click)="onSaveServing()">
-					Save
+					@if (_isSubmitting) {
+						<mat-spinner diameter="20" class="spinner-inline" />
+					} @else {
+						Save
+					}
 				</button>
 			</div>
 		} @else {
 			<button mat-flat-button class="flex-grow w-100" [disabled]="form.invalid || _isSubmitting" (click)="onAddServing()">
 				@if (_isSubmitting) {
-					Adding...
+					<mat-spinner diameter="20" class="spinner-inline" />
 				} @else {
 					Add to {{ form.get("category")?.value || "diary" }}
 				}

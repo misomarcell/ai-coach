@@ -116,7 +116,7 @@ export class ServingsService {
 		);
 	}
 
-	detele(servingId: string): Observable<void> {
+	delete(servingId: string): Observable<void> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			take(1),
@@ -127,7 +127,6 @@ export class ServingsService {
 
 	getFoodNutritions(food: Food | ServingFood): Nutrition[] {
 		const nutritionMap = new Map<NutritionType, Nutrition>();
-
 		for (const nutrition of food.nutritions) {
 			if (nutritionMap.has(nutrition.type)) {
 				nutritionMap.get(nutrition.type)!.amount += nutrition.amount;
@@ -142,16 +141,12 @@ export class ServingsService {
 			{ type: "Omega-6 Total", unit: "g", amount: calculateOmega6Total(Array.from(nutritionMap.values())) }
 		];
 
-		console.log({ calculatedNutritions });
-
 		return [...nutritionMap.values(), ...calculatedNutritions];
 	}
 
 	getServingNutritions(serving: Serving): Nutrition[] {
-		const multiplier = serving.isFinalized ? 1 : ((serving.servingSize.gramWeight || 1) * (serving.servingAmount || 1)) / 100;
-
 		const nutritionMap = new Map<NutritionType, Nutrition>();
-
+		const multiplier = serving.isFinalized ? 1 : ((serving.servingSize.gramWeight || 1) * (serving.servingAmount || 1)) / 100;
 		for (const nutrition of serving.food.nutritions) {
 			const scaledAmount = nutrition.amount * multiplier;
 

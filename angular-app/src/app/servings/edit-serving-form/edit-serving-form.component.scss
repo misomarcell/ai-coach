@@ -29,6 +29,14 @@
 	mat-form-field {
 		flex: 1;
 	}
+
+	&.full-width {
+		flex-direction: column;
+
+		mat-form-field {
+			width: 100%;
+		}
+	}
 }
 
 .top-wrapper,

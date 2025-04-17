@@ -1,10 +1,12 @@
 import { slideInOut } from "@aicoach/animations";
 import { FULLSCREEN_OVERLAY_DATA, FullscreenOverlayRef } from "@aicoach/overlay";
 import { Food, Nutrition, Serving, servingCategories, ServingCategory, ServingFood, ServingSize } from "@aicoach/shared";
-import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from "@angular/material/core";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
@@ -18,6 +20,7 @@ import { NutritionListComponent } from "../../nutrition-list/nutrition-list.comp
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 interface PrefillOptions {
 	servingAmount?: number;
@@ -34,11 +37,18 @@ interface PrefillOptions {
 		ReactiveFormsModule,
 		MatDialogModule,
 		MatButtonModule,
+		MatProgressSpinnerModule,
 		MatFormFieldModule,
 		MatInputModule,
 		MatSelectModule,
 		MatIconModule,
-		MatChipsModule
+		MatChipsModule,
+		MatDatepickerModule,
+		MatNativeDateModule
+	],
+	providers: [
+		{ provide: DateAdapter, useClass: NativeDateAdapter },
+		{ provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
 	],
 	animations: [slideInOut],
 	host: {
@@ -47,7 +57,8 @@ interface PrefillOptions {
 	templateUrl: "./edit-serving-form.component.html",
 	styleUrl: "./edit-serving-form.component.scss"
 })
-export class EditServingFormComponent implements OnInit, AfterViewInit {
+export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestroy {
+	private formSubscription: any;
 	form: FormGroup;
 	servingCategories = servingCategories;
 	servingSizes: ServingSize[] = [];
@@ -74,31 +85,24 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	@ViewChild("amount", { static: false }) amountField: ElementRef<HTMLInputElement> | undefined;
 	constructor() {
+		const today = new Date();
 		this.form = this.formBuilder.group({
 			amount: [100, [Validators.required, Validators.min(0.01)]],
 			servingSize: [[], Validators.required],
-			time: [this.getFormattedTime(new Date()), [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
+			date: [today, Validators.required],
+			time: [this.getFormattedTime(today), [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
 			category: [this.getDefaultCategory(), Validators.required]
 		});
 
-		this.form.valueChanges.subscribe(() => {
-			const serving = this.serving();
-			const food = this.food();
-
-			if (serving) {
-				this.nutritions.set(
-					this.servingsService.getServingNutritions({
-						...serving,
-						servingAmount: this.form.value.amount,
-						servingSize: this.form.value.servingSize
-					})
-				);
-			} else if (food) {
-				this.nutritions.set(
-					this.servingsService.getFoodNutritions(food).map((n) => ({ ...n, amount: n.amount * (this.form.value.amount / 100) }))
-				);
-			}
+		this.formSubscription = this.form.valueChanges.subscribe(() => {
+			this.updateNutritions();
 		});
+	}
+
+	ngOnDestroy(): void {
+		if (this.formSubscription) {
+			this.formSubscription.unsubscribe();
+		}
 	}
 
 	ngOnInit(): void {
@@ -109,7 +113,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			this.nutritions.set(this.servingsService.getServingNutritions(this.overlayData.serving));
 			this.prefillForm({ ...this.overlayData.serving });
 
-			if (!this.overlayData.serving.isEditable) {
+			if (this.overlayData.serving.isEditable === false) {
 				this.form.disable();
 			}
 		}
@@ -138,17 +142,27 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	ngAfterViewInit(): void {
 		setTimeout(() => {
-			this.amountField?.nativeElement?.click();
-			this.amountField?.nativeElement?.select();
+			if (this.amountField?.nativeElement) {
+				this.amountField.nativeElement.click();
+				this.amountField.nativeElement.select();
+			}
 		}, 100);
 	}
 
 	prefillForm(options?: PrefillOptions): void {
-		const formattedTime = this.getFormattedTime(options?.created || new Date());
+		const createdDate = options?.created || new Date();
+		const formattedTime = this.getFormattedTime(createdDate);
+
+		let servingSize = options?.servingSize;
+		if (!servingSize && this.servingSizes.length > 0) {
+			servingSize = this.servingSizes[0];
+		}
+
 		this.form.patchValue({
 			amount: options?.servingAmount || 100,
-			servingSize: options?.servingSize || this.servingSizes[0],
+			servingSize: servingSize,
 			category: options?.category || this.getDefaultCategory(),
+			date: createdDate,
 			time: formattedTime
 		});
 	}
@@ -165,28 +179,42 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 
 	onSaveServing(): void {
 		const _serving = this.serving();
-		if (!_serving?.id || this.form?.invalid || this.isSubmitting()) {
+		const formValues = this.form.getRawValue();
+
+		if (!_serving?.id || this.form.invalid || this.isSubmitting()) {
 			return;
 		}
 
 		this.isSubmitting.set(true);
 
-		const createdTime = this.parseTimeStringToTodayDate(_serving.created, this.form!.value.time);
+		const createdTime = this.combineDateAndTime(formValues.date, formValues.time);
 		const servingData: Partial<Serving> = {
 			...this.serving(),
-			servingSize: this.form!.value.servingSize,
-			servingAmount: this.form!.value.amount,
-			category: this.form!.value.category as ServingCategory,
+			servingSize: formValues.servingSize,
+			servingAmount: formValues.amount,
+			category: formValues.category as ServingCategory,
 			created: createdTime || new Date()
 		};
 
 		this.servingsService
 			.updateServing(_serving.id, servingData)
-			.pipe(take(1))
-			.subscribe(() => {
-				this.snackService.open("Serving updated successfully!", "Close", { duration: 3000 });
-				this.isSubmitting.set(false);
-				this.closeOverlay();
+			.pipe(
+				take(1),
+				tap(() => {
+					this.snackService.open("Serving updated successfully!", "Close", { duration: 3000 });
+				}),
+				switchMap(() => this.router.navigate(["/home"])),
+				tap(() => {
+					this.isSubmitting.set(false);
+					this.closeOverlay();
+				})
+			)
+			.subscribe({
+				error: (err) => {
+					this.snackService.open("Error updating serving. Please try again.", "Close", { duration: 3000 });
+					this.isSubmitting.set(false);
+					console.error("Error updating serving:", err);
+				}
 			});
 	}
 
@@ -207,11 +235,26 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result === "yes") {
 				this.isSubmitting.set(true);
-				this.servingsService.detele(serving.id).subscribe(() => {
-					this.snackService.open("Serving deleted successfully!", "Close", { duration: 3000 });
-					this.isSubmitting.set(false);
-					this.closeOverlay();
-				});
+				this.servingsService
+					.delete(serving.id)
+					.pipe(
+						tap(() => {
+							this.snackService.open("Serving deleted successfully!", "Close", { duration: 3000 });
+						}),
+						switchMap(() => this.router.navigate(["/home"])),
+						take(1)
+					)
+					.subscribe({
+						next: () => {
+							this.isSubmitting.set(false);
+							this.closeOverlay();
+						},
+						error: (err) => {
+							this.snackService.open("Error deleting serving. Please try again.", "Close", { duration: 3000 });
+							this.isSubmitting.set(false);
+							console.error("Error deleting serving:", err);
+						}
+					});
 			}
 		});
 	}
@@ -233,7 +276,15 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result === "yes") {
 				this.isSubmitting.set(true);
-				this.addServing(serving.food);
+
+				// Copy with current form values to preserve user modifications
+				const formValues = this.form.getRawValue();
+				this.addServing(serving.food, {
+					amount: formValues.amount,
+					servingSize: formValues.servingSize,
+					category: formValues.category,
+					date: new Date() // Always use today's date for copied servings
+				});
 			}
 		});
 	}
@@ -242,43 +293,42 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 		this.overlayRef?.close(false);
 	}
 
-	private addServing(food: ServingFood): void {
+	private addServing(food: ServingFood, options?: { amount?: number; servingSize?: any; category?: ServingCategory; date?: Date }): void {
+		const formValues = this.form.getRawValue();
+		const selectedDate = options?.date || this.getSelectedDate();
+
 		this.servingsService
 			.addServing(
 				{
 					food,
-					category: this.form.value.category,
-					servingSize: this.form.value.servingSize,
-					servingAmount: this.form.value.amount
+					category: options?.category || formValues.category,
+					servingSize: options?.servingSize || formValues.servingSize,
+					servingAmount: options?.amount || formValues.amount
 				},
-				this.getSelectedDate()
+				selectedDate
 			)
 			.pipe(
 				take(1),
-				switchMap(() => {
+				tap(() => {
 					this.snackService.open("Serving added successfully!", "Close", { duration: 3000 });
-					this.isSubmitting.set(false);
-
-					return this.router.navigate(["/home"]);
 				}),
-				tap(() => this.closeOverlay())
+				switchMap(() => this.router.navigate(["/home"])),
+				tap(() => {
+					this.isSubmitting.set(false);
+					this.closeOverlay();
+				})
 			)
-			.subscribe();
+			.subscribe({
+				error: (err) => {
+					this.snackService.open("Error adding serving. Please try again.", "Close", { duration: 3000 });
+					this.isSubmitting.set(false);
+					console.error("Error adding serving:", err);
+				}
+			});
 	}
 
 	private getSelectedDate(): Date {
-		const dateString = this.activatedRoute.snapshot.queryParams["date"];
-		const timeString = this.form.value.time;
-
-		if (dateString) {
-			const date = new Date(dateString);
-			const parsedDate = this.parseTimeStringToTodayDate(date, timeString);
-			if (parsedDate) {
-				return parsedDate;
-			}
-		}
-
-		return new Date();
+		return this.combineDateAndTime(this.form.value.date, this.form.value.time) || new Date();
 	}
 
 	private getFormattedTime(date: Date): string {
@@ -307,8 +357,28 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	private parseTimeStringToTodayDate(date: Date, timeString: string): Date | null {
-		if (!timeString || !/^\d{2}:\d{2}$/.test(timeString)) {
+	private updateNutritions(): void {
+		const formValues = this.form.getRawValue();
+		const serving = this.serving();
+		const food = this.food();
+
+		if (serving && formValues.servingSize && formValues.amount) {
+			this.nutritions.set(
+				this.servingsService.getServingNutritions({
+					...serving,
+					servingAmount: formValues.amount,
+					servingSize: formValues.servingSize
+				})
+			);
+		} else if (food && formValues.amount) {
+			this.nutritions.set(
+				this.servingsService.getFoodNutritions(food).map((n) => ({ ...n, amount: n.amount * (formValues.amount / 100) }))
+			);
+		}
+	}
+
+	private combineDateAndTime(date: Date, timeString: string): Date | null {
+		if (!date || !timeString || !/^\d{2}:\d{2}$/.test(timeString)) {
 			return null;
 		}
 
@@ -321,7 +391,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			return null;
 		}
 
-		const resultDate = date;
+		const resultDate = new Date(date);
 		resultDate.setHours(hours, minutes, 0, 0);
 
 		return resultDate;

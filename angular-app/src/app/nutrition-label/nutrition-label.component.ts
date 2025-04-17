@@ -63,6 +63,7 @@ export class NutritionLabelComponent {
 	constructor() {
 		effect(() => {
 			const nutritions = this.nutritions().map((n) => toSmallestWholeUnit(n));
+			const updated: CalculatedNutrition[] = [];
 			for (const displayed of DISPLAYED_NUTRITIONS) {
 				const nutrition = nutritions.find((n) => n.type === displayed.nutrition.type);
 				if (nutrition) {
@@ -70,8 +71,10 @@ export class NutritionLabelComponent {
 					displayed.nutrition.unit = nutrition.unit;
 				}
 
-				this.calculated.update((current) => [...current, displayed]);
+				updated.push(displayed);
 			}
+
+			this.calculated.set(updated);
 		});
 	}
 }
