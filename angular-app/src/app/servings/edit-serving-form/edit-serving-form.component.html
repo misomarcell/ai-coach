@@ -99,7 +99,7 @@
 				<button mat-icon-button (click)="onCopyServing(_serving)"><mat-icon>content_copy</mat-icon></button>
 				<button mat-flat-button class="w-100" [disabled]="form.invalid || form.disabled || _isSubmitting" (click)="onSaveServing()">
 					@if (_isSubmitting) {
-						<mat-spinner diameter="20" class="spinner-inline" />
+						<mat-spinner diameter="20" />
 					} @else {
 						Save
 					}
@@ -108,7 +108,7 @@
 		} @else {
 			<button mat-flat-button class="flex-grow w-100" [disabled]="form.invalid || _isSubmitting" (click)="onAddServing()">
 				@if (_isSubmitting) {
-					<mat-spinner diameter="20" class="spinner-inline" />
+					<mat-spinner diameter="20" />
 				} @else {
 					Add to {{ form.get("category")?.value || "diary" }}
 				}

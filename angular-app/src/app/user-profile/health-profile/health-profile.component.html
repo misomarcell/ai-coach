@@ -158,6 +158,12 @@
 		</div>
 	}
 	<div class="button-container">
-		<button mat-flat-button type="submit" class="w-100" [disabled]="formGroup.invalid || isSubmitting()">Save</button>
+		<button mat-flat-button type="submit" class="w-100" [disabled]="formGroup.invalid || isSubmitting()">
+			@if (isSubmitting()) {
+				<mat-spinner diameter="20" />
+			} @else {
+				Save
+			}
+		</button>
 	</div>
 </form>

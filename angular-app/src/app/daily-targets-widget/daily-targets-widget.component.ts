@@ -6,6 +6,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, RouterModule } from "@angular/router";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../prompt-dialog/prompt-dialog.component";
 import { DailyTargetsService } from "../services/daily-targets.service";
@@ -19,7 +20,7 @@ const DEFAULT_NUTRITION_TYPES: NutritionType[] = ["Calories", "Net Carbs", "Tota
 
 @Component({
 	selector: "app-daily-targets-widget",
-	imports: [DecimalPipe, RouterModule, MatProgressBarModule, MatCardModule, MatButtonModule, MatIconModule],
+	imports: [DecimalPipe, RouterModule, MatProgressBarModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatIconModule],
 	templateUrl: "./daily-targets-widget.component.html",
 	styleUrl: "./daily-targets-widget.component.scss"
 })
@@ -39,22 +40,24 @@ export class DailyTargetsWidgetComponent {
 	targets = computed(() => {
 		const result = this.dailyTargets();
 		const displayedNutrition = this.displayedNutrition();
-		if (!result) return undefined;
+		const nutritions = !result?.nutritons
+			? []
+			: result.nutritons
+					.filter((nutrition) => displayedNutrition.includes(nutrition.type))
+					.map((nutrition) => {
+						const actualNutrition = this.actualNutritions().find((n) => n.type === nutrition.type);
 
-		return result.nutritons
-			.filter((nutrition) => displayedNutrition.includes(nutrition.type))
-			.map((nutrition) => {
-				const actualNutrition = this.actualNutritions().find((n) => n.type === nutrition.type);
+						return {
+							nutrition,
+							actualAmount: actualNutrition ? actualNutrition.amount : 0,
+							actualUnit: actualNutrition ? actualNutrition.unit : nutrition.unit,
+							targetAmount: nutrition.amount,
+							targetUnit: nutrition.unit,
+							percentage: this.calculateNutritionPercentage(actualNutrition, nutrition) || 0
+						};
+					});
 
-				return {
-					nutrition,
-					actualAmount: actualNutrition ? actualNutrition.amount : 0,
-					actualUnit: actualNutrition ? actualNutrition.unit : nutrition.unit,
-					targetAmount: nutrition.amount,
-					targetUnit: nutrition.unit,
-					percentage: this.calculateNutritionPercentage(actualNutrition, nutrition) || 0
-				};
-			});
+		return { nutritions, status: result?.status };
 	});
 
 	constructor() {
