@@ -8,7 +8,7 @@
 	"display": "standalone",
 	"orientation": "portrait",
 	"scope": "/",
-	"start_url": "/home",
+	"start_url": "/home/",
 	"screenshots": [
 		{
 			"src": "screenshots/home_h.webp",
