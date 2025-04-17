@@ -16,7 +16,9 @@ export class DateSelectorComponent {
 	constructor() {
 		effect(() => {
 			const date = this.selectedDate();
-			this.dateChanged.emit(date);
+			if (date) {
+				this.dateChanged.emit(date);
+			}
 		});
 	}
 

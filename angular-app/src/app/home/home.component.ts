@@ -1,5 +1,5 @@
 import { Nutrition, Serving } from "@aicoach/shared";
-import { Component, effect, inject, PLATFORM_ID, signal } from "@angular/core";
+import { Component, effect, inject, signal } from "@angular/core";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute } from "@angular/router";
@@ -7,8 +7,7 @@ import { DailyTargetsWidgetComponent } from "../daily-targets-widget/daily-targe
 import { DateSelectorComponent } from "../date-selector/date-selector.component";
 import { ServingsListComponent } from "../servings/servings-list/servings-list.component";
 import { ServingsService } from "../servings/servings.service";
-import { finalize, take } from "rxjs";
-import { isPlatformServer } from "@angular/common";
+import { Subscription } from "rxjs";
 
 @Component({
 	selector: "app-home",
@@ -20,28 +19,34 @@ import { isPlatformServer } from "@angular/common";
 export class HomeComponent {
 	private route = inject(ActivatedRoute);
 	private servingsService = inject(ServingsService);
-	private platformId = inject(PLATFORM_ID);
+	private servingsSubscription: Subscription | undefined;
 
 	isLoading = signal<boolean>(false);
 	selectedDate = signal<Date>(new Date());
 	totalNutrition = signal<Nutrition[]>([]);
-	servings = signal<Serving[]>(this.route.snapshot.data["servings"] ?? []);
+	servings = signal<Serving[]>(this.route.snapshot.data["servings"] ?? {});
 
-	fetchServingsEffect = effect(() => {
-		if (isPlatformServer(this.platformId)) {
-			return;
+	updateEffect = effect(() => {
+		const servings = this.servings();
+		const totalNutrition = this.servingsService.getTotalNutritionAmounts(servings);
+		this.totalNutrition.set(totalNutrition);
+	});
+
+	onSelectedDateChanged(date: Date) {
+		const selectedDate = this.selectedDate();
+		if (!this.compareDates(selectedDate, date)) {
+			this.isLoading.set(true);
 		}
 
-		this.isLoading.set(true);
-		this.servingsService
-			.getServingsByDate(this.selectedDate())
-			.pipe(
-				take(1),
-				finalize(() => this.isLoading.set(false))
-			)
-			.subscribe((data) => {
-				this.servings.set(data);
-				this.totalNutrition.set(this.servingsService.getTotalNutritionAmounts(data));
-			});
-	});
+		this.selectedDate.set(date);
+		this.servingsSubscription?.unsubscribe();
+		this.servingsSubscription = this.servingsService.getServingsByDate(date).subscribe((servings) => {
+			this.servings.set(servings);
+			this.isLoading.set(false);
+		});
+	}
+
+	private compareDates(dateA: Date, dateB: Date): boolean {
+		return dateA.getFullYear() === dateB.getFullYear() && dateA.getMonth() === dateB.getMonth() && dateA.getDate() === dateB.getDate();
+	}
 }

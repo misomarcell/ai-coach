@@ -1,7 +1,6 @@
-import { Serving } from "@aicoach/shared";
+import { Nutrition } from "@aicoach/shared";
 import { DecimalPipe } from "@angular/common";
-import { Component, effect, inject, input, signal } from "@angular/core";
-import { ServingsService } from "../servings/servings.service";
+import { Component, effect, input, signal } from "@angular/core";
 
 @Component({
 	selector: "app-nutrition-label",
@@ -10,20 +9,13 @@ import { ServingsService } from "../servings/servings.service";
 	styleUrl: "./nutrition-label.component.scss"
 })
 export class NutritionLabelComponent {
-	serving = input<Serving | undefined>(undefined);
+	nutritions = input.required<Nutrition[]>();
 	calculated = signal<Record<string, number>>({});
-
-	private servingsService = inject(ServingsService);
 
 	constructor() {
 		effect(() => {
-			const serving = this.serving();
-			if (!serving) {
-				return;
-			}
-
-			const nutritionsArray = this.servingsService.getNutritionAmounts(serving);
-			const nutritionRecord = nutritionsArray.reduce<Record<string, number>>((acc, nutrition) => {
+			const nutritions = this.nutritions();
+			const nutritionRecord = nutritions.reduce<Record<string, number>>((acc, nutrition) => {
 				acc[nutrition.type] = nutrition.amount;
 				return acc;
 			}, {});

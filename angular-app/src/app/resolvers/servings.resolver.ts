@@ -5,7 +5,7 @@ import { ServingsService } from "../servings/servings.service";
 
 export const servingsResolver: ResolveFn<Serving[]> = () => {
 	const servingsService = inject(ServingsService);
-	const currentDate = new Date();
+	const date = new Date();
 
-	return servingsService.getServingsByDate(currentDate);
+	return servingsService.getServingsByDate(date);
 };

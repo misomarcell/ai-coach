@@ -2,13 +2,12 @@ import {
 	calculateNetCarbs,
 	calculateOmega3Total,
 	calculateOmega6Total,
+	Food,
 	Nutrition,
 	NutritionType,
 	Serving,
-	ServingCategory,
 	ServingDb,
-	ServingFood,
-	ServingSize
+	ServingFood
 } from "@aicoach/shared";
 import { inject, Injectable } from "@angular/core";
 import {
@@ -28,13 +27,6 @@ import {
 } from "@angular/fire/firestore";
 import { filter, from, map, Observable, switchMap, take } from "rxjs";
 import { AuthService } from "../services/auth.service";
-
-export interface ServingOptions {
-	servingSize: ServingSize;
-	servingAmount: number;
-	category: ServingCategory;
-	isCustomized: boolean;
-}
 
 @Injectable({
 	providedIn: "root"
@@ -61,8 +53,7 @@ export class ServingsService {
 		}
 	};
 
-	addServing(food: ServingFood, options: ServingOptions): Observable<string> {
-		const { id, name, brand, category, nutritions, tags, isApproved } = food;
+	addServing(serving: Partial<Serving>, date?: Date): Observable<string> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
 			take(1),
@@ -71,21 +62,9 @@ export class ServingsService {
 			switchMap((docRef) =>
 				from(
 					setDoc(docRef, {
-						...options,
-						servingSize: options.servingSize,
-						servingAmount: options.servingAmount,
-						created: new Date(),
-						food: {
-							id,
-							dietaryFlags: Array.from(food.dietaryFlags || []),
-							name,
-							category,
-							nutritions,
-							brand,
-							tags,
-							isApproved
-						},
-						id: docRef.id
+						...serving,
+						id: docRef.id,
+						created: date ?? new Date()
 					}).then(() => docRef.id)
 				)
 			)
@@ -144,7 +123,29 @@ export class ServingsService {
 		);
 	}
 
-	getNutritionAmounts(serving: Serving): Nutrition[] {
+	getFoodNutritions(food: Food | ServingFood): Nutrition[] {
+		const nutritionMap = new Map<NutritionType, Nutrition>();
+
+		for (const nutrition of food.nutritions) {
+			if (nutritionMap.has(nutrition.type)) {
+				nutritionMap.get(nutrition.type)!.amount += nutrition.amount;
+			} else {
+				nutritionMap.set(nutrition.type, { ...nutrition });
+			}
+		}
+
+		const calculatedNutritions: Nutrition[] = [
+			{ type: "Net Carbs", unit: "g", amount: calculateNetCarbs(Array.from(nutritionMap.values())) },
+			{ type: "Omega-3 Total", unit: "g", amount: calculateOmega3Total(Array.from(nutritionMap.values())) },
+			{ type: "Omega-6 Total", unit: "g", amount: calculateOmega6Total(Array.from(nutritionMap.values())) }
+		];
+
+		console.log({ calculatedNutritions });
+
+		return [...nutritionMap.values(), ...calculatedNutritions];
+	}
+
+	getServingNutritions(serving: Serving): Nutrition[] {
 		const multiplier = serving.isFinalized ? 1 : ((serving.servingSize.gramWeight || 1) * (serving.servingAmount || 1)) / 100;
 
 		const nutritionMap = new Map<NutritionType, Nutrition>();
@@ -171,7 +172,7 @@ export class ServingsService {
 	getTotalNutritionAmounts(servings: Serving[] = []): Nutrition[] {
 		const nutritionMap = new Map<string, Nutrition>();
 		servings.forEach((serving) => {
-			this.getNutritionAmounts(serving).forEach(({ type, amount, unit }) => {
+			this.getServingNutritions(serving).forEach(({ type, amount, unit }) => {
 				if (!nutritionMap.has(type)) {
 					nutritionMap.set(type, { type, amount: 0, unit });
 				}

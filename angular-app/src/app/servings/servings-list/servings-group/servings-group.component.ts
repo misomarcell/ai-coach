@@ -18,6 +18,7 @@ import { ServingsService } from "../../servings.service";
 export class ServingsGroupComponent {
 	groupName = input.required<string>();
 	servings = input.required<Serving[]>();
+	date = input.required<Date>();
 	caloriesTotal = signal<number>(0);
 
 	private overlayService = inject(OverlayService);
@@ -30,7 +31,7 @@ export class ServingsGroupComponent {
 	}
 
 	getCaloriesFor(serving: Serving): number | undefined {
-		return this.servingsService.getNutritionAmounts(serving).find((n) => n.type === "Calories")?.amount;
+		return this.servingsService.getServingNutritions(serving).find((n) => n.type === "Calories")?.amount;
 	}
 
 	onAddClick(event: Event) {
@@ -42,11 +43,18 @@ export class ServingsGroupComponent {
 			() => import("../../../servings/edit-serving-form/edit-serving-form.component").then((m) => m.EditServingFormComponent),
 			{
 				data: {
-					serving,
-					foodId: serving.food.id
+					serving
 				}
 			}
 		);
+	}
+
+	getFormattedDate(): string {
+		const year = this.date().getFullYear();
+		const month = String(this.date().getMonth() + 1).padStart(2, "0");
+		const day = String(this.date().getDate()).padStart(2, "0");
+
+		return `${year}-${month}-${day}`;
 	}
 
 	private getTotalCalories(): number {

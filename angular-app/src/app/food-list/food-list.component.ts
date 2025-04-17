@@ -53,7 +53,7 @@ export class FoodListComponent implements OnInit, AfterViewInit {
 	searchControl = new FormControl<string>("");
 	foodCategories = foodCategories;
 
-	private fb = inject(FormBuilder);
+	private formBuilder = inject(FormBuilder);
 	private authService = inject(AuthService);
 	private platformId = inject(PLATFORM_ID);
 	private activatedRoute = inject(ActivatedRoute);
@@ -69,7 +69,7 @@ export class FoodListComponent implements OnInit, AfterViewInit {
 
 	@ViewChild("search") searchInput: ElementRef<HTMLInputElement> | undefined;
 	constructor() {
-		this.filterForm = this.fb.group({
+		this.filterForm = this.formBuilder.group({
 			sortBy: ["lastUpdatedAt"],
 			sortDirection: ["desc"],
 			category: [""],

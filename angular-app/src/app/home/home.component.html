@@ -1,10 +1,12 @@
 <app-daily-targets-widget [actualNutritions]="totalNutrition()" />
-<app-date-selector (dateChanged)="selectedDate.set($event)" />
+<app-date-selector (dateChanged)="onSelectedDateChanged($event)" />
 
 @if (isLoading()) {
-	Loading...
+	<div class="w-100 d-flex gap-2 jc-c mt-5">
+		<mat-spinner diameter="40"></mat-spinner>
+	</div>
 } @else {
 	<div class="servings-section">
-		<app-servings-list [servings]="servings() || []" />
+		<app-servings-list [servings]="servings() || []" [date]="selectedDate()" />
 	</div>
 }

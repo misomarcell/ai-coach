@@ -31,6 +31,7 @@ export class ServingsListComponent {
 	isLoading = signal<boolean>(false);
 	isResultEmpty = signal<boolean>(true);
 
+	date = input.required<Date>();
 	servings = input.required<Serving[]>();
 	servingCategories: ServingCategory[] = ["Uncategorized", "Breakfast", "Lunch", "Dinner", "Snacks"];
 	categorizedServings = new Map<ServingCategory, Serving[]>();
@@ -60,7 +61,7 @@ export class ServingsListComponent {
 		}
 
 		this.categorizedServings.forEach((servingsInCategory) => {
-			servingsInCategory.sort((a, b) => b.created.getTime() - a.created.getTime());
+			servingsInCategory.sort((a, b) => a.created.getTime() - b.created.getTime());
 		});
 
 		this.isResultEmpty.set(servings.length === 0);

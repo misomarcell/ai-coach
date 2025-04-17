@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
 		provideHttpClient(withFetch()),
 		provideExperimentalZonelessChangeDetection(),
 		provideRouter(routes, withPreloading(PreloadAllModules)),
-		provideClientHydration(withHttpTransferCacheOptions({ includePostRequests: true }), withIncrementalHydration(), withEventReplay()),
+		provideClientHydration(withHttpTransferCacheOptions({}), withIncrementalHydration(), withEventReplay()),
 		provideAnimationsAsync(),
 		{
 			provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,

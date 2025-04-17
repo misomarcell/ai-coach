@@ -52,10 +52,10 @@
 
 	<div class="food-details d-flex flex-column gap-1">
 		@if (_food && _food.nutritions.length > 0) {
-			<app-nutrition-label [serving]="serving()" />
+			<app-nutrition-label [nutritions]="nutritions()" />
 
 			@if (dietaryFlags.length > 0) {
-				<div class="dietary-flags">
+				<div class="d-flex jc-c">
 					<mat-chip-set>
 						@for (flag of dietaryFlags; track flag) {
 							<mat-chip>{{ flag }}</mat-chip>
@@ -64,16 +64,17 @@
 				</div>
 			}
 
-			<app-nutrition-list [serving]="serving()" />
+			<app-nutrition-list [nutritions]="nutritions()" />
 		}
 	</div>
 
 	@if (form) {
 		@let _isSubmitting = isSubmitting();
 		@let _serving = serving();
-		@if (_serving) {
+		@if (_serving && _serving.id) {
 			<div class="mt-3 d-flex gap-2">
-				<button mat-icon-button color="warn" (click)="onDeleteServing(_serving)"><mat-icon>delete</mat-icon></button>
+				<button mat-icon-button (click)="onDeleteServing(_serving)"><mat-icon>delete</mat-icon></button>
+				<button mat-icon-button (click)="onCopyServing(_serving)"><mat-icon>content_copy</mat-icon></button>
 				<button mat-flat-button class="w-100" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">Save</button>
 			</div>
 		} @else {
