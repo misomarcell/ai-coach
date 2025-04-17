@@ -48,8 +48,6 @@ export class OverlayService {
 			hasBackdrop: true,
 			width: "100vw",
 			height: "100vh",
-			maxWidth: "100vw",
-			maxHeight: "100vh",
 			scrollStrategy: this.overlay.scrollStrategies.block(),
 			panelClass: [
 				"fullscreen-overlay-pane",

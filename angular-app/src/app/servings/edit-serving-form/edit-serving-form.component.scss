@@ -3,12 +3,22 @@
 	position: relative;
 	--mdc-dialog-subhead-size: 1.2rem;
 	--mdc-dialog-subhead-line-height: 1.2;
+	padding: 4rem 0;
+	max-width: 800px;
+	margin: 0 auto;
 }
 
-.title {
-	font-size: 1.2rem;
-	line-height: 1.2;
-	margin: 0;
+.title-bar {
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+	align-items: center;
+
+	.title {
+		font-size: 1.2rem;
+		line-height: 1.2;
+		margin: 0;
+	}
 }
 
 .form-row {
@@ -21,9 +31,22 @@
 	}
 }
 
-.buttons-wrapper {
+.top-wrapper,
+.bottom-wrapper {
 	background: var(--mat-app-background-color);
-	position: sticky;
-	bottom: 0;
+	position: fixed;
+	max-width: 800px;
+	margin: 0 auto;
 	padding: 1rem;
+	z-index: 1;
+	left: 0;
+	right: 0;
+}
+
+.top-wrapper {
+	top: 0;
+}
+
+.bottom-wrapper {
+	bottom: 0;
 }

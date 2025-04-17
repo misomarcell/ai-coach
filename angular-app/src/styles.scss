@@ -1,6 +1,7 @@
 @use "@angular/material" as mat;
 @use "./theme-colors" as theme-colors;
 @use "./classes";
+@import "@angular/cdk/overlay-prebuilt.css";
 @import url("https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 $theme: mat.define-theme(
@@ -38,7 +39,8 @@ body {
 
 	.fullscreen-overlay-pane {
 		display: block;
-		overflow: scroll;
+		overflow-y: auto;
+		overflow-x: hidden;
 		background: var(--mat-app-background-color);
 	}
 
