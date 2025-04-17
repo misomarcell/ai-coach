@@ -149,12 +149,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	ngAfterViewInit(): void {
-		setTimeout(() => {
-			if (this.amountField?.nativeElement) {
-				this.amountField.nativeElement.click();
-				this.amountField.nativeElement.select();
-			}
-		}, 100);
+		setTimeout(() => this.amountField?.nativeElement.click(), 300);
 	}
 
 	prefillForm(options?: PrefillOptions): void {
