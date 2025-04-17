@@ -1,14 +1,16 @@
 @let _food = food();
+@let _isSubmitting = isSubmitting();
+@let _serving = serving();
 
-<div class="add-serving-container p-2">
-	<div class="title-bar d-flex ai-c jc-sb mb-2">
+<div class="add-serving-container">
+	<div class="title-bar d-flex ai-c jc-sb m-2">
 		<h4 class="title">{{ _food?.name }}</h4>
 		<button mat-icon-button (click)="closeOverlay()">
 			<mat-icon>close</mat-icon>
 		</button>
 	</div>
 
-	<form [formGroup]="form" class="food-form">
+	<form [formGroup]="form" class="food-form m-2">
 		<div class="form-row">
 			<mat-form-field>
 				<mat-label>Amount</mat-label>
@@ -50,7 +52,13 @@
 		</div>
 	</form>
 
-	<div class="food-details d-flex flex-column gap-1">
+	@if (_serving?.isEditable === false) {
+		<div class="text-center mb-2">
+			<span>This food is not editable.</span>
+		</div>
+	}
+
+	<div class="food-details d-flex flex-column gap-1 m-2">
 		@if (_food && _food.nutritions.length > 0) {
 			<app-nutrition-label [nutritions]="nutritions()" />
 
@@ -68,22 +76,17 @@
 		}
 	</div>
 
-	@if (form) {
-		@let _isSubmitting = isSubmitting();
-		@let _serving = serving();
+	<div class="buttons-wrapper">
 		@if (_serving && _serving.id) {
-			<div class="mt-3 d-flex gap-2">
+			<div class="d-flex gap-2">
 				<button mat-icon-button (click)="onDeleteServing(_serving)"><mat-icon>delete</mat-icon></button>
 				<button mat-icon-button (click)="onCopyServing(_serving)"><mat-icon>content_copy</mat-icon></button>
-				<button mat-flat-button class="w-100" [disabled]="form.invalid || _isSubmitting" (click)="onSaveServing()">Save</button>
+				<button mat-flat-button class="w-100" [disabled]="form.invalid || form.disabled || _isSubmitting" (click)="onSaveServing()">
+					Save
+				</button>
 			</div>
 		} @else {
-			<button
-				mat-flat-button
-				class="add-serving-button w-100 mt-3"
-				[disabled]="form.invalid || _isSubmitting"
-				(click)="onAddServing()"
-			>
+			<button mat-flat-button class="flex-grow w-100" [disabled]="form.invalid || _isSubmitting" (click)="onAddServing()">
 				@if (_isSubmitting) {
 					Adding...
 				} @else {
@@ -91,5 +94,5 @@
 				}
 			</button>
 		}
-	}
+	</div>
 </div>

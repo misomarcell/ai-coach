@@ -64,8 +64,10 @@ export class ServingsService {
 					setDoc(docRef, {
 						...serving,
 						id: docRef.id,
+						isEditable: true,
+						isFinalized: false,
 						created: date ?? new Date()
-					}).then(() => docRef.id)
+					} as Serving).then(() => docRef.id)
 				)
 			)
 		);

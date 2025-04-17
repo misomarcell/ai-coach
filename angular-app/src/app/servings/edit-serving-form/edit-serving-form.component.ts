@@ -108,6 +108,10 @@ export class EditServingFormComponent implements OnInit, AfterViewInit {
 			this.food.set(this.overlayData.serving?.food);
 			this.nutritions.set(this.servingsService.getServingNutritions(this.overlayData.serving));
 			this.prefillForm({ ...this.overlayData.serving });
+
+			if (!this.overlayData.serving.isEditable) {
+				this.form.disable();
+			}
 		}
 
 		if (!this.overlayData.foodId) {

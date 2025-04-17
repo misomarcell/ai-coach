@@ -16,9 +16,9 @@ export interface Serving {
 	food: ServingFood;
 	servingAmount: number;
 	servingSize: ServingSize;
+	isFinalized: boolean;
+	isEditable: boolean;
 	comment?: string;
-	isFinalized?: boolean;
-	isEditable?: boolean;
 }
 
 export interface ServingDb extends Omit<Serving, "created" | "lastUpdatedAt"> {
