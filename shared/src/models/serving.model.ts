@@ -17,7 +17,7 @@ export interface Serving {
 	servingAmount: number;
 	servingSize: ServingSize;
 	isFinalized: boolean;
-	isEditable: boolean;
+	isEditable?: boolean;
 	comment?: string;
 }
 

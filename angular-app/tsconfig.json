@@ -20,7 +20,8 @@
 		"paths": {
 			"@aicoach/shared": ["../shared/src"],
 			"@aicoach/animations": ["./src/app/animations"],
-			"@aicoach/overlay": ["./src/app/overlay"]
+			"@aicoach/overlay": ["./src/app/overlay"],
+			"@aicoach/utils/*": ["./src/app/utils/*"]
 		}
 	},
 	"angularCompilerOptions": {

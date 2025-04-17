@@ -45,7 +45,7 @@
 
 			<mat-form-field>
 				<mat-label>Time</mat-label>
-				<input matInput formControlName="time" placeholder="HH:MM" />
+				<input matInput mask="Hh:m0" formControlName="time" placeholder="HH:MM" />
 				@if (form.get("time")?.invalid && form.get("time")?.touched) {
 					<mat-error>Please enter a valid time (HH:MM)</mat-error>
 				}
@@ -66,7 +66,11 @@
 
 	@if (_serving?.isEditable === false) {
 		<div class="text-center mb-2">
-			<span>This food is not editable.</span>
+			<span>This serving is not editable.</span>
+		</div>
+	} @else if (_serving?.isFinalized) {
+		<div class="text-center mb-2">
+			<span>This amount of this serving is not editable.</span>
 		</div>
 	}
 

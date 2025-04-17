@@ -166,7 +166,6 @@ export class CronometerService {
 					food,
 					servingSize,
 					isFinalized: true,
-					isEditable: false,
 					comment: "Exported from Cronometer"
 				};
 

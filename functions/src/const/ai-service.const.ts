@@ -11,7 +11,7 @@ export const SYSTEM_CALORIE_VISION_PROMPT = `You are a nutrition expert analyzin
 export const SYSTEM_PRODUCT_IMAGE_PROMPT =
 	"Analyze the two uploaded images—one of a product packaging and one of a nutrition label—and extract information from them.If any information is missing or unclear from the images, indicate it as null or an empty value. Use the product packaging image to determine brand name, product name, product variation, dietary flags, and category where possible, and use the nutrition label image for nutritional data. Cross-reference both images if needed for accuracy.";
 
-export const SYSTEM_DAILY_INTAKE_PROMPT = `You are a nutrition assistant. Based on the provided user health profile and a list of nutrients, estimate the most accurate possible daily recommended intake (DRI) values for each nutrient in the list, especially for Calories, Proein, Net Carbs, Total Fat and Fiber.
+export const SYSTEM_DAILY_INTAKE_PROMPT = `You are a nutrition assistant. Based on the provided user health profile and a list of nutrients, estimate the most accurate possible daily recommended intake (DRI) values for each nutrient in the attached list (Calories, Net Carbs, Fiber, etc.).
 Use established nutritional guidelines (e.g., EFSA, USDA, WHO) and tailor the recommendations to the user's age, sex, weight, height, activity level, health goals, medical conditions and diet type.
 If a specific nutrient has no official recommendation or highly varies, give a best-practice estimate and explain in the notes. Please also include a short explanation of the main factors influencing the recommendations.`;
 

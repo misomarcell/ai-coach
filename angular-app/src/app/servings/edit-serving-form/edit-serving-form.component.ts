@@ -1,26 +1,29 @@
 import { slideInOut } from "@aicoach/animations";
 import { FULLSCREEN_OVERLAY_DATA, FullscreenOverlayRef } from "@aicoach/overlay";
 import { Food, Nutrition, Serving, servingCategories, ServingCategory, ServingFood, ServingSize } from "@aicoach/shared";
+import { CustomDateAdapter } from "@aicoach/utils/date-adapter.util";
+import { Platform } from "@angular/cdk/platform";
 import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
-import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from "@angular/material/core";
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
+import { NgxMaskDirective, provideNgxMask } from "ngx-mask";
 import { filter, switchMap, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 interface PrefillOptions {
 	servingAmount?: number;
@@ -32,6 +35,7 @@ interface PrefillOptions {
 @Component({
 	standalone: true,
 	imports: [
+		NgxMaskDirective,
 		NutritionLabelComponent,
 		NutritionListComponent,
 		ReactiveFormsModule,
@@ -47,7 +51,8 @@ interface PrefillOptions {
 		MatNativeDateModule
 	],
 	providers: [
-		{ provide: DateAdapter, useClass: NativeDateAdapter },
+		provideNgxMask({ validation: false, dropSpecialCharacters: false }),
+		{ provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE, Platform] },
 		{ provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
 	],
 	animations: [slideInOut],
@@ -115,6 +120,9 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 
 			if (this.overlayData.serving.isEditable === false) {
 				this.form.disable();
+			} else if (this.overlayData.serving.isFinalized) {
+				this.form.get("amount")?.disable();
+				this.form.get("servingSize")?.disable();
 			}
 		}
 
@@ -277,13 +285,12 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			if (result === "yes") {
 				this.isSubmitting.set(true);
 
-				// Copy with current form values to preserve user modifications
 				const formValues = this.form.getRawValue();
 				this.addServing(serving.food, {
 					amount: formValues.amount,
 					servingSize: formValues.servingSize,
 					category: formValues.category,
-					date: new Date() // Always use today's date for copied servings
+					date: new Date()
 				});
 			}
 		});

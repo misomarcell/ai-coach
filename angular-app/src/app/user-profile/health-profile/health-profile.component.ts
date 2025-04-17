@@ -1,5 +1,7 @@
 import { ActivityLevel, calculateAge, calculateBmi, calculateMaintenanceCalories, HealthProfile } from "@aicoach/shared";
+import { CustomDateAdapter } from "@aicoach/utils/date-adapter.util";
 import { COMMA, ENTER, TAB } from "@angular/cdk/keycodes";
+import { Platform } from "@angular/cdk/platform";
 import { DecimalPipe } from "@angular/common";
 import { Component, inject, Signal, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
@@ -8,7 +10,7 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from "@angular/ma
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
-import { MAT_DATE_FORMATS, MatNativeDateModule } from "@angular/material/core";
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialog } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
@@ -44,20 +46,8 @@ import { DIET_GOALS, DIETARY_RESTRICTIONS, HEALTH_CONDITIONS } from "./health-op
 		MatAutocompleteModule
 	],
 	providers: [
-		{
-			provide: MAT_DATE_FORMATS,
-			useValue: {
-				parse: {
-					dateInput: "YYYY-MM-DD"
-				},
-				display: {
-					dateInput: "YYYY-MM-DD",
-					monthYearLabel: "YYYY",
-					dateA11yLabel: "LL",
-					monthYearA11yLabel: "YYYY"
-				}
-			}
-		}
+		{ provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE, Platform] },
+		{ provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
 	],
 	templateUrl: "./health-profile.component.html",
 	styleUrl: "./health-profile.component.scss"
