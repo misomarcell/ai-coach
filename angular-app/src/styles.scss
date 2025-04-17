@@ -48,6 +48,14 @@ body {
 		--mdc-outlined-button-label-text-color: var(--mat-sys-error);
 		--mdc-outlined-button-outline-color: var(--mat-sys-error);
 	}
+
+	.add-menu-bottom-sheet {
+		.mat-bottom-sheet-container {
+			border-radius: 24px 24px 0 0;
+			padding: 0;
+			background-color: var(--mat-sys-secondary-container);
+		}
+	}
 }
 
 @include mat.typography-hierarchy($theme);

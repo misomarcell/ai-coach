@@ -59,8 +59,9 @@
 	<button mat-flat-button class="w-100 mt-2" type="submit" [disabled]="formGroup.invalid || isRegistering()">
 		@if (isRegistering()) {
 			<mat-spinner diameter="20" />
+		} @else {
+			Register
 		}
-		Register
 	</button>
 </form>
 <div class="divider d-flex ai-c">

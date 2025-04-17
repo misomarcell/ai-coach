@@ -25,7 +25,8 @@ const ICONS = [
 	"pizza-slice-solid",
 	"utensils-solid",
 	"question-solid",
-	"wheat-awn-solid"
+	"wheat-awn-solid",
+	"barcode-solid"
 ];
 
 @Component({

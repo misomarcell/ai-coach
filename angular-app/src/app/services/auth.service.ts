@@ -142,6 +142,7 @@ export class AuthService implements OnDestroy {
 	}
 
 	async logout() {
+		cookies.remove("__session");
 		await this.auth.signOut();
 		await this.router.navigate(["login"]);
 	}

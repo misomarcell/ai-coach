@@ -16,4 +16,12 @@ export class ProfileMenuComponent {
 	private authService = inject(AuthService);
 
 	name = toSignal(this.authService.getCurrentUser$().pipe(map((u) => u?.displayName)), { initialValue: "" });
+
+	onLogoutClick() {
+		this.authService.logout();
+	}
+
+	onNotImplementedClick() {
+		alert("This feature is not implemented yet.");
+	}
 }

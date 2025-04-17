@@ -1,0 +1,29 @@
+<mat-toolbar class="bottom-toolbar">
+	<div class="bottom-nav-container">
+		<button mat-icon-button routerLinkActive="active-nav-item" routerLink="/home">
+			<mat-icon>dashboard</mat-icon>
+		</button>
+
+		<button mat-icon-button routerLinkActive="active-nav-item" routerLink="/diet-analyses">
+			<mat-icon>insights</mat-icon>
+		</button>
+
+		<button mat-fab color="primary" (click)="openAddMenu()" class="add-button">
+			<mat-icon>add</mat-icon>
+		</button>
+
+		<button mat-icon-button routerLinkActive="active-nav-item" routerLink="/search-food">
+			<mat-icon>restaurant_menu</mat-icon>
+		</button>
+
+		<button mat-icon-button class="user-avatar" routerLinkActive="active-nav-item" routerLink="/profile">
+			<div class="wrapper">
+				@if (userPhotoUrl()) {
+					<img [src]="userPhotoUrl()" alt="User avatar" />
+				} @else {
+					<img src="assets/user-default.svg" alt="Default user avatar" />
+				}
+			</div>
+		</button>
+	</div>
+</mat-toolbar>

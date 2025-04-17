@@ -5,6 +5,7 @@
 
 	.menu-item {
 		border-radius: 8px;
-		background-color: var(--mat-sys-on-secondary);
+		color: var(--mat-sys-on-secondary-container);
+		background-color: var(--mat-sys-secondary-container);
 	}
 }
