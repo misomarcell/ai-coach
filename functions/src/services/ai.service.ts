@@ -141,7 +141,7 @@ export class AiService {
 		const structuredLlm = model.withStructuredOutput(DailyIntakeRecommendation, { name: "daily-nutrition-targets" });
 		const parsedResponse = await prompt.pipe(structuredLlm).invoke({ compiledPreferences });
 
-		return { nutritons: parsedResponse.nutritions, explanation: parsedResponse.explanation, status: "success", model: model.getName() };
+		return { nutritons: parsedResponse.nutritions, explanation: parsedResponse.explanation, model: model.getName() };
 	}
 
 	private getModelInstance(config?: AiModelConfig) {
