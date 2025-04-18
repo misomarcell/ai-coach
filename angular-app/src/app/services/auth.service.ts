@@ -152,9 +152,7 @@ export class AuthService implements OnDestroy {
 
 	async resetPassword(email: string): Promise<void> {
 		try {
-			await sendPasswordResetEmail(this.auth, email, {
-				url: "http://localhost:4200/forgot-password?step=new-password"
-			});
+			await sendPasswordResetEmail(this.auth, email);
 			this.snackBar.open("Password reset email sent successfully.", "Close", {
 				duration: 3000,
 				panelClass: ["snackbar-success"]
