@@ -16,7 +16,7 @@ export class AppShellComponent {
 
 	isMenuOpen = false;
 	userPhotoUrl = toSignal(
-		this.authService.getCurrentUser$().pipe(
+		this.authService.getCurrentUser().pipe(
 			takeUntilDestroyed(),
 			map((user) => user?.photoURL || undefined)
 		)

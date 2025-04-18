@@ -12,11 +12,11 @@ import {
 	onIdTokenChanged,
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
-	verifyPasswordResetCode,
 	signInWithPopup,
 	updateProfile,
 	User,
-	UserCredential
+	UserCredential,
+	verifyPasswordResetCode
 } from "@angular/fire/auth";
 import { doc, Firestore, setDoc } from "@angular/fire/firestore";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -33,6 +33,7 @@ export class AuthService implements OnDestroy {
 	private router = inject(Router);
 
 	private readonly auth = inject(Auth);
+
 	protected readonly authState = authState(this.auth);
 
 	private readonly unsubscribeFromOnIdTokenChanged: (() => void) | undefined;
@@ -93,12 +94,12 @@ export class AuthService implements OnDestroy {
 		this.unsubscribeFromOnIdTokenChanged?.();
 	}
 
-	getCurrentUser$(): Observable<User | null> {
+	getCurrentUser(): Observable<User | null> {
 		return authState(this.auth);
 	}
 
-	isLoggedIn$(): Observable<boolean> {
-		return this.getCurrentUser$().pipe(map((user) => !!user));
+	isLoggedIn(): Observable<boolean> {
+		return this.getCurrentUser().pipe(map((user) => !!user));
 	}
 
 	getRedirectResult(): Promise<UserCredential | null> {

@@ -62,7 +62,7 @@ export class FoodService {
 			images: []
 		};
 
-		return this.authService.getCurrentUser$().pipe(
+		return this.authService.getCurrentUser().pipe(
 			take(1),
 			filter((user) => !!user),
 			switchMap((user) => addDoc(collectionRef, { ...foodDocument, ownerUid: user.uid })),
@@ -88,7 +88,7 @@ export class FoodService {
 	}
 
 	getFood(foodId: string): Observable<Food | undefined> {
-		return this.authService.getCurrentUser$().pipe(
+		return this.authService.getCurrentUser().pipe(
 			filter((user) => !!user),
 			map(() => doc(this.firestore, `foods/${foodId}`).withConverter(this.foodTypeConverter)),
 			distinctUntilChanged(),
@@ -97,7 +97,7 @@ export class FoodService {
 	}
 
 	uploadProductImage(foodId: string, file: File, imageType: "package" | "label"): Observable<string> {
-		return this.authService.getCurrentUser$().pipe(
+		return this.authService.getCurrentUser().pipe(
 			take(1),
 			filter((user) => !!user),
 			map((user) => `product-images/${user.uid}/${foodId}/${imageType}`),
@@ -116,7 +116,7 @@ export class FoodService {
 	private getUserPendingFood(): Observable<Food | undefined> {
 		const collectionRef = collection(this.firestore, "foods").withConverter(this.foodTypeConverter);
 
-		return this.authService.getCurrentUser$().pipe(
+		return this.authService.getCurrentUser().pipe(
 			take(1),
 			filter((user) => !!user),
 			map((user) => query(collectionRef, where("status", "==", FoodStatus.Creating), where("ownerUid", "==", user.uid), limit(1))),

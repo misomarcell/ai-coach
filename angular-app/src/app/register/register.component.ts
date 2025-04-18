@@ -70,7 +70,7 @@ export class RegisterComponent {
 
 		try {
 			this.authService
-				.isLoggedIn$()
+				.isLoggedIn()
 				.pipe(
 					first(),
 					switchMap((isLoggedIn) =>

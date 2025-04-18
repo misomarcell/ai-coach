@@ -18,7 +18,7 @@ export class ProfileMenuComponent {
 	private pwaService = inject(PwaService);
 
 	isInstallable = signal(false);
-	name = toSignal(this.authService.getCurrentUser$().pipe(map((u) => u?.displayName)), { initialValue: "" });
+	name = toSignal(this.authService.getCurrentUser().pipe(map((u) => u?.displayName)), { initialValue: "" });
 
 	constructor() {
 		this.isInstallable.set(this.pwaService.isReadyToInstall());

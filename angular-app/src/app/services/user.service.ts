@@ -32,7 +32,7 @@ export class UserService {
 			return of(activatedRoute.data["userProfile"] as UserProfile);
 		}
 
-		return this.authService.getCurrentUser$().pipe(
+		return this.authService.getCurrentUser().pipe(
 			filter((user) => !!user),
 			take(1),
 			map((user) => doc(this.firestore, "users", user.uid).withConverter(this.userProfileConverter)),

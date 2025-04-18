@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { isAdminGuard } from "./admin.guard";
 import { loggedInGuard, loggedOutGuard } from "./auth.guard";
 import { dailyTargetsResolver } from "./resolvers/daily-targets.resolver";
 import { healthProfileResolver } from "./resolvers/health-profile.resolver";
@@ -73,6 +74,11 @@ export const routes: Routes = [
 						resolve: { userProfile: userProfileResolver }
 					}
 				]
+			},
+			{
+				path: "admin-dashboard",
+				loadComponent: () => import("./admin-dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
+				canActivate: [loggedInGuard, isAdminGuard]
 			},
 			{
 				path: "",
