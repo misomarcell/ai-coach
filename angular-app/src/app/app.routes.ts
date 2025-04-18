@@ -46,7 +46,7 @@ export const routes: Routes = [
 			},
 			{
 				path: "search-food",
-				loadComponent: () => import("./food-list/food-list.component").then((m) => m.FoodListComponent),
+				loadComponent: () => import("./foods-page/foods-page.component").then((m) => m.FoodsPageComponent),
 				canActivate: [loggedInGuard]
 			},
 			{
@@ -86,7 +86,8 @@ export const routes: Routes = [
 					},
 					{
 						path: "food-list",
-						loadComponent: () => import("./admin-dashboard/food-list/food-list.component").then((m) => m.FoodListComponent)
+						loadComponent: () =>
+							import("./admin-dashboard/admin-food-list/admin-food-list.component").then((m) => m.AdminFoodListComponent)
 					}
 				]
 			},

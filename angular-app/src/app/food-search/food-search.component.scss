@@ -1,0 +1,97 @@
+:host {
+	.mat-expansion-panel-header-title {
+		gap: 0.5rem;
+	}
+}
+
+.food-list-container {
+	width: 100%;
+
+	.food-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.pagination-controls {
+		display: grid;
+		grid-template-columns: 125px 1fr 125px;
+		align-items: center;
+		margin-top: 1rem;
+
+		button {
+			width: 100%;
+		}
+
+		.reverse {
+			display: flex;
+			align-items: center;
+			flex-direction: row-reverse;
+
+			.mat-icon {
+				margin: 0 0 0 8px;
+			}
+		}
+
+		.page-info {
+			margin: 0 0.5rem;
+			color: var(--text-secondary-color);
+			text-align: center;
+		}
+	}
+}
+
+.filters-section {
+	margin-bottom: 1.5rem;
+}
+
+.filter-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+
+	mat-form-field {
+		flex: 1;
+		min-width: 150px;
+	}
+}
+
+.list-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	h4 {
+		margin: 0;
+	}
+}
+
+.dietary-filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 0.5rem;
+
+	.dietary-filters-label {
+		font-weight: 500;
+		margin-right: 0.5rem;
+		width: 100%;
+	}
+
+	button {
+		margin-left: auto;
+	}
+}
+
+.loading-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 200px;
+}
+
+.empty-state {
+	width: 100%;
+	text-align: center;
+}

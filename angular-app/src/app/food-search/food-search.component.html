@@ -1,0 +1,111 @@
+<div class="food-list-container">
+	<mat-form-field class="w-100">
+		<input matInput #search placeholder="Search food..." [formControl]="searchControl" class="search-input" />
+		@if (searchControl.value) {
+			<button mat-icon-button matSuffix class="mr-1" (click)="clearSearch()">
+				<mat-icon>close</mat-icon>
+			</button>
+		} @else {
+			<mat-icon matSuffix class="mr-1">search</mat-icon>
+		}
+	</mat-form-field>
+	<div class="filters-section">
+		<mat-expansion-panel>
+			<mat-expansion-panel-header>
+				<mat-panel-title>
+					<mat-icon>filter_list</mat-icon>
+					Filters
+				</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<form [formGroup]="filterForm">
+				<div class="filter-controls">
+					<mat-form-field appearance="outline">
+						<mat-label>Category</mat-label>
+						<mat-select formControlName="category">
+							<mat-option value="">All Categories</mat-option>
+							@for (category of foodCategories; track category) {
+								<mat-option [value]="category">
+									{{ category }}
+								</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				</div>
+
+				<div formGroupName="dietaryFlags" class="dietary-filters">
+					<div class="dietary-filters-label">Dietary Preferences:</div>
+					<mat-checkbox
+						[checked]="filterForm.get('dietaryFlags')?.value.includes('vegan')"
+						(change)="updateDietaryFlags('vegan', $event.checked)"
+					>
+						Vegan
+					</mat-checkbox>
+					<mat-checkbox
+						[checked]="filterForm.get('dietaryFlags')?.value.includes('vegetarian')"
+						(change)="updateDietaryFlags('vegetarian', $event.checked)"
+					>
+						Vegetarian
+					</mat-checkbox>
+					<mat-checkbox
+						[checked]="filterForm.get('dietaryFlags')?.value.includes('gluten-free')"
+						(change)="updateDietaryFlags('gluten-free', $event.checked)"
+					>
+						Gluten free
+					</mat-checkbox>
+					<mat-checkbox
+						[checked]="filterForm.get('dietaryFlags')?.value.includes('keto')"
+						(change)="updateDietaryFlags('keto', $event.checked)"
+					>
+						Keto
+					</mat-checkbox>
+
+					<button mat-button color="accent" (click)="resetFilters()">Reset Filters</button>
+				</div>
+			</form>
+		</mat-expansion-panel>
+	</div>
+
+	@if (isLoading()) {
+		<div class="loading-container">
+			<mat-spinner diameter="40" />
+		</div>
+	} @else if (isResultEmpty()) {
+		<div class="empty-state">
+			<mat-card>
+				<mat-card-content>
+					<p>No food found.</p>
+					<button mat-stroked-button color="primary" routerLink="/add-food"><mat-icon>add</mat-icon> Add New Food</button>
+				</mat-card-content>
+			</mat-card>
+		</div>
+	} @else {
+		<div class="food-list">
+			<div class="list-header">
+				<h4>Foods</h4>
+				<button mat-stroked-button [routerLink]="['/add-food']">
+					<mat-icon>add</mat-icon>
+					Create food
+				</button>
+			</div>
+
+			@for ((food of foods()); track food.id) {
+				<app-food-search-result matRipple [food]="food" (foodClick)="foodSelected.emit($event)" />
+			}
+
+			@if (!isResultEmpty() && totalPages() > 1) {
+				<div class="pagination-controls">
+					<button mat-stroked-button [disabled]="currentPage() === 0" (click)="goToPreviousPage()">
+						<mat-icon>chevron_left</mat-icon>
+						<span>Previous</span>
+					</button>
+					<span class="page-info">Page {{ currentPage() + 1 }} of {{ totalPages() }}</span>
+					<button mat-stroked-button class="reverse" [disabled]="currentPage() === totalPages() - 1" (click)="goToNextPage()">
+						<span>Next</span>
+						<mat-icon>chevron_right</mat-icon>
+					</button>
+				</div>
+			}
+		</div>
+	}
+</div>
