@@ -7,6 +7,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { RouterModule } from "@angular/router";
+import { EditServingFormComponent } from "../../edit-serving-form/edit-serving-form.component";
 import { ServingsService } from "../../servings.service";
 
 @Component({
@@ -39,14 +40,12 @@ export class ServingsGroupComponent {
 	}
 
 	async onServingClick(serving: Serving): Promise<void> {
-		await this.overlayService.open(
-			() => import("../../../servings/edit-serving-form/edit-serving-form.component").then((m) => m.EditServingFormComponent),
-			{
-				data: {
-					serving
-				}
+		console.warn("Serving clicked:", serving);
+		await this.overlayService.open(EditServingFormComponent, {
+			data: {
+				serving
 			}
-		);
+		});
 	}
 
 	getFormattedDate(): string {

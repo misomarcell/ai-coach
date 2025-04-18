@@ -1,5 +1,5 @@
 import { OverlayService } from "@aicoach/overlay";
-import { Food, foodCategories, FoodCategory } from "@aicoach/shared";
+import { foodCategories, FoodCategory } from "@aicoach/shared";
 import { isPlatformServer } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, inject, OnInit, PLATFORM_ID, signal, ViewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
@@ -20,6 +20,7 @@ import { combineLatest, debounceTime, distinctUntilChanged, map, startWith, swit
 import { AuthService } from "../services/auth.service";
 import { FoodSearchResult, FoodSearchService, SearchOptions, SearchResponse } from "../services/food-search.service";
 import { FoodService } from "../services/food.service";
+import { EditServingFormComponent } from "../servings/edit-serving-form/edit-serving-form.component";
 import { FoodSearchResultComponent } from "./food-search-result/food-search-result.component";
 
 @Component({
@@ -179,22 +180,11 @@ export class FoodListComponent implements OnInit, AfterViewInit {
 		this.isLoading.set(false);
 	}
 
-	onFoodClick(foodSearchResult: FoodSearchResult): void {
-		this.foodService.getFood(foodSearchResult.id).subscribe((food) => {
-			if (food) {
-				this.openAddServingDialog(food);
+	async onFoodClick(foodSearchResult: FoodSearchResult): Promise<void> {
+		await this.overlayService.open(EditServingFormComponent, {
+			data: {
+				foodId: foodSearchResult.id
 			}
 		});
-	}
-
-	private async openAddServingDialog(food: Food): Promise<void> {
-		await this.overlayService.open(
-			() => import("../servings/edit-serving-form/edit-serving-form.component").then((m) => m.EditServingFormComponent),
-			{
-				data: {
-					foodId: food.id
-				}
-			}
-		);
 	}
 }

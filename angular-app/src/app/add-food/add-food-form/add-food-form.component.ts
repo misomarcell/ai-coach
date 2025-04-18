@@ -102,14 +102,10 @@ export class AddFoodFormComponent implements OnInit {
 			.pipe(
 				take(1),
 				tap(() => {
-					this.snackBar.open("Food item updated successfully!", "Close", {
-						duration: 3000
-					});
+					this.snackBar.open("Food item updated successfully!", "Close");
 				}),
 				catchError(() => {
-					this.snackBar.open("Error updating food item", "Close", {
-						duration: 3000
-					});
+					this.snackBar.open("Error updating food item", "Close");
 
 					return EMPTY;
 				}),

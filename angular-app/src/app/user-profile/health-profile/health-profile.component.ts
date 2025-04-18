@@ -163,9 +163,7 @@ export class HealthProfileComponent {
 			.pipe(
 				take(1),
 				switchMap(() => {
-					this.snackBar.open("Your profile is updated succesfully", "Close", {
-						duration: 3000
-					});
+					this.snackBar.open("Your profile is updated succesfully", "Close");
 
 					return from(this.router.navigate(["/home"]));
 				}),

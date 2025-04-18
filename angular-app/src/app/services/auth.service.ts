@@ -207,7 +207,6 @@ export class AuthService implements OnDestroy {
 		}
 
 		this.snackBar.open(message, "Close", {
-			duration: 3000,
 			panelClass: ["snackbar-error"]
 		});
 	}

@@ -211,7 +211,7 @@ export class CronometerIntegrationComponent implements OnInit {
 						},
 						() => {
 							this.uploadProgress.set(null);
-							this.snackBar.open("CSV uploaded successfully", "Close", { duration: 3000 });
+							this.snackBar.open("CSV uploaded successfully", "Close");
 							this.resetFileInput();
 
 							this.requestServingsExport("file");

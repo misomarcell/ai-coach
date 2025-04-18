@@ -11,6 +11,7 @@ import { PreloadAllModules, provideRouter, withPreloading } from "@angular/route
 import { provideServiceWorker } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from "@angular/material/snack-bar";
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -22,6 +23,10 @@ export const appConfig: ApplicationConfig = {
 		{
 			provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
 			useValue: { appearance: "outline" }
+		},
+		{
+			provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+			useValue: { duration: 3000, horizontalPosition: "center", verticalPosition: "bottom" }
 		},
 		provideFirestore(() => {
 			const firestore = initializeFirestore(inject(FirebaseApp), { ignoreUndefinedProperties: true });

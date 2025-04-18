@@ -18,7 +18,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgxMaskDirective, provideNgxMask } from "ngx-mask";
-import { filter, switchMap, take, tap } from "rxjs";
+import { filter, finalize, switchMap, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
@@ -213,17 +213,17 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			.pipe(
 				take(1),
 				tap(() => {
-					this.snackService.open("Serving updated successfully!", "Close", { duration: 3000 });
+					this.snackService.open("Serving updated successfully!", "Close");
 				}),
 				switchMap(() => this.router.navigate(["/home"])),
-				tap(() => {
+				finalize(() => {
 					this.isSubmitting.set(false);
 					this.closeOverlay();
 				})
 			)
 			.subscribe({
 				error: (err) => {
-					this.snackService.open("Error updating serving. Please try again.", "Close", { duration: 3000 });
+					this.snackService.open("Error updating serving. Please try again.", "Close");
 					this.isSubmitting.set(false);
 					console.error("Error updating serving:", err);
 				}
@@ -251,7 +251,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 					.delete(serving.id)
 					.pipe(
 						tap(() => {
-							this.snackService.open("Serving deleted successfully!", "Close", { duration: 3000 });
+							this.snackService.open("Serving deleted successfully!", "Close");
 						}),
 						switchMap(() => this.router.navigate(["/home"])),
 						take(1)
@@ -262,7 +262,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 							this.closeOverlay();
 						},
 						error: (err) => {
-							this.snackService.open("Error deleting serving. Please try again.", "Close", { duration: 3000 });
+							this.snackService.open("Error deleting serving. Please try again.", "Close");
 							this.isSubmitting.set(false);
 							console.error("Error deleting serving:", err);
 						}
@@ -301,7 +301,11 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	closeOverlay(): void {
-		this.overlayRef?.close(false);
+		if (!this.overlayRef) {
+			console.error("Overlay reference is not available.");
+		}
+
+		this.overlayRef.close();
 	}
 
 	private addServing(food: ServingFood, servingData?: Partial<Serving>): void {
@@ -322,17 +326,17 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			.pipe(
 				take(1),
 				tap(() => {
-					this.snackService.open("Serving added successfully!", "Close", { duration: 3000 });
+					this.snackService.open("Serving added successfully!", "Close");
 				}),
 				switchMap(() => this.router.navigate(["/home"])),
-				tap(() => {
+				finalize(() => {
 					this.isSubmitting.set(false);
 					this.closeOverlay();
 				})
 			)
 			.subscribe({
 				error: (err) => {
-					this.snackService.open("Error adding serving. Please try again.", "Close", { duration: 3000 });
+					this.snackService.open("Error adding serving. Please try again.", "Close");
 					this.isSubmitting.set(false);
 					console.error("Error adding serving:", err);
 				}

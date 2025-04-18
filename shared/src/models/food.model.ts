@@ -123,6 +123,7 @@ export interface Nutrition {
 export interface ServingSize {
 	name: string;
 	gramWeight?: number;
+	isAiEstimate?: boolean;
 }
 
 export interface ProductImage {

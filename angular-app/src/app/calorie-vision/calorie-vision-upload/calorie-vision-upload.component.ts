@@ -151,9 +151,7 @@ export class CalorieVisionUploadComponent {
 					this.loading = false;
 					this.isExpanded = false;
 
-					this.snackBar.open("Image uploaded successfully! Waiting for analysis...", "Close", {
-						duration: 3000
-					});
+					this.snackBar.open("Image uploaded successfully! Waiting for analysis...", "Close");
 
 					this.uploadComplete.emit({
 						fileName: fileName,

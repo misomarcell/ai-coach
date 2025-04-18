@@ -56,6 +56,10 @@ body {
 			background-color: var(--mat-sys-secondary-container);
 		}
 	}
+
+	.mat-mdc-snack-bar-handset {
+		margin-bottom: 5rem !important;
+	}
 }
 
 @include mat.typography-hierarchy($theme);
