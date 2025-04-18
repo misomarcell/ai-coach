@@ -30,6 +30,10 @@ export class ProfileMenuComponent {
 		}
 	}
 
+	onFeedbackClick() {
+		window.open("https://forms.gle/2JqQcvhc7qUPnTPGA", "_blank");
+	}
+
 	onLogoutClick() {
 		this.authService.logout();
 	}
