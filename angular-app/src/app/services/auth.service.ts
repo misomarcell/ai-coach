@@ -30,6 +30,7 @@ import { map, Observable, startWith, tap } from "rxjs";
 export class AuthService implements OnDestroy {
 	private snackBar = inject(MatSnackBar);
 	private firestore = inject(Firestore);
+	private router = inject(Router);
 
 	private readonly auth = inject(Auth);
 	protected readonly authState = authState(this.auth);
@@ -50,7 +51,7 @@ export class AuthService implements OnDestroy {
 					: tap()
 		);
 
-	constructor(private router: Router) {
+	constructor() {
 		if (isPlatformBrowser(inject(PLATFORM_ID))) {
 			this.unsubscribeFromOnIdTokenChanged = onIdTokenChanged(this.auth, async (user) => {
 				if (user) {
@@ -58,6 +59,7 @@ export class AuthService implements OnDestroy {
 					cookies.set("__session", idToken);
 				} else {
 					cookies.remove("__session");
+					this.router.navigate(["login"]);
 				}
 			});
 
@@ -71,6 +73,7 @@ export class AuthService implements OnDestroy {
 						cookies.set("__session", idToken);
 					} else {
 						cookies.remove("__session");
+						this.router.navigate(["login"]);
 					}
 				},
 				async () => {
@@ -78,6 +81,7 @@ export class AuthService implements OnDestroy {
 						cookies.set("__session", priorCookieValue);
 					} else {
 						cookies.remove("__session");
+						this.router.navigate(["login"]);
 					}
 				}
 			);
