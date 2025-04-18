@@ -1,5 +1,6 @@
 import { FoodDb, FoodStatus } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 export class FoodService {
 	async getUserFoodDocument(uid: string, foodId: string): Promise<FoodDb | undefined> {
@@ -42,6 +43,22 @@ export class FoodService {
 		}
 
 		await documentRef.update({ status });
+	}
+
+	async increaseAddedCounter(foodId: string): Promise<void> {
+		const documentRef = firestore().doc(`foods/${foodId}`);
+
+		await documentRef.update({
+			"counters.added": FieldValue.increment(1)
+		});
+	}
+
+	async decreaseAddedCounter(foodId: string): Promise<void> {
+		const documentRef = firestore().doc(`foods/${foodId}`);
+
+		await documentRef.update({
+			"counters.added": FieldValue.increment(-1)
+		});
 	}
 }
 

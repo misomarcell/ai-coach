@@ -8,6 +8,8 @@ import { credentialsCreated } from "./triggers/credential-created.trigger";
 import { exportRequestCreated } from "./triggers/export-request-created.trigger";
 import { healthProfileWrittenTrigger } from "./triggers/health-profile-written.trigger";
 import { scheduledRun } from "./triggers/scheduler.trigger";
+import { servingCreatedTrigger } from "./triggers/serving-created.trigger";
+import { servingDeletedTrigger } from "./triggers/serving-deleted.trigger";
 import { storageTrigger } from "./triggers/storage.trigger";
 
 const FIREBASE_APP = initializeApp();
@@ -24,3 +26,5 @@ exports.api = expressApiHandler;
 exports.scheduler = scheduledRun;
 exports.storage = storageTrigger;
 exports.healthProfileWritten = healthProfileWrittenTrigger;
+exports.servingCreatedTrigger = servingCreatedTrigger;
+exports.servingDeletedTrigger = servingDeletedTrigger;
