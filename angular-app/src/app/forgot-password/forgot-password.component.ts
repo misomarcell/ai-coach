@@ -8,10 +8,20 @@ import { ActivatedRoute, RouterLink } from "@angular/router";
 import { MatIconModule } from "@angular/material/icon";
 import { from, tap } from "rxjs";
 import { passwordMatchValidator } from "../services/form.service";
+import { PageTitleComponent } from "../page-title/page-title.component";
 
 @Component({
 	selector: "app-forgot-password",
-	imports: [RouterLink, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+	imports: [
+		PageTitleComponent,
+		RouterLink,
+		FormsModule,
+		ReactiveFormsModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatButtonModule,
+		MatIconModule
+	],
 	templateUrl: "./forgot-password.component.html",
 	styleUrl: "./forgot-password.component.scss"
 })

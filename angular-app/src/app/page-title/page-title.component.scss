@@ -1,4 +1,8 @@
 :host {
+	display: block;
+	--mdc-fab-small-container-color: var(--mat-sys-surface-bright);
+	--mat-fab-small-foreground-color: var(--mat-sys-on-surface);
+
 	.title {
 		font-size: 1.2rem;
 		line-height: 1.2;
