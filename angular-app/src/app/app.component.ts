@@ -1,7 +1,9 @@
-import { Component } from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
+import { Component, inject, PLATFORM_ID } from "@angular/core";
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { RouterOutlet } from "@angular/router";
+import { PwaService } from "./services/pwa.service";
 
 const ICONS = [
 	"telegram",
@@ -36,9 +38,19 @@ const ICONS = [
 	styleUrl: "./app.component.scss"
 })
 export class AppComponent {
+	private platformId = inject(PLATFORM_ID);
+	private pwaService = inject(PwaService);
+
 	constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
 		for (const icon of ICONS) {
 			iconRegistry.addSvgIcon(icon, sanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${icon}.svg`));
+		}
+
+		if (isPlatformBrowser(this.platformId)) {
+			window.addEventListener("beforeinstallprompt", (event) => {
+				event.preventDefault();
+				this.pwaService.registerPwaInstallPrompt(event);
+			});
 		}
 	}
 }

@@ -1,10 +1,11 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterModule } from "@angular/router";
 import { map } from "rxjs";
 import { AuthService } from "../../services/auth.service";
+import { PwaService } from "../../services/pwa.service";
 
 @Component({
 	selector: "app-profile-menu",
@@ -14,8 +15,20 @@ import { AuthService } from "../../services/auth.service";
 })
 export class ProfileMenuComponent {
 	private authService = inject(AuthService);
+	private pwaService = inject(PwaService);
 
+	isInstallable = signal(false);
 	name = toSignal(this.authService.getCurrentUser$().pipe(map((u) => u?.displayName)), { initialValue: "" });
+
+	constructor() {
+		this.isInstallable.set(this.pwaService.isReadyToInstall());
+	}
+
+	onInstallClick() {
+		if (this.pwaService.isReadyToInstall()) {
+			this.pwaService.promptInstallPwa();
+		}
+	}
 
 	onLogoutClick() {
 		this.authService.logout();
