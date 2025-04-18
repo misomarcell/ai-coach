@@ -31,6 +31,7 @@ export interface SearchOptions {
 	filters?: SearchFilters;
 	page?: number;
 	hitsPerPage?: number;
+	skipOwnerChecks?: boolean;
 }
 
 export interface SearchResponse<T> {
@@ -61,7 +62,11 @@ export class FoodSearchService {
 		};
 
 		const filterStrings: string[] = [];
-		filterStrings.push(options?.filters?.ownerUid ? `(isPublic:true OR ownerUid:"${options.filters.ownerUid}")` : "(isPublic:true)");
+		if (!options?.skipOwnerChecks) {
+			filterStrings.push(
+				options?.filters?.ownerUid ? `(isPublic:true OR ownerUid:"${options.filters.ownerUid}")` : "(isPublic:true)"
+			);
+		}
 
 		if (options?.filters?.category) {
 			filterStrings.push(`category:"${options.filters.category}"`);

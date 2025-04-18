@@ -1,7 +1,6 @@
-import { OverlayService } from "@aicoach/overlay";
 import { foodCategories, FoodCategory } from "@aicoach/shared";
 import { isPlatformServer } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, inject, OnInit, output, PLATFORM_ID, signal, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, inject, input, OnInit, output, PLATFORM_ID, signal, ViewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -52,19 +51,20 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 	searchControl = new FormControl<string>("");
 	foodCategories = foodCategories;
 
-	private pageSize = 10;
 	private formBuilder = inject(FormBuilder);
 	private authService = inject(AuthService);
 	private platformId = inject(PLATFORM_ID);
 	private activatedRoute = inject(ActivatedRoute);
 	private foodSearchService = inject(FoodSearchService);
-	private overlayService = inject(OverlayService);
+
+	pageSize = input(10);
+	adminSearch = input(false);
+	foodSelected = output<FoodSearchResult>();
 
 	currentPage = signal<number>(0);
 	totalPages = signal<number>(0);
 	totalHits = signal<number>(0);
 	currentUid = toSignal(this.authService.uid);
-	foodSelected = output<FoodSearchResult>();
 
 	@ViewChild("search") searchInput: ElementRef<HTMLInputElement> | undefined;
 	constructor() {
@@ -134,7 +134,8 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 	buildSearchOptions(filterValues: any): SearchOptions {
 		const options: SearchOptions = {
 			page: this.currentPage(),
-			hitsPerPage: this.pageSize,
+			hitsPerPage: this.pageSize(),
+			skipOwnerChecks: this.adminSearch(),
 			filters: {
 				ownerUid: this.currentUid() ?? "Unknown",
 				category: filterValues.category as FoodCategory,
