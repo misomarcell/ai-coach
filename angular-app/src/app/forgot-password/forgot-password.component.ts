@@ -68,9 +68,11 @@ export class ForgotPasswordComponent implements OnInit {
 			return;
 		}
 
-		await this.authService.resetPassword(this.emailControl.value!);
-		this.passwordResetEmail.set(this.emailControl.value!);
-		this.currentStep.set("email-sent");
+		const result = await this.authService.resetPassword(this.emailControl.value!);
+		if (!result?.error) {
+			this.passwordResetEmail.set(this.emailControl.value!);
+			this.currentStep.set("email-sent");
+		}
 	}
 
 	async onChangePasswordClick() {

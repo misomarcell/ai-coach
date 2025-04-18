@@ -150,15 +150,13 @@ export class AuthService implements OnDestroy {
 			.catch((error) => ({ error }));
 	}
 
-	async resetPassword(email: string): Promise<void> {
+	async resetPassword(email: string): Promise<{ error?: any } | void> {
 		try {
 			await sendPasswordResetEmail(this.auth, email);
-			this.snackBar.open("Password reset email sent successfully.", "Close", {
-				duration: 3000,
-				panelClass: ["snackbar-success"]
-			});
 		} catch (error) {
 			this.handleAuthError(error);
+
+			return { error };
 		}
 	}
 

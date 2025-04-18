@@ -1,6 +1,6 @@
 <div class="text-center mb-2">
 	<h3>KombuchAI</h3>
-	<button mat-button type="button" [routerLink]="['/login']">Already have an account? Sign in!</button>
+	<p>Unlock a smarter way to optimize your nutrition today!</p>
 </div>
 <form class="d-flex flex-column p-2" [formGroup]="formGroup" (submit)="onRegister()">
 	<mat-form-field class="w-100">
@@ -75,4 +75,6 @@
 	<button mat-flat-button class="btn-github" type="button" (click)="onProviderLogin('github')" [disabled]="isRegistering()">
 		Register with GitHub
 	</button>
+
+	<button mat-button type="button" [routerLink]="['/login']">Already have an account? Sign in!</button>
 </div>
