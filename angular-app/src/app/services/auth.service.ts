@@ -4,12 +4,15 @@ import {
 	Auth,
 	authState,
 	beforeAuthStateChanged,
+	confirmPasswordReset,
 	createUserWithEmailAndPassword,
 	getRedirectResult,
 	GithubAuthProvider,
 	GoogleAuthProvider,
 	onIdTokenChanged,
+	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
+	verifyPasswordResetCode,
 	signInWithPopup,
 	updateProfile,
 	User,
@@ -139,6 +142,30 @@ export class AuthService implements OnDestroy {
 		}
 
 		return credential;
+	}
+
+	async getResetPasswordEmail(code: string): Promise<{ email?: string; error?: any }> {
+		return verifyPasswordResetCode(this.auth, code)
+			.then((email) => ({ email }))
+			.catch((error) => ({ error }));
+	}
+
+	async resetPassword(email: string): Promise<void> {
+		try {
+			await sendPasswordResetEmail(this.auth, email, {
+				url: "http://localhost:4200/forgot-password?step=new-password"
+			});
+			this.snackBar.open("Password reset email sent successfully.", "Close", {
+				duration: 3000,
+				panelClass: ["snackbar-success"]
+			});
+		} catch (error) {
+			this.handleAuthError(error);
+		}
+	}
+
+	async updatePassword(code: string, email: string): Promise<void> {
+		await confirmPasswordReset(this.auth, code, email);
 	}
 
 	async logout() {

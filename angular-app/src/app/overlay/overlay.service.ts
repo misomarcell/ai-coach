@@ -41,7 +41,6 @@ export class OverlayService {
 		}
 
 		const componentType = await componentTypePromise;
-
 		const positionStrategy: GlobalPositionStrategy = this.overlay.position().global().centerHorizontally().centerVertically();
 		const overlayConfig = new OverlayConfig({
 			positionStrategy,

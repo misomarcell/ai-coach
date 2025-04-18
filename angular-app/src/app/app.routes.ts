@@ -95,6 +95,11 @@ export const routes: Routes = [
 		canActivate: [loggedOutGuard]
 	},
 	{
+		path: "forgot-password",
+		loadComponent: () => import("./forgot-password/forgot-password.component").then((m) => m.ForgotPasswordComponent),
+		canActivate: [loggedOutGuard]
+	},
+	{
 		path: "**",
 		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
 	}

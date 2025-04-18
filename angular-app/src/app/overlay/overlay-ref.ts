@@ -35,6 +35,6 @@ export class FullscreenOverlayRef<T = any, R = any> {
 	 */
 	close(result?: R): void {
 		this._result = result;
-		this.overlayRef.dispose(); // Dispose fully cleans up the overlay
+		this.overlayRef.dispose();
 	}
 }

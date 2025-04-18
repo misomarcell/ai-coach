@@ -1,14 +1,5 @@
 import { Component, inject, signal } from "@angular/core";
-import {
-	AbstractControl,
-	FormControl,
-	FormGroup,
-	FormsModule,
-	ReactiveFormsModule,
-	ValidationErrors,
-	ValidatorFn,
-	Validators
-} from "@angular/forms";
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -18,17 +9,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Router, RouterLink } from "@angular/router";
 import { first, from, switchMap } from "rxjs";
 import { AuthService } from "../services/auth.service";
-
-export function passwordMatchValidator(passwordField: string, confirmField: string): ValidatorFn {
-	return (formGroup: AbstractControl): ValidationErrors | null => {
-		const password = formGroup.get(passwordField);
-		const confirm = formGroup.get(confirmField);
-
-		if (!password || !confirm) return null;
-
-		return password.value === confirm.value ? null : { passwordMismatch: true };
-	};
-}
+import { passwordMatchValidator } from "../services/form.service";
 
 @Component({
 	selector: "app-register",
