@@ -11,8 +11,20 @@
 	"start_url": "/home/",
 	"screenshots": [
 		{
-			"src": "screenshots/home_h.webp",
-			"sizes": "720x1558",
+			"src": "screenshots/1.webp",
+			"sizes": "585x1266",
+			"type": "image/webp",
+			"label": "Home screen showing main navigation and featured content"
+		},
+		{
+			"src": "screenshots/2.webp",
+			"sizes": "585x1266",
+			"type": "image/webp",
+			"label": "Home screen showing main navigation and featured content"
+		},
+		{
+			"src": "screenshots/3.webp",
+			"sizes": "585x1266",
 			"type": "image/webp",
 			"label": "Home screen showing main navigation and featured content"
 		},

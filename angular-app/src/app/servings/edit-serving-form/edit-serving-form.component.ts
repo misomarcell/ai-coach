@@ -325,9 +325,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			)
 			.pipe(
 				take(1),
-				tap(() => {
-					this.snackService.open("Serving added successfully!", "Close");
-				}),
+				tap(() => this.snackService.open("Serving added successfully!", "Close")),
 				switchMap(() => this.router.navigate(["/home"])),
 				finalize(() => {
 					this.isSubmitting.set(false);
