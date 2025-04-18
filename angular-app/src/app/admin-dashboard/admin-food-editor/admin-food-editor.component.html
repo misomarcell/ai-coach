@@ -1,0 +1,71 @@
+<div class="admin-food-editor">
+	<div class="header">
+		<h4>Edit {{ food()?.name }}</h4>
+		<button mat-icon-button (click)="close()" class="close-button">
+			<mat-icon>close</mat-icon>
+		</button>
+	</div>
+
+	@if (isLoading()) {
+		<div class="loading-container">
+			<mat-spinner diameter="40" />
+		</div>
+	} @else if (food()) {
+		<div class="admin-food-container">
+			<div class="admin-section">
+				<h4>Admin Settings</h4>
+				<form [formGroup]="adminForm" class="admin-form">
+					<div class="form-row">
+						<mat-checkbox formControlName="isApproved" color="primary">Is Approved</mat-checkbox>
+					</div>
+					<div class="form-row">
+						<mat-checkbox formControlName="isPublic" color="primary">Is Public</mat-checkbox>
+					</div>
+					<div class="form-row">
+						<mat-form-field appearance="outline">
+							<mat-label>Status</mat-label>
+							<mat-select formControlName="status">
+								@for (statusValue of foodStatusValues; track statusValue) {
+									<mat-option [value]="statusValue">{{ statusValue }}</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+					</div>
+					<button mat-stroked-button (click)="saveAdminChanges()" [disabled]="adminForm.invalid">Save Admin Settings</button>
+				</form>
+			</div>
+
+			@if (food()?.images?.length) {
+				<div class="images-section">
+					<h4>Product Images</h4>
+					<div class="images-gallery">
+						@for (image of food()!.images; track image.url) {
+							<div class="image-item">
+								<img [src]="image.url" [alt]="image.type + ' image'" />
+								<span class="image-type">{{ image.type }}</span>
+							</div>
+						}
+					</div>
+				</div>
+			}
+
+			<div class="serving-sizes-section">
+				<h4>Serving Sizes</h4>
+				<button mat-stroked-button class="w-100 mt-2" (click)="generateServingSizes()">
+					<mat-icon>auto_awesome</mat-icon>
+					Generate AI Serving Sizes
+				</button>
+			</div>
+
+			<div class="food-form-section">
+				<h4>Food Details</h4>
+				<app-add-food-form [food]="food()" />
+			</div>
+		</div>
+	} @else {
+		<div class="error-container">
+			<p>Food not found</p>
+			<button mat-raised-button color="primary" (click)="close()">Close</button>
+		</div>
+	}
+</div>
