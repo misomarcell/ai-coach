@@ -22,7 +22,7 @@ import { doc, Firestore, setDoc } from "@angular/fire/firestore";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import cookies from "js-cookie";
-import { map, Observable, startWith, tap } from "rxjs";
+import { from, map, Observable, of, startWith, switchMap, take, tap } from "rxjs";
 
 @Injectable({
 	providedIn: "root"
@@ -106,6 +106,14 @@ export class AuthService implements OnDestroy {
 		return getRedirectResult(this.auth);
 	}
 
+	isAdmin(): Observable<boolean> {
+		return authState(this.auth).pipe(
+			take(1),
+			switchMap((user) => (user ? from(user?.getIdTokenResult()) : of(null))),
+			map((idTokenResult) => !!idTokenResult?.claims["admin"])
+		);
+	}
+
 	async register(email: string, password: string, displayName: string): Promise<UserCredential | undefined> {
 		try {
 			const credential = await createUserWithEmailAndPassword(this.auth, email, password);
@@ -170,9 +178,7 @@ export class AuthService implements OnDestroy {
 	}
 
 	async logout() {
-		cookies.remove("__session");
-		await this.auth.signOut();
-		await this.router.navigate(["login"]);
+		await this.auth.signOut().then(() => this.router.navigate(["login"]));
 	}
 
 	private addDisplayName(uid: string, displayName: string): Promise<void> {

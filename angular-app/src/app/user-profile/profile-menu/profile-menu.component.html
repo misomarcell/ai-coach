@@ -16,6 +16,12 @@
 	<mat-icon>bug_report</mat-icon>
 	<span>Report a problem</span>
 </div>
+@if (isAdmin()) {
+	<div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['../admin-dashboard']">
+		<mat-icon>shield</mat-icon>
+		<span>Admin dashboard</span>
+	</div>
+}
 @if (isInstallable()) {
 	<div matRipple class="menu-item bold d-flex gap-2 p-2" (click)="onInstallClick()">
 		<mat-icon>get_app</mat-icon>

@@ -78,7 +78,17 @@ export const routes: Routes = [
 			{
 				path: "admin-dashboard",
 				loadComponent: () => import("./admin-dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
-				canActivate: [loggedInGuard, isAdminGuard]
+				canActivate: [loggedInGuard, isAdminGuard],
+				children: [
+					{
+						path: "",
+						loadComponent: () => import("./admin-dashboard/admin-menu/admin-menu.component").then((m) => m.AdminMenuComponent)
+					},
+					{
+						path: "food-list",
+						loadComponent: () => import("./admin-dashboard/food-list/food-list.component").then((m) => m.FoodListComponent)
+					}
+				]
 			},
 			{
 				path: "",
