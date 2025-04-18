@@ -76,25 +76,23 @@ export const nutritionTypes = [
 export type NutritionType = (typeof nutritionTypes)[number];
 
 export const foodCategories = [
-	"Baby Foods",
-	"Baked Products",
 	"Fruits",
-	"Fish",
 	"Vegetables",
 	"Grains & Cereals",
-	"Restaurant Foods",
-	"Proteins",
-	"Dairy & Alternatives",
+	"Baked Products",
 	"Legumes & Pulses",
 	"Nuts & Seeds",
+	"Proteins",
+	"Fish",
+	"Dairy & Alternatives",
 	"Fats & Oils",
-	"Sweets & Desserts",
-	"Beverages",
-	"Soups and Sauces",
-	"Spices and Herbs",
-	"Snacks & Processed Foods",
-	"Supplements",
+	"Sweets & Snacks",
 	"Mixed Dishes",
+	"Soups and Sauces",
+	"Beverages",
+	"Spices and Herbs",
+	"Baby Foods",
+	"Supplements",
 	"Other"
 ] as const;
 export type FoodCategory = (typeof foodCategories)[number];

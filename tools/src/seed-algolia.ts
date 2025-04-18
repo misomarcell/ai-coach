@@ -57,9 +57,9 @@ async function pushDocumentsInBatches(
 		}
 
 		await client.saveObjects({ indexName, objects: documents });
-		console.log(`Pushed ${documents.length} documents to Algolia (total: ${totalPushed + documents.length})`);
 
 		totalPushed += documents.length;
+		console.log(`Pushed ${documents.length} documents to Algolia (total: ${totalPushed})`);
 		lastDoc = snapshot.docs[snapshot.docs.length - 1];
 	}
 }

@@ -11,7 +11,7 @@ import {
 } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
 
-const foodCategoryMap: Record<string, FoodCategory> = {
+export const foodCategoryMap: Record<string, FoodCategory> = {
 	"Baby Foods": "Baby Foods",
 	"Baked Products": "Baked Products",
 	"Beef Products": "Proteins",
@@ -20,7 +20,7 @@ const foodCategoryMap: Record<string, FoodCategory> = {
 	"Cereal Grains and Pasta": "Grains & Cereals",
 	"Dairy and Egg Products": "Dairy & Alternatives",
 	"Ethnic Foods": "Mixed Dishes",
-	"Fast Foods": "Snacks & Processed Foods",
+	"Fast Foods": "Sweets & Snacks",
 	"Fats and Oils": "Fats & Oils",
 	"Finfish and Shellfish Products": "Fish",
 	"Fruits and Fruit Juices": "Fruits",
@@ -30,15 +30,15 @@ const foodCategoryMap: Record<string, FoodCategory> = {
 	"Nut and Seed Products": "Nuts & Seeds",
 	"Pork Products": "Proteins",
 	"Poultry Products": "Proteins",
-	"Restaurant Foods": "Restaurant Foods",
+	"Restaurant Foods": "Mixed Dishes",
 	"Sausages and Luncheon Meats": "Proteins",
-	"Snacks": "Snacks & Processed Foods",
+	"Snacks": "Sweets & Snacks",
 	"Soups, Sauces, and Gravies": "Soups and Sauces",
 	"Spices and Herbs": "Spices and Herbs",
 	"Supplements": "Supplements",
-	"Sweets": "Sweets & Desserts",
+	"Sweets": "Sweets & Snacks",
 	"Vegetables and Vegetable Products": "Vegetables"
-};
+} as const;
 
 const servingCategory: Record<string, ServingCategory> = {
 	Breakfast: "Breakfast",

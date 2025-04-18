@@ -6,7 +6,8 @@
 	"scripts": {
 		"seed-algolia": "npx tsx src/seed-algolia.ts",
 		"import:ciqual": "npx tsx src/import-tools/ciqual.ts",
-		"import:usda": "npx tsx src/import-tools/usda.ts"
+		"import:usda": "npx tsx src/import-tools/usda.ts",
+		"import:cofid": "npx tsx src/import-tools/cofid.ts"
 	},
 	"keywords": [],
 	"author": "",
