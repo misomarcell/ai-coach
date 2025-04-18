@@ -30,6 +30,7 @@ interface PrefillOptions {
 	servingSize?: ServingSize;
 	category?: ServingCategory;
 	created?: Date;
+	comment?: string;
 }
 
 @Component({
@@ -68,6 +69,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	servingCategories = servingCategories;
 	servingSizes: ServingSize[] = [];
 
+	isOpenComment = signal<boolean>(false);
 	isSubmitting = signal<boolean>(false);
 	nutritions = signal<Nutrition[]>([]);
 	food = signal<Food | ServingFood | undefined>(undefined);
@@ -96,7 +98,8 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			servingSize: [[], Validators.required],
 			date: [today, Validators.required],
 			time: [this.getFormattedTime(today), [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
-			category: [this.getDefaultCategory(), Validators.required]
+			category: [this.getDefaultCategory(), Validators.required],
+			comment: [""]
 		});
 
 		this.formSubscription = this.form.valueChanges.subscribe(() => {
@@ -161,10 +164,15 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			servingSize = this.servingSizes[0];
 		}
 
+		if (options?.comment) {
+			this.isOpenComment.set(true);
+		}
+
 		this.form.patchValue({
 			amount: options?.servingAmount || 100,
 			servingSize: servingSize,
 			category: options?.category || this.getDefaultCategory(),
+			comment: options?.comment || "",
 			date: createdDate,
 			time: formattedTime
 		});
@@ -196,6 +204,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			servingSize: formValues.servingSize,
 			servingAmount: formValues.amount,
 			category: formValues.category as ServingCategory,
+			comment: formValues.comment,
 			created: createdTime || new Date()
 		};
 
@@ -282,10 +291,10 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 
 				const formValues = this.form.getRawValue();
 				this.addServing(serving.food, {
-					amount: formValues.amount,
+					servingAmount: formValues.amount,
 					servingSize: formValues.servingSize,
 					category: formValues.category,
-					date: new Date()
+					created: new Date()
 				});
 			}
 		});
@@ -295,17 +304,18 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		this.overlayRef?.close(false);
 	}
 
-	private addServing(food: ServingFood, options?: { amount?: number; servingSize?: any; category?: ServingCategory; date?: Date }): void {
+	private addServing(food: ServingFood, servingData?: Partial<Serving>): void {
 		const formValues = this.form.getRawValue();
-		const selectedDate = options?.date || this.getSelectedDate();
+		const selectedDate = servingData?.created || this.getSelectedDate();
 
 		this.servingsService
 			.addServing(
 				{
 					food,
-					category: options?.category || formValues.category,
-					servingSize: options?.servingSize || formValues.servingSize,
-					servingAmount: options?.amount || formValues.amount
+					category: servingData?.category || formValues.category,
+					servingSize: servingData?.servingSize || formValues.servingSize,
+					servingAmount: servingData?.servingAmount || formValues.amount,
+					comment: formValues.comment
 				},
 				selectedDate
 			)

@@ -10,7 +10,7 @@
 		</button>
 	</div>
 
-	<form [formGroup]="form" class="food-form m-2">
+	<form [formGroup]="form" class="food-form ml-2 mr-2 mt-3">
 		<div class="form-row">
 			<mat-form-field>
 				<mat-label>Amount</mat-label>
@@ -52,7 +52,7 @@
 			</mat-form-field>
 		</div>
 
-		<div class="form-row full-width">
+		<div class="form-row">
 			<mat-form-field>
 				<mat-label>Category</mat-label>
 				<mat-select formControlName="category">
@@ -61,7 +61,17 @@
 					}
 				</mat-select>
 			</mat-form-field>
+			<button mat-icon-button class="mt-1" (click)="isOpenComment.set(!isOpenComment())"><mat-icon>edit_note</mat-icon></button>
 		</div>
+
+		@if (isOpenComment()) {
+			<div class="form-row">
+				<mat-form-field>
+					<mat-label>Comment</mat-label>
+					<textarea matInput formControlName="comment" rows="1" maxlength="100"></textarea>
+				</mat-form-field>
+			</div>
+		}
 	</form>
 
 	@if (_serving?.isEditable === false) {

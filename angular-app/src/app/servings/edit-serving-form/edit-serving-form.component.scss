@@ -18,24 +18,21 @@
 		font-size: 1.2rem;
 		line-height: 1.2;
 		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
 	}
 }
 
 .form-row {
 	display: flex;
 	gap: 1rem;
-	padding: 0.5rem 0;
 
-	mat-form-field {
+	.mat-mdc-form-field {
 		flex: 1;
-	}
-
-	&.full-width {
-		flex-direction: column;
-
-		mat-form-field {
-			width: 100%;
-		}
 	}
 }
 
@@ -44,6 +41,7 @@
 	background: var(--mat-app-background-color);
 	position: fixed;
 	max-width: 800px;
+	max-height: 3rem;
 	margin: 0 auto;
 	padding: 1rem;
 	z-index: 1;
