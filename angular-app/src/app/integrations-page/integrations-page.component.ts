@@ -4,9 +4,10 @@ import { ActivatedRoute } from "@angular/router";
 import { UserService } from "../services/user.service";
 import { CronometerIntegrationComponent } from "./cronometer-integration/cronometer-integration.component";
 import { TelegramIntegrationComponent } from "./telegram-integration/telegram-integration.component";
+import { PageTitleComponent } from "../page-title/page-title.component";
 
 @Component({
-	imports: [CronometerIntegrationComponent, TelegramIntegrationComponent],
+	imports: [PageTitleComponent, CronometerIntegrationComponent, TelegramIntegrationComponent],
 	templateUrl: "./integrations-page.component.html",
 	styleUrl: "./integrations-page.component.scss"
 })

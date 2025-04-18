@@ -25,11 +25,13 @@ import { catchError, EMPTY, from, map, of, startWith, switchMap, take, tap } fro
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { HealthProfileService } from "../../services/health-profile.service";
 import { DIET_GOALS, DIETARY_RESTRICTIONS, HEALTH_CONDITIONS } from "./health-options";
+import { PageTitleComponent } from "../../page-title/page-title.component";
 
 @Component({
 	selector: "app-health-profile",
 	imports: [
 		DecimalPipe,
+		PageTitleComponent,
 		ReactiveFormsModule,
 		FormsModule,
 		MatFormFieldModule,

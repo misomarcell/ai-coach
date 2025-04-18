@@ -64,14 +64,15 @@ export const routes: Routes = [
 						loadComponent: () =>
 							import("./user-profile/health-profile/health-profile.component").then((m) => m.HealthProfileComponent),
 						resolve: { healthProfile: healthProfileResolver }
+					},
+					{
+						path: "integrations",
+						loadComponent: () =>
+							import("./integrations-page/integrations-page.component").then((m) => m.IntegrationsPageComponent),
+						canActivate: [loggedInGuard],
+						resolve: { userProfile: userProfileResolver }
 					}
 				]
-			},
-			{
-				path: "integrations",
-				loadComponent: () => import("./integrations-page/integrations-page.component").then((m) => m.IntegrationsPageComponent),
-				canActivate: [loggedInGuard],
-				resolve: { userProfile: userProfileResolver }
 			},
 			{
 				path: "",
