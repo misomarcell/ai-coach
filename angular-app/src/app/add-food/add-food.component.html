@@ -4,7 +4,8 @@
 	@let _analysisResult = analysisResult();
 	<div class="add-food-container">
 		@if (_foodId && _analysisResult?.status === "prefilled") {
-			<app-add-food-form [food]="analysisResult()" />
+			<app-page-title title="Create new food" class="mb-2" />
+			<app-edit-food-form [food]="analysisResult()" />
 		} @else if (_analysisResult?.status === "invalid") {
 			<div class="error-message">
 				<mat-icon>error</mat-icon>

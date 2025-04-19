@@ -1,14 +1,14 @@
 import { Food, FoodStatus } from "@aicoach/shared";
-import { CommonModule } from "@angular/common";
 import { Component, DestroyRef, effect, inject, OnInit, signal } from "@angular/core";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { AddFoodFormComponent } from "./add-food-form/add-food-form.component";
 import { LabelAnalyzerComponent } from "./label-analyzer/label-analyzer.component";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { FoodService } from "../services/food.service";
 import { ActivatedRoute } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { EditFoodFormComponent } from "../edit-food-form/edit-food-form.component";
+import { PageTitleComponent } from "../page-title/page-title.component";
 
 export enum LoadingStatus {
 	InitDocument = "InitDocument",
@@ -18,7 +18,7 @@ export enum LoadingStatus {
 
 @Component({
 	standalone: true,
-	imports: [CommonModule, LabelAnalyzerComponent, AddFoodFormComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+	imports: [PageTitleComponent, LabelAnalyzerComponent, EditFoodFormComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
 	templateUrl: "./add-food.component.html",
 	styleUrl: "./add-food.component.scss"
 })

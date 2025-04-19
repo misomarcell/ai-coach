@@ -9,9 +9,9 @@ import {
 	nutritionUnits
 } from "@aicoach/shared";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
-import { CommonModule } from "@angular/common";
+import { TitleCasePipe } from "@angular/common";
 import { Component, inject, input, OnInit, signal } from "@angular/core";
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -25,13 +25,14 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { catchError, EMPTY, finalize, from, switchMap, take, tap } from "rxjs";
-import { BarcodeScannerService } from "../../services/barcode-scanner.service";
-import { FoodService } from "../../services/food.service";
+import { BarcodeScannerService } from "../services/barcode-scanner.service";
+import { FoodService } from "../services/food.service";
 
 @Component({
-	selector: "app-add-food-form",
+	selector: "app-edit-food-form",
 	imports: [
-		CommonModule,
+		TitleCasePipe,
+		FormsModule,
 		ReactiveFormsModule,
 		MatButtonModule,
 		MatCardModule,
@@ -44,10 +45,10 @@ import { FoodService } from "../../services/food.service";
 		MatIconModule,
 		MatProgressSpinnerModule
 	],
-	templateUrl: "./add-food-form.component.html",
-	styleUrl: "./add-food-form.component.scss"
+	templateUrl: "./edit-food-form.component.html",
+	styleUrl: "./edit-food-form.component.scss"
 })
-export class AddFoodFormComponent implements OnInit {
+export class EditFoodFormComponent implements OnInit {
 	foodForm!: FormGroup;
 	remainingNutritions: NutritionType[] = [];
 	separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -58,7 +59,7 @@ export class AddFoodFormComponent implements OnInit {
 	nutritionUnits = nutritionUnits;
 	foodCategories = foodCategories;
 
-	defaultNutritions: NutritionType[] = ["Calories", "Total Fat", "Saturated Fat", "Carbohydrates", "Sugar", "Fiber", "Protein", "Sodium"];
+	defaultNutritions: NutritionType[] = ["Calories", "Total Fat", "Saturated Fat", "Carbohydrates", "Sugar", "Fiber", "Protein", "Salt"];
 	dietaryFlags = dietaryFlags;
 
 	private router = inject(Router);

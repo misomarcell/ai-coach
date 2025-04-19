@@ -10,12 +10,12 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { AddFoodFormComponent } from "../../add-food/add-food-form/add-food-form.component";
 import { FullscreenOverlayRef } from "../../overlay/overlay-ref";
 import { FULLSCREEN_OVERLAY_DATA } from "../../overlay/overlay.token";
 import { FoodService } from "../../services/food.service";
 import { catchError, EMPTY, finalize, take, tap } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { EditFoodFormComponent } from "../../edit-food-form/edit-food-form.component";
 
 @Component({
 	standalone: true,
@@ -29,7 +29,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 		MatSelectModule,
 		MatCheckboxModule,
 		MatProgressSpinnerModule,
-		AddFoodFormComponent
+		EditFoodFormComponent
 	],
 	templateUrl: "./admin-food-editor.component.html",
 	styleUrl: "./admin-food-editor.component.scss"

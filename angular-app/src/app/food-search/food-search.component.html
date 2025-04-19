@@ -75,7 +75,7 @@
 			<mat-card>
 				<mat-card-content>
 					<p>No food found.</p>
-					<button mat-stroked-button color="primary" routerLink="/add-food"><mat-icon>add</mat-icon> Add New Food</button>
+					<button mat-stroked-button color="primary" routerLink="/foods/add"><mat-icon>add</mat-icon> Add New Food</button>
 				</mat-card-content>
 			</mat-card>
 		</div>
@@ -83,7 +83,7 @@
 		<div class="food-list">
 			<div class="list-header">
 				<h4>Foods</h4>
-				<button mat-stroked-button [routerLink]="['/add-food']">
+				<button mat-stroked-button [routerLink]="['/foods/add']">
 					<mat-icon>add</mat-icon>
 					Create food
 				</button>

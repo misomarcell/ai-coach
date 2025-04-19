@@ -35,19 +35,25 @@ export const routes: Routes = [
 				loadComponent: () => import("./scanner-page/scanner-page.component").then((m) => m.ScannerPageComponent)
 			},
 			{
-				path: "add-food",
-				loadComponent: () => import("./add-food/add-food.component").then((m) => m.AddFoodComponent),
-				canActivate: [loggedInGuard]
-			},
-			{
-				path: "add-food/:foodId",
-				loadComponent: () => import("./add-food/add-food.component").then((m) => m.AddFoodComponent),
-				canActivate: [loggedInGuard]
-			},
-			{
-				path: "search-food",
+				path: "foods",
 				loadComponent: () => import("./foods-page/foods-page.component").then((m) => m.FoodsPageComponent),
-				canActivate: [loggedInGuard]
+				canActivate: [loggedInGuard],
+				children: [
+					{
+						path: "",
+						loadComponent: () => import("./foods-list/foods-list.component").then((m) => m.FoodsListComponent)
+					},
+					{
+						path: "add",
+						loadComponent: () => import("./add-food/add-food.component").then((m) => m.AddFoodComponent),
+						canActivate: [loggedInGuard]
+					},
+					{
+						path: "add/:foodId",
+						loadComponent: () => import("./add-food/add-food.component").then((m) => m.AddFoodComponent),
+						canActivate: [loggedInGuard]
+					}
+				]
 			},
 			{
 				path: "profile",

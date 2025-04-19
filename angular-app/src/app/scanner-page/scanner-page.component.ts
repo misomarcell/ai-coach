@@ -27,7 +27,7 @@ export class ScannerPageComponent {
 					from(
 						food
 							? this.router.navigate(["/food-list"], { queryParams: { barcode: result.getText() } })
-							: this.router.navigate(["/add-food"], { queryParams: { barcode: result.getText() } })
+							: this.router.navigate(["/foods"], { queryParams: { barcode: result.getText() } })
 					)
 				)
 			)

@@ -1,6 +1,4 @@
-<h3>Add New Food</h3>
-
-<form [formGroup]="foodForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="foodForm" class="mb-4" (ngSubmit)="onSubmit()">
 	<div class="form-container">
 		<mat-form-field class="form-field-name">
 			<mat-label>Name</mat-label>
@@ -80,7 +78,10 @@
 				}
 
 				<div class="add-button-row">
-					<button mat-button type="button" [matMenuTriggerFor]="nutritionMenu"><mat-icon>add</mat-icon> Add Nutrition</button>
+					<button mat-button type="button" [matMenuTriggerFor]="nutritionMenu">
+						<mat-icon>add</mat-icon>
+						Add nutrition
+					</button>
 					<mat-menu #nutritionMenu="matMenu">
 						@for (nutritionType of remainingNutritions; track nutritionType) {
 							<button mat-menu-item (click)="addNutrition(nutritionType)">
@@ -117,7 +118,10 @@
 
 				@if (servingSizesFormArray.length < 11) {
 					<div class="add-button-row">
-						<button mat-button type="button" (click)="addServingSize()"><mat-icon>add</mat-icon> Add Serving</button>
+						<button mat-button type="button" (click)="addServingSize()">
+							<mat-icon>add</mat-icon>
+							Add serving size
+						</button>
 					</div>
 				}
 			</div>
@@ -161,7 +165,7 @@
 		<div class="form-actions">
 			<button mat-flat-button color="primary" type="submit" [disabled]="foodForm.invalid || isLoading()">
 				@if (isLoading()) {
-					Updating food...
+					<mat-spinner diameter="20" />
 				} @else {
 					Submit
 				}
