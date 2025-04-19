@@ -94,7 +94,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	constructor() {
 		const today = new Date();
 		this.form = this.formBuilder.group({
-			amount: [100, [Validators.required, Validators.min(0.01)]],
+			amount: ["", [Validators.required, Validators.min(0.01)]],
 			servingSize: [[], Validators.required],
 			date: [today, Validators.required],
 			time: [this.getFormattedTime(today), [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
@@ -102,9 +102,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			comment: [""]
 		});
 
-		this.formSubscription = this.form.valueChanges.subscribe(() => {
-			this.updateNutritions();
-		});
+		this.formSubscription = this.form.valueChanges.subscribe(() => this.updateNutritions());
 	}
 
 	ngOnDestroy(): void {
@@ -137,18 +135,18 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			.getFood(this.overlayData.foodId)
 			.pipe(
 				filter((food) => !!food),
+				tap((food) => this.food.set(food)),
 				tap((food) => {
 					food.servingSizes.forEach((size) => {
 						if (!this.servingSizes.some((s) => s.name === size.name)) {
 							this.servingSizes.push(size);
 						}
 					});
-
-					this.prefillForm();
-					this.nutritions.set(this.servingsService.getFoodNutritions(food));
-				})
+				}),
+				tap(() => this.prefillForm()),
+				tap(() => this.updateNutritions())
 			)
-			.subscribe((food) => this.food.set(food));
+			.subscribe();
 	}
 
 	ngAfterViewInit(): void {
@@ -161,7 +159,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 
 		let servingSize = options?.servingSize;
 		if (!servingSize && this.servingSizes.length > 0) {
-			servingSize = this.servingSizes[0];
+			servingSize = this.servingSizes[this.servingSizes.length - 1];
 		}
 
 		if (options?.comment) {
@@ -169,7 +167,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		}
 
 		this.form.patchValue({
-			amount: options?.servingAmount || 100,
+			amount: options?.servingAmount || (servingSize?.gramWeight === 1 ? 100 : 1),
 			servingSize: servingSize,
 			category: options?.category || this.getDefaultCategory(),
 			comment: options?.comment || "",
@@ -186,6 +184,10 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 
 		this.isSubmitting.set(true);
 		this.addServing(food);
+	}
+
+	onServingSizeChange(servingSize: ServingSize): void {
+		this.form.get("amount")?.setValue(servingSize.gramWeight === 1 ? 100 : 1);
 	}
 
 	onSaveServing(): void {
@@ -384,13 +386,19 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 					servingSize: formValues.servingSize
 				})
 			);
-		} else if (food && formValues.amount) {
+		} else if (food && formValues.servingSize && formValues.amount != null) {
+			const { amount, servingSize } = formValues;
+			const gw = servingSize.gramWeight;
+			const factor = gw != null ? (amount * gw) / 100 : amount / 100;
+
 			this.nutritions.set(
-				this.servingsService.getFoodNutritions(food).map((n) => ({ ...n, amount: n.amount * (formValues.amount / 100) }))
+				this.servingsService.getFoodNutritions(food).map((n) => ({
+					...n,
+					amount: n.amount * factor
+				}))
 			);
 		}
 	}
-
 	private combineDateAndTime(date: Date, timeString: string): Date | null {
 		if (!date || !timeString || !/^\d{2}:\d{2}$/.test(timeString)) {
 			return null;

@@ -28,7 +28,6 @@ async function main(): Promise<void> {
 	const entries: FoundationFoodsEntity[] = data.FoundationFoods;
 
 	const convertedFoods = getConvertedFoods(entries);
-
 	const firestoreConnector = new FirestoreConnector(envInput === "prod");
 	await firestoreConnector.addFoodsToDb(convertedFoods);
 }
@@ -122,24 +121,18 @@ function mapNutrients(sourceNutrients: FoodNutrientsEntity[]): Nutrition[] {
 	sourceNutrients.forEach((nutrient) => {
 		const mapped = nutritionMap[nutrient.nutrient.name];
 		if (mapped) {
-			if (nutrient.nutrient.name === "Energy" && nutrient.nutrient.unitName === "kJ") {
-				const kjAmount = nutrient.amount || nutrient.median || 0;
-				const kcalAmount = kjAmount * 0.239; // Convert kJ to kcal
-				mappedNutrients.push({
-					type: "Calories",
-					unit: "kcal",
-					amount: kcalAmount
-				});
-			} else if (mapped.unit === nutrient.nutrient.unitName) {
+			if (mapped.unit === nutrient.nutrient.unitName) {
 				mappedNutrients.push({
 					type: mapped.type,
 					unit: mapped.unit,
 					amount: nutrient.amount || nutrient.median || 0
 				});
 			} else {
-				console.warn(
-					`Unit mismatch for nutrient ${nutrient.nutrient.name}: expected ${mapped.unit}, got ${nutrient.nutrient.unitName}`
-				);
+				if (!(mapped.unit === "kcal" && nutrient.nutrient.unitName === "kJ")) {
+					console.warn(
+						`Unit mismatch for nutrient ${nutrient.nutrient.name}: expected ${mapped.unit}, got ${nutrient.nutrient.unitName}`
+					);
+				}
 			}
 		}
 	});
@@ -159,22 +152,18 @@ function mapServingSizes(sourcePortions: (FoodPortionsEntity | null)[]): Serving
 		return mappedServingSizes;
 	}
 
-	for (let i = 0; i < sourcePortions.length; i++) {
-		const portion = sourcePortions[i];
+	for (const portion of sourcePortions) {
 		if (!portion || !portion.gramWeight || !portion.measureUnit?.abbreviation) {
 			continue;
 		}
 
-		if (portion.amount !== 1 && portion.measureUnit.abbreviation !== "ml") {
-			console.warn(`Portion amount is not 1 for ${portion.measureUnit.abbreviation}: ${portion.amount}`);
-		}
-
+		const prefix = portion.amount !== 1 ? portion.amount : "";
 		const servingName = portion.portionDescription
 			? `${portion.measureUnit.abbreviation} (${portion.portionDescription})`
 			: portion.measureUnit.abbreviation;
 
 		const servingSize: ServingSize = {
-			name: servingName,
+			name: `${prefix} ${servingName}`,
 			gramWeight: portion.gramWeight
 		};
 		mappedServingSizes.push(servingSize);

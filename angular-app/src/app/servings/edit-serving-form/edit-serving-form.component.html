@@ -22,7 +22,7 @@
 
 			<mat-form-field>
 				<mat-label>Serving Size</mat-label>
-				<mat-select formControlName="servingSize">
+				<mat-select formControlName="servingSize" (selectionChange)="onServingSizeChange($event.value)">
 					@for (size of servingSizes; track size.name) {
 						<mat-option [value]="size">
 							{{ size.name }} {{ size.name !== "g" && size.gramWeight ? "(" + size.gramWeight + "g)" : "" }}
