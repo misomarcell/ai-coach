@@ -44,7 +44,7 @@ export class LabelAnalyzerComponent {
 
 	foodId = input<string>();
 	analysisComplete = output<Partial<Food>>();
-	loadingStatus = signal<LoadingStatus | null>(LoadingStatus.InitDocument);
+	loadingStatus = signal<LoadingStatus | null>(null);
 
 	private foodService = inject(FoodService);
 	private snackBar = inject(MatSnackBar);
@@ -113,6 +113,7 @@ export class LabelAnalyzerComponent {
 
 	uploadImages() {
 		if (!this.foodId()) {
+			console.error("Food ID is not set. Cannot upload images.");
 			return;
 		}
 
@@ -143,6 +144,19 @@ export class LabelAnalyzerComponent {
 
 	areImagesReady(): boolean {
 		return !!this.packageImage().file && !!this.labelImage().file;
+	}
+
+	skipAnalysis() {
+		const foodId = this.foodId();
+		if (!foodId) {
+			console.error("Food ID is not set. Cannot skip analysis.");
+			return;
+		}
+
+		this.analysisComplete.emit({
+			id: foodId,
+			status: FoodStatus.Prefilled
+		});
 	}
 
 	private handleLabelAnalysisResult(food: Food): void {

@@ -40,7 +40,6 @@ export class ServingsGroupComponent {
 	}
 
 	async onServingClick(serving: Serving): Promise<void> {
-		console.warn("Serving clicked:", serving);
 		await this.overlayService.open(EditServingFormComponent, {
 			data: {
 				serving

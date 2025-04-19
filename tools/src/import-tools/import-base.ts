@@ -69,4 +69,39 @@ export class FirestoreConnector {
 			throw error;
 		}
 	}
+
+	async deleteFoodsFromSource(source: string): Promise<void> {
+		console.log(`Deleting foods from source: ${source}`);
+
+		const collectionRef = this.firestore.collection("foods");
+		const totalSnapshot = await collectionRef.where("source", "==", source).get();
+		const total = totalSnapshot.size;
+		if (total === 0) {
+			console.log("No documents found for the specified source.");
+			return;
+		}
+
+		const batchSize = 100;
+		const totalBatches = Math.ceil(total / batchSize);
+		let deleted = 0;
+		let batchNumber = 0;
+
+		while (true) {
+			const snapshot = await collectionRef.where("source", "==", source).limit(batchSize).get();
+
+			if (snapshot.empty) {
+				break;
+			}
+
+			const batch = this.firestore.batch();
+			snapshot.forEach((doc) => batch.delete(doc.ref));
+			await batch.commit();
+
+			batchNumber++;
+			deleted += snapshot.size;
+			console.log(`Batch ${batchNumber}/${totalBatches} committed — deleted ${deleted}/${total} docs`);
+		}
+
+		console.log("✅ All foods from the specified source have been deleted.");
+	}
 }

@@ -1,4 +1,4 @@
-import { Food, FoodStatus } from "@aicoach/shared";
+import { Food } from "@aicoach/shared";
 import { Component, DestroyRef, effect, inject, OnInit, signal } from "@angular/core";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { LabelAnalyzerComponent } from "./label-analyzer/label-analyzer.component";
@@ -23,7 +23,7 @@ export enum LoadingStatus {
 	styleUrl: "./add-food.component.scss"
 })
 export class AddFoodComponent implements OnInit {
-	loadingStatus = signal<LoadingStatus | null>(LoadingStatus.InitDocument);
+	isLoading = signal<boolean>(true);
 	analysisResult = signal<Partial<Food> | undefined>(undefined);
 	foodId = signal<string | undefined>(undefined);
 
@@ -34,14 +34,14 @@ export class AddFoodComponent implements OnInit {
 	constructor() {
 		effect(() => {
 			if (this.foodId()) {
-				this.loadingStatus.set(null);
+				this.isLoading.set(false);
 			}
 		});
 	}
 
 	ngOnInit(): void {
 		this.foodService.getNewFoodDocumentId().subscribe((documentId) => {
-			this.loadingStatus.set(null);
+			this.isLoading.set(false);
 			this.foodId.set(documentId);
 		});
 		this.activatedRoute.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -57,13 +57,6 @@ export class AddFoodComponent implements OnInit {
 			...oldValue,
 			...analysisResult
 		}));
-	}
-
-	skipAnalysis() {
-		this.analysisResult.set({
-			id: this.foodId(),
-			status: FoodStatus.Prefilled
-		});
 	}
 
 	onTryAgainClick() {

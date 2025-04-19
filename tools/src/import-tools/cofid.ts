@@ -2,7 +2,7 @@
 import { FoodCategory, FoodDb, FoodStatus, Nutrition, NutritionType } from "@aicoach/shared";
 import { FieldValue } from "firebase-admin/firestore";
 import { readFile, utils } from "xlsx";
-import { xlsHeaders, xlsToFoodCategoryMap, xlsToNutritionMap } from "./cofid.model";
+import { xlsHeaders, cofidToFoodCategoryMap, xlsToNutritionMap } from "./cofid.model";
 import { FirestoreConnector } from "./import-base";
 import path from "path";
 import { getAssumedFlags } from "./import-utils";
@@ -99,7 +99,7 @@ function convertRowToFood(row: any): Partial<FoodDb> {
 }
 
 function mapFoodGroupToCategory(foodGroup: string): FoodCategory {
-	const mappedCategory = xlsToFoodCategoryMap[foodGroup] || "Other";
+	const mappedCategory = cofidToFoodCategoryMap[foodGroup] || "Other";
 	if (!mappedCategory) {
 		console.warn(`Food group "${foodGroup}" not found in mapping. Defaulting to "Other".`);
 	}

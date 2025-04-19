@@ -1,5 +1,5 @@
-@let _loadingStatus = loadingStatus();
-@if (!_loadingStatus) {
+@let _isLoading = isLoading();
+@if (!_isLoading) {
 	@let _foodId = foodId();
 	@let _analysisResult = analysisResult();
 	<div class="add-food-container">
@@ -14,25 +14,11 @@
 			</div>
 		} @else {
 			<app-label-analyzer [foodId]="_foodId" (analysisComplete)="onAnalyzisComplete($event)" />
-			<button mat-button class="skip-button" (click)="skipAnalysis()">Skip analysis</button>
 		}
 	</div>
 } @else {
 	<div class="loading-container">
 		<mat-spinner [diameter]="64" />
-		@switch (_loadingStatus) {
-			@case ("InitDocument") {
-				<p>Initializing document...</p>
-			}
-			@case ("UploadingImages") {
-				<p>Uploading images...</p>
-			}
-			@case ("AnalyzingLabel") {
-				<p>Analyzing label...</p>
-			}
-			@default {
-				<p>Loading...</p>
-			}
-		}
+		<p>Initializing document...</p>
 	</div>
 }
