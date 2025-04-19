@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import fs from "fs";
 import path from "path";
 import { FirestoreConnector } from "./import-base";
+import { getAssumedFlags } from "./import-utils";
 import { foodCategoryMap, nutritionMap } from "./usda.map";
 import { FoodNutrientsEntity, FoodPortionsEntity, FoundationFoodsEntity } from "./usda.model";
 
@@ -78,9 +79,10 @@ function printAllNutritionTypes(entries: FoundationFoodsEntity[]) {
 */
 
 function convertFood(input: FoundationFoodsEntity): Partial<FoodDb> {
+	const mappedCategory = mapFoodCategory(input.foodCategory?.description);
 	const food: Partial<FoodDb> = {
 		name: input.description,
-		category: mapFoodCategory(input.foodCategory?.description),
+		category: mappedCategory,
 		servingSizes: [],
 		created: FieldValue.serverTimestamp(),
 		lastUpdatedAt: FieldValue.serverTimestamp(),
@@ -92,7 +94,7 @@ function convertFood(input: FoundationFoodsEntity): Partial<FoodDb> {
 		images: [],
 		source: "USDA",
 		variation: undefined,
-		dietaryFlags: [],
+		dietaryFlags: getAssumedFlags(mappedCategory),
 		tags: []
 	};
 

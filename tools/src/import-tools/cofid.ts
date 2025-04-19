@@ -5,6 +5,7 @@ import { readFile, utils } from "xlsx";
 import { xlsHeaders, xlsToFoodCategoryMap, xlsToNutritionMap } from "./cofid.model";
 import { FirestoreConnector } from "./import-base";
 import path from "path";
+import { getAssumedFlags } from "./import-utils";
 var prompt = require("prompt-sync")();
 
 function printAllNutritionTypes(data: any[]): void {
@@ -92,13 +93,18 @@ function convertRowToFood(row: any): Partial<FoodDb> {
 		status: FoodStatus.Created,
 		nutritions: mapRowToNutritions(row),
 		servingSizes: [{ name: "g", gramWeight: 1 }],
-		dietaryFlags: [],
+		dietaryFlags: getAssumedFlags(mappedCategory),
 		tags: []
 	};
 }
 
 function mapFoodGroupToCategory(foodGroup: string): FoodCategory {
-	return xlsToFoodCategoryMap[foodGroup] || "Other";
+	const mappedCategory = xlsToFoodCategoryMap[foodGroup] || "Other";
+	if (!mappedCategory) {
+		console.warn(`Food group "${foodGroup}" not found in mapping. Defaulting to "Other".`);
+	}
+
+	return mappedCategory;
 }
 
 function mapRowToNutritions(row: any): Nutrition[] {

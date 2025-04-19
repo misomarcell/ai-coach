@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FoodCategory, FoodDb, FoodStatus, Nutrition, NutritionType } from "@aicoach/shared";
 import { FieldValue } from "firebase-admin/firestore";
+import path from "path";
 import { readFile, utils } from "xlsx";
 import { xlsHeaders, xlsToFoodCategoryMap, xlsToNutritionMap } from "./ciqual.model";
 import { FirestoreConnector } from "./import-base";
-import path from "path";
+import { getAssumedFlags } from "./import-utils";
 var prompt = require("prompt-sync")();
 
 async function main(): Promise<void> {
@@ -57,7 +58,7 @@ function convertRowsToFoods(row: any): Partial<FoodDb> {
 		status: FoodStatus.Created,
 		nutritions: mapXlsToNutritions(row),
 		servingSizes: [{ name: "g", gramWeight: 1 }],
-		dietaryFlags: [],
+		dietaryFlags: getAssumedFlags(mappedCategory),
 		tags: []
 	};
 }
