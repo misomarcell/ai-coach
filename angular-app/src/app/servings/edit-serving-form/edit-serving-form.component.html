@@ -61,14 +61,17 @@
 					}
 				</mat-select>
 			</mat-form-field>
-			<button mat-icon-button class="mt-1" (click)="isOpenComment.set(!isOpenComment())"><mat-icon>edit_note</mat-icon></button>
+			<button mat-mini-fab class="mt-1" (click)="isOpenComment.set(!isOpenComment())">
+				<mat-icon>{{ isOpenComment() ? "expand_less" : "edit_note" }}</mat-icon>
+			</button>
+			<button mat-mini-fab class="mt-1"><mat-icon>flag</mat-icon></button>
 		</div>
 
 		@if (isOpenComment()) {
-			<div class="form-row">
+			<div class="form-row comment-wrapper">
 				<mat-form-field>
 					<mat-label>Comment</mat-label>
-					<textarea matInput formControlName="comment" rows="1" maxlength="100"></textarea>
+					<textarea matInput formControlName="comment" placeholder="Add a private note..." rows="1" maxlength="100"></textarea>
 				</mat-form-field>
 			</div>
 		}

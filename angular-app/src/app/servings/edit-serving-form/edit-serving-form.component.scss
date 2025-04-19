@@ -1,8 +1,10 @@
 :host {
-	display: block;
-	position: relative;
 	--mdc-dialog-subhead-size: 1.2rem;
 	--mdc-dialog-subhead-line-height: 1.2;
+	--mdc-fab-small-container-color: var(--mat-sys-surface-variant);
+	--mat-fab-small-foreground-color: var(--mat-sys-on-surface);
+	display: block;
+	position: relative;
 	padding: 4rem 0;
 	max-width: 800px;
 	margin: 0 auto;
@@ -50,9 +52,11 @@
 }
 
 .top-wrapper {
+	border-bottom: 1px solid var(--mat-sys-surface-bright);
 	top: 0;
 }
 
 .bottom-wrapper {
+	border-top: 1px solid var(--mat-sys-surface-bright);
 	bottom: 0;
 }
