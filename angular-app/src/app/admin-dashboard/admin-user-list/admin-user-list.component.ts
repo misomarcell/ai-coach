@@ -5,10 +5,10 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { PageTitleComponent } from "../../page-title/page-title.component";
-import { AdminUserItemComponent } from "./admin-user-item/admin-user-item.component";
-import { AdminUserService } from "../services/admin-user.service";
 import { tap } from "rxjs";
+import { PageTitleComponent } from "../../page-title/page-title.component";
+import { AdminUserService } from "../services/admin-user.service";
+import { AdminUserItemComponent } from "./admin-user-item/admin-user-item.component";
 
 @Component({
 	standalone: true,
@@ -33,14 +33,11 @@ export class AdminUserListComponent implements OnInit {
 		this.isLoading.set(true);
 
 		const lastUser = loadMore ? this.users()[this.users().length - 1] : undefined;
-
 		this.adminUserService
 			.getUsers(this.pageSize, lastUser)
 			.pipe(
 				takeUntilDestroyed(this.destroyRef),
 				tap((newUsers) => {
-					console.log({ newUsers });
-
 					if (loadMore) {
 						this.users.update((currentUsers) => [...currentUsers, ...newUsers]);
 					} else {
