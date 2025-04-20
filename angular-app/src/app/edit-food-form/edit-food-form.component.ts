@@ -24,9 +24,13 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
-import { catchError, EMPTY, finalize, from, switchMap, take, tap } from "rxjs";
+import { catchError, EMPTY, finalize, from, map, Observable, switchMap, take } from "rxjs";
 import { BarcodeScannerService } from "../services/barcode-scanner.service";
 import { FoodService } from "../services/food.service";
+import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../prompt-dialog/prompt-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
+import { OverlayService } from "@aicoach/overlay";
+import { EditServingFormComponent } from "../servings/edit-serving-form/edit-serving-form.component";
 
 @Component({
 	selector: "app-edit-food-form",
@@ -65,6 +69,8 @@ export class EditFoodFormComponent implements OnInit {
 	private router = inject(Router);
 	private foodService = inject(FoodService);
 	private scannerService = inject(BarcodeScannerService);
+	private dialogService = inject(MatDialog);
+	private overlayService = inject(OverlayService);
 	private formBuilder = inject(FormBuilder);
 	private snackBar = inject(MatSnackBar);
 
@@ -75,21 +81,16 @@ export class EditFoodFormComponent implements OnInit {
 		this.initForm();
 		this.updateRemainingNutritions();
 		this.prefillAnalyzerResult();
-
-		console.log("nutritionsFormArray", this.nutritionsFormArray.controls.length);
 	}
 
 	initForm(): void {
-		const defaultNutritions = this.createDefaultNutritions();
-		console.log("Default Nutritions:", defaultNutritions.length);
-
 		this.foodForm = this.formBuilder.group({
 			name: ["", Validators.required],
 			brand: [""],
 			barcode: [""],
 			category: ["", Validators.required],
 			variation: [""],
-			nutritions: this.formBuilder.array(defaultNutritions),
+			nutritions: this.formBuilder.array(this.createDefaultNutritions()),
 			servingSizes: this.formBuilder.array([this.createServingSize("g", 1)]),
 			dietaryFlags: [this.selectedDietaryFlags],
 			tags: [this.tags]
@@ -102,23 +103,42 @@ export class EditFoodFormComponent implements OnInit {
 			return;
 		}
 
-		console.log("Food to create", this.foodForm.value);
-
 		this.isLoading.set(true);
 		this.foodService
 			.updateFood(foodId, { ...this.foodForm.value }, FoodStatus.Created)
 			.pipe(
 				take(1),
-				tap(() => this.snackBar.open("Food item updated successfully!", "Close")),
 				catchError(() => {
 					this.snackBar.open("Error updating food item", "Close");
 
 					return EMPTY;
 				}),
-				switchMap(() => from(this.router.navigate(["/home"]))),
+				switchMap(() => this.promptAddServing()),
+				switchMap((answer) => (answer ? this.openAddServingOverlay(foodId) : from(this.router.navigate(["/home"])))),
 				finalize(() => () => this.isLoading.set(false))
 			)
 			.subscribe();
+	}
+
+	promptAddServing(): Observable<boolean> {
+		const dialog = this.dialogService.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
+			data: {
+				title: "Create serving",
+				message: "Do you want to create a serving with this food?",
+				buttonLayout: "yes-no"
+			}
+		});
+
+		return dialog.afterClosed().pipe(
+			take(1),
+			map((answer) => answer === "yes")
+		);
+	}
+
+	async openAddServingOverlay(foodId: string): Promise<void> {
+		await this.overlayService.open(EditServingFormComponent, {
+			data: { foodId }
+		});
 	}
 
 	createDefaultNutritions(): FormGroup[] {
@@ -264,8 +284,6 @@ export class EditFoodFormComponent implements OnInit {
 		if (!prefilledFood || !this.foodForm) {
 			return;
 		}
-
-		console.log("Prefilled Food:", prefilledFood);
 
 		this.foodForm.patchValue(prefilledFood);
 		this.foodForm.get("nutritions")?.value.forEach((nutrition: any, index: number) => {

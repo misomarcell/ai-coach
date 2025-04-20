@@ -102,7 +102,8 @@ export class DailyTargetsWidgetComponent {
 				"µg-mg": 0.001,
 				"g-µg": 1000000, // 1 g = 1000000 µg
 				"µg-g": 0.000001,
-				"ml-l": 0.001 // 1 ml = 0.001 l (if liters were included, here for completeness)
+				"ml-l": 0.001, // 1 ml = 0.001 l (if liters were included, here for completeness)
+				"kcal-kcal": 1 // 1 kcal = 1 kcal (if kilocalories were included, here for completeness)
 			};
 
 			const conversionKey = `${actualUnit}-${targetUnit}`;

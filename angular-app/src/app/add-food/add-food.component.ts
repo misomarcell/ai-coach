@@ -5,10 +5,11 @@ import { LabelAnalyzerComponent } from "./label-analyzer/label-analyzer.componen
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { FoodService } from "../services/food.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { EditFoodFormComponent } from "../edit-food-form/edit-food-form.component";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 export enum LoadingStatus {
 	InitDocument = "InitDocument",
@@ -29,6 +30,8 @@ export class AddFoodComponent implements OnInit {
 
 	private destroyRef = inject(DestroyRef);
 	private foodService = inject(FoodService);
+	private snackBar = inject(MatSnackBar);
+	private router = inject(Router);
 	private activatedRoute = inject(ActivatedRoute);
 
 	constructor() {
@@ -43,6 +46,7 @@ export class AddFoodComponent implements OnInit {
 		this.foodService.getNewFoodDocumentId().subscribe((documentId) => {
 			this.isLoading.set(false);
 			this.foodId.set(documentId);
+			console.log({ documentId });
 		});
 		this.activatedRoute.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
 			if (params["barcode"]) {

@@ -43,7 +43,7 @@
 		</div>
 
 		<div class="content-section">
-			<p class="section-title">Nutritions</p>
+			<p class="section-title">Nutritions / 100g</p>
 			<div formArrayName="nutritions">
 				@for (nutrition of nutritionsFormArray.controls; track $index; let i = $index) {
 					<div [formGroupName]="i" class="nutrition-item">
