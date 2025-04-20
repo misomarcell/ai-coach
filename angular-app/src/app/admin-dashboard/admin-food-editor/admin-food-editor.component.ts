@@ -1,6 +1,7 @@
 import { Food, FoodStatus } from "@aicoach/shared";
 import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
-import { CommonModule } from "@angular/common";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { getDownloadURL, ref, Storage } from "@angular/fire/storage";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -10,17 +11,15 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { catchError, EMPTY, finalize, from, switchMap, take, tap } from "rxjs";
+import { EditFoodFormComponent } from "../../edit-food-form/edit-food-form.component";
 import { FullscreenOverlayRef } from "../../overlay/overlay-ref";
 import { FULLSCREEN_OVERLAY_DATA } from "../../overlay/overlay.token";
 import { FoodService } from "../../services/food.service";
-import { catchError, EMPTY, finalize, take, tap } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { EditFoodFormComponent } from "../../edit-food-form/edit-food-form.component";
 
 @Component({
 	standalone: true,
 	imports: [
-		CommonModule,
 		ReactiveFormsModule,
 		MatButtonModule,
 		MatIconModule,
@@ -41,7 +40,10 @@ export class AdminFoodEditorComponent implements OnInit {
 	adminForm: FormGroup;
 	foodStatusValues = Object.values(FoodStatus);
 
+	imageSrc = signal<string[]>([]);
+
 	private foodService = inject(FoodService);
+	private storage = inject(Storage);
 	private overlayRef = inject(FullscreenOverlayRef);
 	private overlayData = inject(FULLSCREEN_OVERLAY_DATA);
 	private destroyRef = inject(DestroyRef);
@@ -100,6 +102,20 @@ export class AdminFoodEditorComponent implements OnInit {
 						this.close();
 					}
 				}),
+				switchMap((food) => {
+					const promises = [];
+					for (const imgPath of food?.images || []) {
+						const imageRef = ref(this.storage, imgPath.url);
+
+						promises.push(getDownloadURL(imageRef));
+					}
+
+					return from(Promise.all(promises));
+				}),
+				tap((urls) => {
+					console.log("Image URLs:", urls);
+					this.imageSrc.set(urls);
+				}),
 				finalize(() => this.isLoading.set(false)),
 				catchError((err) => {
 					console.error("Error loading food", err);
@@ -137,6 +153,10 @@ export class AdminFoodEditorComponent implements OnInit {
 
 	generateServingSizes(): void {
 		this.snackBar.open("AI serving size generation is not implemented yet", "Close");
+	}
+
+	onImageClick(imageUrl: string): void {
+		window.open(imageUrl, "_blank");
 	}
 
 	close(): void {

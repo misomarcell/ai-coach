@@ -59,10 +59,9 @@
 				<div class="images-section">
 					<h4>Product Images</h4>
 					<div class="images-gallery">
-						@for (image of food()!.images; track image.url) {
-							<div class="image-item">
-								<img [src]="image.url" [alt]="image.type + ' image'" />
-								<span class="image-type">{{ image.type }}</span>
+						@for (src of imageSrc(); track src) {
+							<div class="image-item" (click)="onImageClick(src)">
+								<img [src]="src" alt="Food pic" />
 							</div>
 						}
 					</div>
