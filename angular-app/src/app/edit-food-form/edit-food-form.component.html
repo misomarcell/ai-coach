@@ -45,7 +45,7 @@
 		<div class="content-section">
 			<p class="section-title">Nutritions / 100g</p>
 			<div formArrayName="nutritions">
-				@for (nutrition of nutritionsFormArray.controls; track $index; let i = $index) {
+				@for (nutritionControl of nutritionsFormArray.controls; track nutritionControl; let i = $index) {
 					<div [formGroupName]="i" class="nutrition-item">
 						<mat-form-field [floatLabel]="'always'" class="nutrition-type-field">
 							<mat-select formControlName="type" (selectionChange)="onNutritionTypeChange($event, i)">

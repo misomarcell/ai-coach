@@ -77,10 +77,8 @@
 				</button>
 			</div>
 
-			<div class="food-form-section">
-				<h4>Food Details</h4>
-				<app-edit-food-form class="mt-2" [food]="food()" />
-			</div>
+			<h4>Food Details</h4>
+			<app-edit-food-form [food]="food()" />
 		</div>
 	} @else {
 		<div class="error-container">
