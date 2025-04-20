@@ -53,8 +53,13 @@ import { EditServingFormComponent } from "../servings/edit-serving-form/edit-ser
 	styleUrl: "./edit-food-form.component.scss"
 })
 export class EditFoodFormComponent implements OnInit {
+	private _remainingNutritions: NutritionType[] = [];
+
+	get remainingNutritions(): NutritionType[] {
+		return this._remainingNutritions.sort((a, b) => a.localeCompare(b));
+	}
+
 	foodForm!: FormGroup;
-	remainingNutritions: NutritionType[] = [];
 	separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
 	selectedDietaryFlags: string[] = [];
 	tags: string[] = [];
@@ -170,7 +175,7 @@ export class EditFoodFormComponent implements OnInit {
 
 	updateRemainingNutritions(): void {
 		const currentTypes = this.nutritionsFormArray.controls.map((control) => control.get("type")?.value);
-		this.remainingNutritions = nutritionTypes.filter((type) => !currentTypes.includes(type));
+		this._remainingNutritions = nutritionTypes.filter((type) => !currentTypes.includes(type));
 	}
 
 	isNutritionTypeUnique(type: NutritionType): boolean {
