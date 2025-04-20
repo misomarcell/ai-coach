@@ -1,10 +1,11 @@
 import { Component } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterLink } from "@angular/router";
+import { PageTitleComponent } from "../../page-title/page-title.component";
 
 @Component({
 	selector: "app-admin-menu",
-	imports: [RouterLink, MatIconModule],
+	imports: [RouterLink, PageTitleComponent, MatIconModule],
 	templateUrl: "./admin-menu.component.html",
 	styleUrl: "./admin-menu.component.scss"
 })

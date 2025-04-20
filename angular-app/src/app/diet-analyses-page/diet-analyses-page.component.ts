@@ -4,9 +4,10 @@ import { AnalysisResultListComponent } from "../analysis-result-list/analysis-re
 import { UserService } from "../services/user.service";
 import { AsyncPipe } from "@angular/common";
 import { EMPTY } from "rxjs";
+import { PageTitleComponent } from "../page-title/page-title.component";
 
 @Component({
-	imports: [AsyncPipe, AnalysisRequestFormComponent, AnalysisResultListComponent],
+	imports: [AsyncPipe, PageTitleComponent, AnalysisRequestFormComponent, AnalysisResultListComponent],
 	templateUrl: "./diet-analyses-page.component.html",
 	styleUrl: "./diet-analyses-page.component.scss"
 })

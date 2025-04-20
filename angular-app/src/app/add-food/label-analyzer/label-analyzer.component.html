@@ -1,7 +1,7 @@
 @let _loadingStatus = loadingStatus();
 
 @if (!_loadingStatus) {
-	<h4>Upload product photos</h4>
+	<app-page-title [main]="true" title="Label analyzer" />
 	<div class="analyzer-container">
 		<mat-expansion-panel [expanded]="isPackagePanelOpen" class="upload-expansion">
 			<mat-expansion-panel-header>

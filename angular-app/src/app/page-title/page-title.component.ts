@@ -13,6 +13,7 @@ export class PageTitleComponent {
 	private route = inject(ActivatedRoute);
 	private router = inject(Router);
 
+	main = input<boolean>(false);
 	title = input.required<string>();
 
 	onBackClick() {

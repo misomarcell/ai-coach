@@ -4,12 +4,13 @@ import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterModule } from "@angular/router";
 import { map } from "rxjs";
+import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
 import { PwaService } from "../../services/pwa.service";
 
 @Component({
 	selector: "app-profile-menu",
-	imports: [RouterModule, MatIconModule, MatRippleModule],
+	imports: [RouterModule, PageTitleComponent, MatIconModule, MatRippleModule],
 	templateUrl: "./profile-menu.component.html",
 	styleUrl: "./profile-menu.component.scss"
 })

@@ -1,5 +1,4 @@
 import { Food, FoodStatus } from "@aicoach/shared";
-import { CommonModule } from "@angular/common";
 import { Component, inject, input, output, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -8,6 +7,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
 import { filter, forkJoin, switchMap, tap } from "rxjs";
+import { PageTitleComponent } from "../../page-title/page-title.component";
 import { FoodService } from "../../services/food.service";
 import { LoadingStatus } from "../add-food.component";
 
@@ -21,7 +21,15 @@ interface ImageUpload {
 @Component({
 	selector: "app-label-analyzer",
 	standalone: true,
-	imports: [CommonModule, MatCardModule, MatExpansionModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSnackBarModule],
+	imports: [
+		PageTitleComponent,
+		MatCardModule,
+		MatExpansionModule,
+		MatButtonModule,
+		MatIconModule,
+		MatProgressSpinnerModule,
+		MatSnackBarModule
+	],
 	templateUrl: "./label-analyzer.component.html",
 	styleUrl: "./label-analyzer.component.scss"
 })
