@@ -149,7 +149,7 @@ export class CronometerIntegrationComponent implements OnInit {
 						this.snackBar.open("Error requesting export", "Close", { duration: 5000 });
 					} else if (request.status === "success") {
 						this.snackBar.open("Export request completed successfully", "Close", { duration: 5000 });
-						this.router.navigate(["/home"]);
+						this.router.navigate(["/dashboard"]);
 					}
 				}),
 				takeWhile((request) => ["pending", "exporting", "processing"].includes(request.status)),

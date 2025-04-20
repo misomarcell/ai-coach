@@ -17,8 +17,8 @@ export const routes: Routes = [
 				canActivate: [loggedInGuard]
 			},
 			{
-				path: "home",
-				loadComponent: () => import("./home/home.component").then((m) => m.HomeComponent),
+				path: "dashboard",
+				loadComponent: () => import("./dashboard/dashboard.component").then((m) => m.DashboardComponent),
 				canActivate: [loggedInGuard],
 				resolve: {
 					servings: servingsResolver,
@@ -104,7 +104,7 @@ export const routes: Routes = [
 			},
 			{
 				path: "",
-				redirectTo: "home",
+				redirectTo: "dashboard",
 				pathMatch: "full"
 			}
 		]

@@ -121,7 +121,9 @@ export class DailyTargetsWidgetComponent {
 			}
 
 			if (!conversionFactor) {
-				console.error(`No conversion factor found for ${actualNutrition.type} to ${targetNutrition.type}`);
+				console.error(
+					`No conversion factor found for ${actualNutrition.type} (${targetUnit}) to ${targetNutrition.type} (${actualUnit})`
+				);
 				return 0;
 			}
 

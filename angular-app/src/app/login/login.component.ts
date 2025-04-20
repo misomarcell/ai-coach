@@ -65,7 +65,7 @@ export class LoginComponent {
 				.pipe(
 					first(),
 					switchMap((isLoggedIn) =>
-						isLoggedIn ? this.router.navigate(["home"]) : from(this.authService.providerLogin(provider))
+						isLoggedIn ? this.router.navigate(["dashboard"]) : from(this.authService.providerLogin(provider))
 					)
 				)
 				.subscribe();

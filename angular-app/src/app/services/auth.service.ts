@@ -139,7 +139,7 @@ export class AuthService implements OnDestroy {
 
 		if (credential?.user) {
 			cookies.set("__session", await credential.user.getIdToken());
-			await this.router.navigate(["home"]);
+			await this.router.navigate(["dashboard"]);
 		}
 
 		return credential;
@@ -151,7 +151,7 @@ export class AuthService implements OnDestroy {
 
 		if (credential.user) {
 			cookies.set("__session", await credential.user.getIdToken());
-			this.router.navigate(["home"]);
+			this.router.navigate(["dashboard"]);
 		}
 
 		return credential;

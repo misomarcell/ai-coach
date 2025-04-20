@@ -165,7 +165,7 @@ export class HealthProfileComponent {
 				switchMap(() => {
 					this.snackBar.open("Your profile is updated succesfully", "Close");
 
-					return from(this.router.navigate(["/home"]));
+					return from(this.router.navigate(["/dashboard"]));
 				}),
 				catchError((error) => {
 					this.snackBar.open(`Failed to submit analysis request: ${error.message}`, "Close", {

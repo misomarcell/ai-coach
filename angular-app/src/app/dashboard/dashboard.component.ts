@@ -10,13 +10,13 @@ import { ServingsService } from "../servings/servings.service";
 import { Subscription } from "rxjs";
 
 @Component({
-	selector: "app-home",
+	selector: "app-dashboard",
 	standalone: true,
 	imports: [DateSelectorComponent, ServingsListComponent, DailyTargetsWidgetComponent, MatProgressSpinnerModule, MatCardModule],
-	templateUrl: "./home.component.html",
-	styleUrl: "./home.component.scss"
+	templateUrl: "./dashboard.component.html",
+	styleUrl: "./dashboard.component.scss"
 })
-export class HomeComponent {
+export class DashboardComponent {
 	private route = inject(ActivatedRoute);
 	private servingsService = inject(ServingsService);
 	private servingsSubscription: Subscription | undefined;

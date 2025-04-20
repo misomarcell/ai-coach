@@ -11,7 +11,7 @@ export class NotFoundComponent {
 		if (history.length > 1) {
 			history.back();
 		} else {
-			window.location.href = "/home";
+			window.location.href = "/dashboard";
 		}
 	}
 }

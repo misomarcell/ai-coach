@@ -217,7 +217,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 				tap(() => {
 					this.snackService.open("Serving updated successfully!", "Close");
 				}),
-				switchMap(() => this.router.navigate(["/home"])),
+				switchMap(() => this.router.navigate(["/dashboard"])),
 				finalize(() => {
 					this.isSubmitting.set(false);
 					this.closeOverlay();
@@ -255,7 +255,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 						tap(() => {
 							this.snackService.open("Serving deleted successfully!", "Close");
 						}),
-						switchMap(() => this.router.navigate(["/home"])),
+						switchMap(() => this.router.navigate(["/dashboard"])),
 						take(1)
 					)
 					.subscribe({
@@ -328,7 +328,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			.pipe(
 				take(1),
 				tap(() => this.snackService.open("Serving added successfully!", "Close")),
-				switchMap(() => this.router.navigate(["/home"])),
+				switchMap(() => this.router.navigate(["/dashboard"])),
 				finalize(() => {
 					this.isSubmitting.set(false);
 					this.closeOverlay();

@@ -119,7 +119,7 @@ export class EditFoodFormComponent implements OnInit {
 					return EMPTY;
 				}),
 				switchMap(() => this.promptAddServing()),
-				switchMap((answer) => (answer ? this.openAddServingOverlay(foodId) : from(this.router.navigate(["/home"])))),
+				switchMap((answer) => (answer ? this.openAddServingOverlay(foodId) : from(this.router.navigate(["/dashboard"])))),
 				finalize(() => () => this.isLoading.set(false))
 			)
 			.subscribe();
@@ -153,7 +153,7 @@ export class EditFoodFormComponent implements OnInit {
 	createNutrition(type: NutritionType): FormGroup {
 		return this.formBuilder.group({
 			type: new FormControl<NutritionType>(type, [Validators.required]),
-			unit: new FormControl<NutritionUnit>("g"),
+			unit: new FormControl<NutritionUnit>(type === "Calories" ? "kcal" : "g"),
 			amount: new FormControl<number>(0, [Validators.required, Validators.min(0.01)])
 		});
 	}

@@ -15,5 +15,5 @@ export const loggedOutGuard: CanActivateFn = () => {
 	const router = inject(Router);
 	const authService = inject(AuthService);
 
-	return authService.uid.pipe(switchMap((uid) => (!uid ? of(true) : from(router.navigate(["home"])))));
+	return authService.uid.pipe(switchMap((uid) => (!uid ? of(true) : from(router.navigate(["dashboard"])))));
 };
