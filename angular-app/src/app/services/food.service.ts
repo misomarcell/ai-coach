@@ -70,10 +70,12 @@ export class FoodService {
 		);
 	}
 
-	updateFood(foodId: string, food: Partial<Food>): Observable<void> {
+	updateFood(foodId: string, food: Partial<Food>, status?: FoodStatus): Observable<void> {
 		const docRef = doc(this.firestore, `foods/${foodId}`).withConverter(this.foodTypeConverter);
 		const foodData: Partial<Food> = {
 			...food,
+			id: docRef.id,
+			status: status ?? food.status ?? FoodStatus.Created,
 			lastUpdatedAt: new Date()
 		};
 

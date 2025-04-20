@@ -8,7 +8,7 @@ import {
 	NutritionUnit,
 	nutritionUnits
 } from "@aicoach/shared";
-import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { COMMA, ENTER, SPACE } from "@angular/cdk/keycodes";
 import { TitleCasePipe } from "@angular/common";
 import { Component, inject, input, OnInit, signal } from "@angular/core";
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -51,7 +51,7 @@ import { FoodService } from "../services/food.service";
 export class EditFoodFormComponent implements OnInit {
 	foodForm!: FormGroup;
 	remainingNutritions: NutritionType[] = [];
-	separatorKeysCodes: number[] = [ENTER, COMMA];
+	separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
 	selectedDietaryFlags: string[] = [];
 	tags: string[] = [];
 
@@ -75,17 +75,22 @@ export class EditFoodFormComponent implements OnInit {
 		this.initForm();
 		this.updateRemainingNutritions();
 		this.prefillAnalyzerResult();
+
+		console.log("nutritionsFormArray", this.nutritionsFormArray.controls.length);
 	}
 
 	initForm(): void {
+		const defaultNutritions = this.createDefaultNutritions();
+		console.log("Default Nutritions:", defaultNutritions.length);
+
 		this.foodForm = this.formBuilder.group({
 			name: ["", Validators.required],
 			brand: [""],
 			barcode: [""],
 			category: ["", Validators.required],
 			variation: [""],
-			nutritions: this.formBuilder.array(this.createDefaultNutritions()),
-			servingSizes: this.formBuilder.array([this.createServingSize("100g", 100)]),
+			nutritions: this.formBuilder.array(defaultNutritions),
+			servingSizes: this.formBuilder.array([this.createServingSize("g", 1)]),
 			dietaryFlags: [this.selectedDietaryFlags],
 			tags: [this.tags]
 		});
@@ -97,14 +102,14 @@ export class EditFoodFormComponent implements OnInit {
 			return;
 		}
 
+		console.log("Food to create", this.foodForm.value);
+
 		this.isLoading.set(true);
 		this.foodService
-			.updateFood(foodId, { ...this.foodForm.value, status: FoodStatus.Created })
+			.updateFood(foodId, { ...this.foodForm.value }, FoodStatus.Created)
 			.pipe(
 				take(1),
-				tap(() => {
-					this.snackBar.open("Food item updated successfully!", "Close");
-				}),
+				tap(() => this.snackBar.open("Food item updated successfully!", "Close")),
 				catchError(() => {
 					this.snackBar.open("Error updating food item", "Close");
 
@@ -117,23 +122,21 @@ export class EditFoodFormComponent implements OnInit {
 	}
 
 	createDefaultNutritions(): FormGroup[] {
-		return this.defaultNutritions.map((type) => {
-			return this.createNutrition(type);
-		});
+		return this.defaultNutritions.map((type) => this.createNutrition(type));
 	}
 
 	createNutrition(type: NutritionType): FormGroup {
 		return this.formBuilder.group({
 			type: new FormControl<NutritionType>(type, [Validators.required]),
 			unit: new FormControl<NutritionUnit>("g"),
-			amount: new FormControl<number>(0, [Validators.required, Validators.min(0)])
+			amount: new FormControl<number>(0, [Validators.required, Validators.min(0.01)])
 		});
 	}
 
-	createServingSize(name = "", weight = 0): FormGroup {
+	createServingSize(name = "", gramWeight = 1): FormGroup {
 		return this.formBuilder.group({
 			name: [name, Validators.required],
-			weight: [weight, [Validators.required, Validators.min(0)]]
+			gramWeight: [gramWeight, [Validators.required, Validators.min(1)]]
 		});
 	}
 
@@ -262,21 +265,15 @@ export class EditFoodFormComponent implements OnInit {
 			return;
 		}
 
-		this.foodForm.get("name")?.setValue(prefilledFood.name || "");
-		this.foodForm.get("brand")?.setValue(prefilledFood.brand || "");
-		this.foodForm.get("variation")?.setValue(prefilledFood.variation || "");
-		this.foodForm.get("barcode")?.setValue(prefilledFood.barcode || "");
-		this.foodForm.get("category")?.setValue(prefilledFood.category || "");
-		this.foodForm.get("nutritions")?.patchValue(prefilledFood.nutritions || []);
-		this.foodForm.get("servingSizes")?.patchValue(prefilledFood.servingSizes || []);
+		console.log("Prefilled Food:", prefilledFood);
 
-		this.tags = prefilledFood.tags || [];
-		this.foodForm.get("tags")?.setValue(this.tags);
-		this.selectedDietaryFlags = prefilledFood.dietaryFlags || [];
-		this.foodForm.get("dietaryFlags")?.setValue(this.selectedDietaryFlags);
-
+		this.foodForm.patchValue(prefilledFood);
 		this.foodForm.get("nutritions")?.value.forEach((nutrition: any, index: number) => {
-			if (nutrition.amount === 0) {
+			const duplicateIndex = this.nutritionsFormArray.controls.findIndex(
+				(control, i) => i !== index && control.get("type")?.value === nutrition.type
+			);
+
+			if (duplicateIndex !== -1 && nutrition.amount === 0) {
 				this.nutritionsFormArray.removeAt(index);
 			}
 		});

@@ -59,8 +59,8 @@
 							</mat-select>
 						</mat-form-field>
 
-						<mat-form-field class="nutrition-amount-field">
-							<input matInput type="number" formControlName="amount" />
+						<mat-form-field (click)="amountInput.select()" class="nutrition-amount-field">
+							<input #amountInput matInput type="number" formControlName="amount" />
 						</mat-form-field>
 
 						<mat-form-field class="nutrition-unit-field">
@@ -98,14 +98,14 @@
 			<div formArrayName="servingSizes">
 				@for (serving of servingSizesFormArray.controls; track $index; let i = $index) {
 					<div [formGroupName]="i" class="serving-item">
-						<mat-form-field>
+						<mat-form-field (click)="nameInput.select()">
 							<mat-label>Name</mat-label>
-							<input matInput formControlName="name" placeholder="e.g. Cup, Slice" />
+							<input #nameInput matInput formControlName="name" placeholder="e.g. Cup, Slice" />
 						</mat-form-field>
 
-						<mat-form-field>
+						<mat-form-field (click)="weightInput.select()">
 							<mat-label>Weight (g)</mat-label>
-							<input matInput type="number" formControlName="weight" />
+							<input #weightInput matInput type="number" formControlName="gramWeight" />
 						</mat-form-field>
 
 						@if (i > 0) {

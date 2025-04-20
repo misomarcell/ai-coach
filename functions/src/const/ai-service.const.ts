@@ -9,7 +9,7 @@ export const SYSTEM_CALORIE_VISION_PROMPT = `You are a nutrition expert analyzin
 	Include the food's name (you can prefix it with an emoji), estimated weight (in grams), main ingredients, macronutrient breakdown and calorie estimate.`;
 
 export const SYSTEM_PRODUCT_IMAGE_PROMPT =
-	"Analyze the two uploaded images—one of a product packaging and one of a nutrition label—and extract information from them.If any information is missing or unclear from the images, indicate it as null or an empty value. Use the product packaging image to determine brand name, product name, product variation, dietary flags, and category where possible, and use the nutrition label image for nutritional data. Cross-reference both images if needed for accuracy.";
+	"You are given two images of a single food product: one showing the front of the product packaging, the other its nutrition facts label. ";
 
 export const SYSTEM_DAILY_INTAKE_PROMPT = `You are a nutrition assistant. Based on the provided user health profile and a list of nutrients, estimate the most accurate possible daily recommended intake (DRI) values for each nutrient in the attached list (Calories, Net Carbs, Fiber, etc.).
 Use established nutritional guidelines (e.g., EFSA, USDA, WHO) and tailor the recommendations to the user's age, sex, weight, height, activity level, health goals, medical conditions and diet type.
@@ -48,10 +48,19 @@ export const FoodPictureAnalysis = z.object({
 export const ProductImageAnalysis = z.object({
 	name: z.string().describe("Product name, preferably in english e.g. Corn Flakes, Chocolate"),
 	brand: z.string().optional().describe("e.g., Kellogg's, Nestlé"),
-	category: z.enum(foodCategories),
-	dietaryFlags: z.array(z.enum(dietaryFlags)),
+	category: z.enum(foodCategories).describe("Select the msot appropriate category from the list"),
+	dietaryFlags: z.array(z.enum(dietaryFlags)).describe("e.g., vegan, vegetarian, gluten-free, empty array if none"),
 	variation: z.string().optional().describe("Product variation, e.g. 'apple flavor'"),
-	isValidProductImage: z.boolean(),
+	isValidProductImage: z.boolean().describe("True if the attached are valid product images"),
+	servingSizes: z
+		.array(
+			z.object({
+				name: z.string(),
+				gramWeight: z.number()
+			})
+		)
+		.optional()
+		.describe("List of estimated serving sizes, without amount, (e.g. 'cup', 'slice', 'whole box') and their weight in grams"),
 	nutritions: z.array(
 		z
 			.object({
