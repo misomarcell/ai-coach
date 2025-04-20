@@ -30,6 +30,19 @@
 	}
 }
 
+.admin-details {
+	border: 1px solid var(--mat-sys-inverse-on-surface);
+	border-radius: 4px;
+
+	div {
+		padding: 0.5rem;
+	}
+
+	div:nth-child(odd) {
+		background: var(--mat-sys-inverse-on-surface);
+	}
+}
+
 .loading-container,
 .error-container {
 	display: flex;

@@ -14,6 +14,21 @@
 		<div class="admin-food-container">
 			<div class="admin-section">
 				<h4>Admin Settings</h4>
+				<div class="admin-details d-flex flex-column mt-2 mb-2">
+					<div class="d-flex jc-sb">
+						<span>ID: {{ food()?.id }}</span>
+						<mat-icon (click)="copy(food()?.id)">content_copy</mat-icon>
+					</div>
+					<div class="d-flex jc-sb">
+						<span>Owner: {{ food()?.ownerUid }}</span>
+						<mat-icon (click)="copy(food()?.ownerUid)">content_copy</mat-icon>
+					</div>
+					<div class="d-flex jc-sb">
+						<span>Source: {{ food()?.source }}</span>
+						<mat-icon (click)="copy(food()?.source)">content_copy</mat-icon>
+					</div>
+				</div>
+
 				<form [formGroup]="adminForm" class="admin-form">
 					<div class="form-row">
 						<mat-checkbox formControlName="isApproved" color="primary">Is Approved</mat-checkbox>
@@ -31,7 +46,12 @@
 							</mat-select>
 						</mat-form-field>
 					</div>
-					<button mat-stroked-button (click)="saveAdminChanges()" [disabled]="adminForm.invalid">Save Admin Settings</button>
+					<div class="d-flex gap-1">
+						<button mat-stroked-button color="warn" (click)="deleteFood()" [disabled]="adminForm.invalid">Delete</button>
+						<button mat-stroked-button (click)="saveAdminChanges()" class="flex-grow" [disabled]="adminForm.invalid">
+							Save Admin Settings
+						</button>
+					</div>
 				</form>
 			</div>
 
@@ -59,7 +79,7 @@
 
 			<div class="food-form-section">
 				<h4>Food Details</h4>
-				<app-edit-food-form [food]="food()" />
+				<app-edit-food-form class="mt-2" [food]="food()" />
 			</div>
 		</div>
 	} @else {

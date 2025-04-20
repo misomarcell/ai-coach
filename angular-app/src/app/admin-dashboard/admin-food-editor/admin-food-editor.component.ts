@@ -70,6 +70,16 @@ export class AdminFoodEditorComponent implements OnInit {
 		}
 	}
 
+	async copy(content?: string): Promise<void> {
+		if (!content) {
+			return;
+		}
+
+		navigator.clipboard.writeText(content).then(() => {
+			this.snackBar.open("Copied to clipboard", "Close", { duration: 1000 });
+		});
+	}
+
 	loadFood(): void {
 		if (!this.foodId) return;
 
@@ -119,6 +129,10 @@ export class AdminFoodEditorComponent implements OnInit {
 				})
 			)
 			.subscribe();
+	}
+
+	deleteFood(): void {
+		console.log("Not yet implemented");
 	}
 
 	generateServingSizes(): void {
