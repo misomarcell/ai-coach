@@ -94,6 +94,11 @@ export const routes: Routes = [
 						path: "food-list",
 						loadComponent: () =>
 							import("./admin-dashboard/admin-food-list/admin-food-list.component").then((m) => m.AdminFoodListComponent)
+					},
+					{
+						path: "user-list",
+						loadComponent: () =>
+							import("./admin-dashboard/admin-user-list/admin-user-list.component").then((m) => m.AdminUserListComponent)
 					}
 				]
 			},

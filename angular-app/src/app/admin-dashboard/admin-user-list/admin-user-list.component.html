@@ -1,0 +1,23 @@
+<app-page-title title="User Management" class="mb-2" />
+
+<div class="user-list-container">
+	<div class="d-flex flex-column gap-2">
+		@for (user of users(); track user.id) {
+			<app-admin-user-item [user]="user" />
+		} @empty {
+			<div class="empty-state">
+				<p>No users found</p>
+			</div>
+		}
+
+		@if (isLoading()) {
+			<div class="loading-container">
+				<mat-spinner diameter="40" />
+			</div>
+		} @else if (hasMoreUsers()) {
+			<div class="load-more-container">
+				<button mat-stroked-button class="w-100" (click)="loadMoreUsers()">Load More</button>
+			</div>
+		}
+	</div>
+</div>

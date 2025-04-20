@@ -1,0 +1,127 @@
+<mat-expansion-panel class="user-panel" (opened)="onPanelOpened()" (closed)="onPanelClosed()">
+	<mat-expansion-panel-header>
+		<mat-panel-title>
+			<div class="user-header">
+				@if (user().photoURL) {
+					<div class="user-avatar">
+						<img [src]="user().photoURL" alt="User photo" />
+					</div>
+				} @else {
+					<div class="user-avatar no-photo">
+						<mat-icon>account_circle</mat-icon>
+					</div>
+				}
+
+				<div class="user-info">
+					<div class="user-name">{{ user().displayName || "No Name" }}</div>
+					<div class="user-email">{{ user().email || "No Email" }}</div>
+				</div>
+			</div>
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	<div class="user-details">
+		<mat-card>
+			<mat-card-content>
+				<p class="bold mb-2">User Information</p>
+				<div class="info-row">
+					<div class="info-label">UID:</div>
+					<div class="info-value">{{ user().id }}</div>
+				</div>
+				<div class="info-row">
+					<div class="info-label">Auth Provider:</div>
+					<div class="info-value">{{ user().providerId }}</div>
+				</div>
+				<div class="info-row">
+					<div class="info-label">Created:</div>
+					<div class="info-value">{{ user().created | date: "YYYY-MM-dd HH:mm" }}</div>
+				</div>
+
+				@if (user().communicationPreferences) {
+					<h3>Communication Preferences</h3>
+					<div class="info-row">
+						<div class="info-label">Channel:</div>
+						<div class="info-value">{{ user().communicationPreferences?.communicationChannel || "None" }}</div>
+					</div>
+					<div class="info-row">
+						<div class="info-label">Frequency:</div>
+						<div class="info-value">{{ user().communicationPreferences?.communicationFrequency || "None" }}</div>
+					</div>
+				}
+
+				<mat-divider class="my-3"></mat-divider>
+
+				<p class="bold mb-2">Health profile</p>
+				@if (isLoading()) {
+					<div class="loading-container">
+						<mat-spinner diameter="30"></mat-spinner>
+					</div>
+				} @else if (healthProfile()) {
+					<div class="health-profile">
+						<div class="info-row">
+							<div class="info-label">Gender:</div>
+							<div class="info-value">{{ healthProfile()!.gender }}</div>
+						</div>
+						<div class="info-row">
+							<div class="info-label">Height:</div>
+							<div class="info-value">{{ healthProfile()!.heightCm }} cm</div>
+						</div>
+						<div class="info-row">
+							<div class="info-label">Weight:</div>
+							<div class="info-value">{{ healthProfile()!.weightKg }} kg</div>
+						</div>
+						<div class="info-row">
+							<div class="info-label">Birth Date:</div>
+							<div class="info-value">{{ healthProfile()!.birthDate | date: "yyyy-MM-dd" }}</div>
+						</div>
+						<div class="info-row">
+							<div class="info-label">Activity Level:</div>
+							<div class="info-value">{{ healthProfile()!.activityLevel }}</div>
+						</div>
+
+						@if (healthProfile()!.dietGoals.length) {
+							<div class="info-row">
+								<div class="info-label">Diet Goals:</div>
+								<div class="info-value">
+									<ul class="tag-list">
+										@for (goal of healthProfile()!.dietGoals; track goal) {
+											<li>{{ goal }}</li>
+										}
+									</ul>
+								</div>
+							</div>
+						}
+
+						@if (healthProfile()!.dietaryRestrictions?.length) {
+							<div class="info-row">
+								<div class="info-label">Dietary Restrictions:</div>
+								<div class="info-value">
+									<ul class="tag-list">
+										@for (restriction of healthProfile()!.dietaryRestrictions; track restriction) {
+											<li>{{ restriction }}</li>
+										}
+									</ul>
+								</div>
+							</div>
+						}
+
+						@if (healthProfile()!.healthConditions?.length) {
+							<div class="info-row">
+								<div class="info-label">Health Conditions:</div>
+								<div class="info-value">
+									<ul class="tag-list">
+										@for (condition of healthProfile()!.healthConditions; track condition) {
+											<li>{{ condition }}</li>
+										}
+									</ul>
+								</div>
+							</div>
+						}
+					</div>
+				} @else {
+					<p class="no-data">No health profile found for this user.</p>
+				}
+			</mat-card-content>
+		</mat-card>
+	</div>
+</mat-expansion-panel>
