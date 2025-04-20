@@ -108,7 +108,9 @@ function convertFood(input: FoundationFoodsEntity): Partial<FoodDb> {
 			existingNutrition.amount += nutrition.amount;
 			console.warn("\t - New amount:", existingNutrition.amount);
 		} else {
-			food.nutritions?.push(nutrition);
+			if (nutrition.amount > 0) {
+				food.nutritions?.push(nutrition);
+			}
 		}
 	}
 

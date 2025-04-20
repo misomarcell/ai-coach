@@ -96,6 +96,10 @@ function mapXlsToNutritions(row: any): Nutrition[] {
 			continue;
 		}
 
+		if (value === 0) {
+			continue;
+		}
+
 		nutritions.push({
 			type: mappedNutrition.type,
 			unit: mappedNutrition.unit,
