@@ -4,7 +4,7 @@
 			<mat-label>Name</mat-label>
 			<input matInput formControlName="name" placeholder="Enter food name" />
 			@if (foodForm.get("name")?.invalid && foodForm.get("name")?.touched) {
-				<mat-error>Name is required</mat-error>
+				<mat-error>{{ getErrorMessage("name") }}</mat-error>
 			}
 		</mat-form-field>
 
@@ -12,11 +12,17 @@
 			<mat-form-field class="form-field-name">
 				<mat-label>Variation</mat-label>
 				<input matInput formControlName="variation" placeholder="e.g. Apple flavor" />
+				@if (foodForm.get("variation")?.invalid && foodForm.get("variation")?.touched) {
+					<mat-error>{{ getErrorMessage("variation") }}</mat-error>
+				}
 			</mat-form-field>
 
 			<mat-form-field class="form-field-brand">
 				<mat-label>Brand</mat-label>
 				<input matInput formControlName="brand" placeholder="Enter brand name" />
+				@if (foodForm.get("brand")?.invalid && foodForm.get("brand")?.touched) {
+					<mat-error>{{ getErrorMessage("brand") }}</mat-error>
+				}
 			</mat-form-field>
 		</div>
 
@@ -24,11 +30,13 @@
 			<mat-form-field class="form-field-barcode">
 				<mat-label>Barcode</mat-label>
 				<input matInput formControlName="barcode" placeholder="Barcode" />
-				<button mat-icon-button matSuffix type="button" (click)="onScanBarcodeClick()">
-					<mat-icon>qr_code_scanner</mat-icon>
+				<button mat-icon-button matSuffix type="button" class="mr-1" (click)="onScanBarcodeClick()">
+					<mat-icon svgIcon="barcode-solid"></mat-icon>
 				</button>
+				@if (foodForm.get("barcode")?.invalid && foodForm.get("barcode")?.touched) {
+					<mat-error>{{ getErrorMessage("barcode") }}</mat-error>
+				}
 			</mat-form-field>
-
 			<mat-form-field class="form-field-category">
 				<mat-label>Category</mat-label>
 				<mat-select formControlName="category">
@@ -37,7 +45,7 @@
 					}
 				</mat-select>
 				@if (foodForm.get("category")?.invalid && foodForm.get("category")?.touched) {
-					<mat-error>Category is required</mat-error>
+					<mat-error>{{ getErrorMessage("category") }}</mat-error>
 				}
 			</mat-form-field>
 		</div>

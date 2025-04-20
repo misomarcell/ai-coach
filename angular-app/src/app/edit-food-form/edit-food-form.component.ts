@@ -284,6 +284,19 @@ export class EditFoodFormComponent implements OnInit {
 		}
 	}
 
+	getErrorMessage(controlName: string): string {
+		const control = this.foodForm.get(controlName);
+
+		if (control?.hasError("required")) {
+			return "This field is required.";
+		} else if (control?.hasError("min")) {
+			return "Value must be greater than 0.";
+		} else if (control?.hasError("pattern")) {
+			return "Invalid format.";
+		}
+		return "Invalid";
+	}
+
 	private prefillAnalyzerResult(): void {
 		const prefilledFood = this.food();
 		if (!prefilledFood || !this.foodForm) {
