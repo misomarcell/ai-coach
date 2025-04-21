@@ -29,7 +29,7 @@
 </mat-expansion-panel>
 
 <mat-menu #menu="matMenu">
-	<button mat-menu-item routerLink="/search-food" [queryParams]="{ focus: true, group: groupName(), date: getFormattedDate() }">
+	<button mat-menu-item routerLink="/foods" [queryParams]="{ focus: true, group: groupName(), date: getFormattedDate() }">
 		<mat-icon>add</mat-icon>
 		<span>Add new entry</span>
 	</button>
