@@ -20,7 +20,7 @@ export class ProfileMenuComponent {
 
 	isInstallable = signal(false);
 	isAdmin = toSignal(this.authService.isAdmin(), { initialValue: false });
-	name = toSignal(this.authService.getCurrentUser().pipe(map((u) => u?.displayName)), { initialValue: "" });
+	name = toSignal(this.authService.getCurrentUser().pipe(map((u) => u?.displayName || "")), { initialValue: "" });
 
 	constructor() {
 		this.isInstallable.set(this.pwaService.isReadyToInstall());
