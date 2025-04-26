@@ -1,11 +1,9 @@
-import { auth } from "firebase-functions/v1";
-import { firestore } from "firebase-admin";
 import { UserProfileDb } from "@aicoach/shared";
+import { firestore } from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
-import { Logger } from "../logger";
+import { auth, logger } from "firebase-functions/v1";
 
 export const userAuthCreated = auth.user().onCreate(async (user) => {
-	const logger = new Logger("AuthTrigger: userAuthCreated");
 	const existingUserDoc = await firestore().collection("users").doc(user.uid).get();
 
 	if (existingUserDoc.exists) {
