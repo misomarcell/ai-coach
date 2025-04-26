@@ -1,4 +1,10 @@
-<app-analysis-request-form class="mb-2" />
+<app-page-title [main]="true" title="Diet Analyses" />
+
+@let _profile = userProfile();
+@let _healthProfile = healthProfile();
+@if (_profile && _healthProfile) {
+	<app-analysis-request-form class="mb-2" />
+}
 
 @if (analyses(); as analyses) {
 	@if (analyses.length > 0) {

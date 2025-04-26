@@ -22,11 +22,13 @@ export type AiModelConfig = {
 	model?: AiModel;
 	maxTokens?: number;
 	temperature?: number;
+	topP?: number;
 };
 
 const DEFAULT_MODEL: AiModel = "gpt-4o";
 const DEFAULT_MAX_TOKENS = 1000;
-const DEFAULT_TEMPERATURE = 0.7;
+const DEFAULT_TEMPERATURE = 1;
+const DEFAULT_TOPP = 0.8;
 const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 const ANTHROPIC_API_KEY = defineSecret("ANTHROPIC_API_KEY");
 
@@ -161,7 +163,8 @@ export class AiService {
 			apiKey,
 			model: config?.model || DEFAULT_MODEL,
 			maxTokens: config?.maxTokens || DEFAULT_MAX_TOKENS,
-			temperature: config?.temperature || DEFAULT_TEMPERATURE
+			temperature: config?.temperature || DEFAULT_TEMPERATURE,
+			topP: config?.topP || DEFAULT_TOPP
 		});
 	}
 }

@@ -7,7 +7,7 @@ import { connectStorageEmulator, getStorage, provideStorage } from "@angular/fir
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
 import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions, withIncrementalHydration } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { PreloadAllModules, provideRouter, withPreloading } from "@angular/router";
+import { PreloadAllModules, provideRouter, withPreloading, withInMemoryScrolling } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
 	providers: [
 		provideHttpClient(withFetch()),
 		provideExperimentalZonelessChangeDetection(),
-		provideRouter(routes, withPreloading(PreloadAllModules)),
+		provideRouter(routes, withPreloading(PreloadAllModules), withInMemoryScrolling({ scrollPositionRestoration: "enabled" })),
 		provideClientHydration(withHttpTransferCacheOptions({}), withIncrementalHydration(), withEventReplay()),
 		provideAnimationsAsync(),
 		{

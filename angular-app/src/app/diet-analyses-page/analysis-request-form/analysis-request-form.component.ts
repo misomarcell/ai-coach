@@ -8,7 +8,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatIconModule } from "@angular/material/icon";
 import { MatRadioModule } from "@angular/material/radio";
 import { map, Subscription } from "rxjs";
-import { AnalysisService } from "../services/analysis.service";
+import { AnalysisService } from "../../services/analysis.service";
 
 @Component({
 	selector: "app-analysis-request-form",

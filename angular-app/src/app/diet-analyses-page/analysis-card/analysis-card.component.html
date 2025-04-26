@@ -1,41 +1,23 @@
+@let _analysis = analysis();
 @if (status === "completed") {
 	<mat-card>
+		<mat-card-header>
+			<mat-card-title>{{ _analysis.request.created | date: "LLL d" }}</mat-card-title>
+		</mat-card-header>
 		<mat-card-content>
 			<p>{{ result?.summary }}</p>
 
-			@if (result?.suggestions; as suggestions) {
-				<ul>
-					@for (suggestion of suggestions; track suggestion) {
-						<li>{{ suggestion }}</li>
-					}
-				</ul>
-			}
-
-			<strong>Positives</strong>
-			<ul>
-				@for (positive of result?.positives; track positive) {
-					<li>
-						<strong>{{ positive.foodName }}:</strong> {{ positive.comment }}
-					</li>
-				}
-			</ul>
-
-			<strong>Negatives</strong>
-			<ul>
-				@for (negative of result?.negatives; track negative) {
-					<li>
-						<strong>{{ negative.foodName }}:</strong> {{ negative.comment }}
-					</li>
-				}
-			</ul>
-
 			<strong>Score: {{ result?.score + "/100" }}</strong>
 			<div class="score-bar"><div class="score" [ngStyle]="{ left: (result?.score ?? 0) + '%' }"></div></div>
-			<mat-card-actions [align]="'end'">
+			<div class="d-flex gap-2 pb-2 pt-2">
 				<button mat-icon-button (click)="onDeleteClick()">
 					<mat-icon>delete</mat-icon>
 				</button>
-			</mat-card-actions>
+				<button mat-icon-button>
+					<mat-icon>flag</mat-icon>
+				</button>
+				<button mat-stroked-button class="flex-grow" [routerLink]="_analysis.id">Open report</button>
+			</div>
 		</mat-card-content>
 		<mat-card-footer class="suggestion-card-footer">
 			{{ result?.created | date: "YYYY-MM-dd HH:mm" }}
@@ -65,7 +47,7 @@
 			</mat-card-actions>
 		</mat-card-content>
 		<mat-card-footer class="suggestion-card-footer">
-			{{ analysis?.request?.created | date: "YYYY-MM-dd HH:mm" }}
+			{{ _analysis.request.created | date: "YYYY-MM-dd HH:mm" }}
 		</mat-card-footer>
 	</mat-card>
 }

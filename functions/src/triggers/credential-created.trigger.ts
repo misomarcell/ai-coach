@@ -1,7 +1,7 @@
 import { CronometerCredentialDb, CronometerCredentialStatus } from "@aicoach/shared";
 import { onDocumentCreated } from "firebase-functions/firestore";
+import { logger } from "firebase-functions";
 import cronometerConnector, { ConnectorError } from "../connectors/cronometer-connector";
-import { Logger } from "../logger";
 import { ConnectorErrorType } from "../models/cronometer-connector.model";
 import cronometerCredentialService from "../services/credential.service";
 
@@ -13,7 +13,6 @@ export const credentialsCreated = onDocumentCreated(
 		region: "europe-west1"
 	},
 	async (event) => {
-		const logger = new Logger("CredentialTrigger: credentialCreated");
 		const snapshot = event.data;
 
 		if (!snapshot) {
@@ -41,6 +40,9 @@ export const credentialsCreated = onDocumentCreated(
 
 					logger.info("Cronometer credential marked as invalid");
 				}
+			} else {
+				await cronometerCredentialService.setVerificationStatus(uid, CronometerCredentialStatus.Error);
+				logger.info("Cronometer credential marked as error");
 			}
 		} finally {
 			await cronometerConnector.close();

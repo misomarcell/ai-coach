@@ -4,7 +4,8 @@ export enum CronometerCredentialStatus {
 	Unknown = "unknown",
 	Processing = "processing",
 	Verified = "verified",
-	Invalid = "invalid"
+	Invalid = "invalid",
+	Error = "error"
 }
 
 export interface CronometerCredential {

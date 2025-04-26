@@ -34,7 +34,13 @@ export const analysisRequestCreated = onDocumentCreated(
 				AnalysisRequestStatus.Processing
 			]);
 			if (ongoinAnalyses.filter((ongoing) => ongoing.id !== analysis.id)?.length > 0) {
-				throw new Error("User has ongoing analysis");
+				logger.info(`User ${userId} already has an ongoing analysis request`);
+				await analysisService.updateAnalysisStatus(
+					userId,
+					analysisId,
+					AnalysisRequestStatus.Failed,
+					"User already has an ongoing analysis request"
+				);
 			}
 
 			await analysisService.updateAnalysisStatus(userId, analysisId, AnalysisRequestStatus.Processing);
@@ -48,7 +54,7 @@ export const analysisRequestCreated = onDocumentCreated(
 			const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 			const servings = await servingsService.getUserServings(userId, { before: now, after: weekAgo });
 			const formattedServings = await formatServings(servings);
-			const modelConfig: AiModelConfig = { model: analysis.request.model };
+			const modelConfig: AiModelConfig = { model: analysis.request.model, temperature: 0.8, topP: 0.9 };
 			const analysisResult = await aiService.getAnalysisResult(formattedServings, healthProfile, modelConfig);
 			if (!analysisResult) {
 				throw new Error(`Failed to get analysis from ${analysis.request.model}`);

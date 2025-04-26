@@ -21,7 +21,7 @@ export const servingCreatedTrigger = onDocumentCreated(
 
 		const foodId = serving?.food.id;
 		if (!foodId) {
-			logger.log("Food ID not found, food counter couldn't be icnreased.");
+			logger.log("Food ID not found, food counter couldn't be increased.");
 
 			return;
 		}

@@ -21,6 +21,14 @@
 				<div class="try-again-button-wrapper">
 					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
 				</div>
+			} @else if (credentials.status === "error") {
+				<div class="status-message">
+					<mat-icon>error_outline</mat-icon>
+					<span>Could not log in to your Cronometer account with the provided credentials.</span>
+				</div>
+				<div class="try-again-button-wrapper">
+					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
+				</div>
 			} @else {
 				<div class="status-message column gap-2">
 					<span>Connected ({{ credentials.username }})</span>

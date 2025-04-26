@@ -1,0 +1,33 @@
+<app-page-title class="mb-2" title="Report details" />
+
+@let result = analysis?.result;
+@if (analysis && result) {
+	<p class="bold text-center">{{ result.summary }}</p>
+
+	<h4>Suggestions</h4>
+	@if (result.suggestions; as suggestions) {
+		<ul>
+			@for (suggestion of suggestions; track suggestion) {
+				<li class="mb-1">{{ suggestion }}</li>
+			}
+		</ul>
+	}
+
+	<h4>Positives</h4>
+	<ul>
+		@for (positive of result.positives; track positive) {
+			<li class="mb-1">
+				<strong>{{ positive.foodName }}:</strong> {{ positive.comment }}
+			</li>
+		}
+	</ul>
+
+	<h4>Negatives</h4>
+	<ul>
+		@for (negative of result.negatives; track negative) {
+			<li class="mb-1">
+				<strong>{{ negative.foodName }}:</strong> {{ negative.comment }}
+			</li>
+		}
+	</ul>
+}

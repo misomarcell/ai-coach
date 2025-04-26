@@ -5,6 +5,7 @@ import {
 	collectionData,
 	deleteDoc,
 	doc,
+	docData,
 	Firestore,
 	FirestoreDataConverter,
 	limit,
@@ -59,6 +60,14 @@ export class AnalysisService {
 			};
 		}
 	};
+
+	getAnalysis(analysisId: string): Observable<Analysis | undefined> {
+		return this.authService.uid.pipe(
+			filter((uid) => !!uid),
+			map((uid) => doc(this.firestore, "users", uid!, "analyses", analysisId).withConverter(this.analysesConverted)),
+			switchMap((docRef) => from(docData(docRef)))
+		);
+	}
 
 	getAnaylses(): Observable<Analysis[]> {
 		return this.authService.uid.pipe(

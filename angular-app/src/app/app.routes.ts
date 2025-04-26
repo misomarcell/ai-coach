@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 import { isAdminGuard } from "./admin.guard";
 import { loggedInGuard, loggedOutGuard } from "./auth.guard";
+import { analysisResolver } from "./resolvers/analysis.resolver";
 import { dailyTargetsResolver } from "./resolvers/daily-targets.resolver";
 import { healthProfileResolver } from "./resolvers/health-profile.resolver";
 import { servingsResolver } from "./resolvers/servings.resolver";
@@ -14,7 +15,24 @@ export const routes: Routes = [
 			{
 				path: "diet-analyses",
 				loadComponent: () => import("./diet-analyses-page/diet-analyses-page.component").then((m) => m.DietAnalysesPageComponent),
-				canActivate: [loggedInGuard]
+				canActivate: [loggedInGuard],
+				children: [
+					{
+						path: "",
+						loadComponent: () =>
+							import("./diet-analyses-page/analysis-result-list/analysis-result-list.component").then(
+								(m) => m.AnalysisResultListComponent
+							)
+					},
+					{
+						path: ":analysisId",
+						loadComponent: () =>
+							import("./diet-analyses-page/analysis-details-page/analysis-details-page.component").then(
+								(m) => m.AnalysisDetailsPageComponent
+							),
+						resolve: { analysis: analysisResolver }
+					}
+				]
 			},
 			{
 				path: "dashboard",
