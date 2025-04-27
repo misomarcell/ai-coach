@@ -74,21 +74,27 @@ export class AiService {
 		return response.text;
 	}
 
-	async analyzeVisionImage(imageData: string, description?: string): Promise<CalorieVisionResult | null> {
+	async analyzeVisionImage(
+		imageData: string,
+		healthProfile?: HealthProfileDb,
+		imageDescription?: string
+	): Promise<CalorieVisionResult | null> {
 		const model = this.getModelInstance();
+		const healtProfileSummary = healthProfile ? generateHealthProfileSummary(healthProfile) : "";
 		const prompt = ChatPromptTemplate.fromMessages([
 			["system", SYSTEM_CALORIE_VISION_PROMPT],
 			[
 				"user",
 				[
-					{ type: "text", text: description },
-					{ type: "image_url", image_url: { url: imageData } }
+					{ type: "text", text: imageDescription },
+					{ type: "image_url", image_url: { url: imageData } },
+					{ type: "text", text: healtProfileSummary }
 				]
 			]
 		]);
 
 		const structuredLlm = model.withStructuredOutput(FoodPictureAnalysis, { name: "food-picture-analysis" });
-		const parsedResponse = await prompt.pipe(structuredLlm).invoke({ description });
+		const parsedResponse = await prompt.pipe(structuredLlm).invoke({ description: imageDescription });
 
 		return parsedResponse;
 	}

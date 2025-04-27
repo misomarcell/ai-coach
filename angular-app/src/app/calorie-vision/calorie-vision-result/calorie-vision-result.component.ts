@@ -60,8 +60,9 @@ export class CalorieVisionResultComponent implements OnInit {
 	onScoreClick() {
 		this.dialog.open(PromptDialogComponent, {
 			data: {
-				title: "Calorie Vision Score",
-				message: "This score reflects the nutritional quality of the food item. A higher score indicates better nutritional value.",
+				title: "About scoring",
+				message:
+					"This score reflects the personalized nutritional value of the food. A higher score can indicates better nutritional value or a better fit to your needs and goals.",
 				buttonLayout: "ok"
 			}
 		});

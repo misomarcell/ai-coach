@@ -35,5 +35,6 @@ service cloud.firestore {
 
 function isAdmin() {
 	return request.auth != null
+		&& ('admin' in request.auth.token)
 		&& request.auth.token.admin == true;
 }

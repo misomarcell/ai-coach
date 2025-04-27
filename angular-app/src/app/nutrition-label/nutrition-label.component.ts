@@ -1,5 +1,5 @@
 import { Nutrition, NutritionType, NutritionUnit, toSmallestWholeUnit } from "@aicoach/shared";
-import { DecimalPipe, NgClass, TitleCasePipe } from "@angular/common";
+import { DecimalPipe, NgClass } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
 
 const DISPLAYED_NUTRITIONS: CalculatedNutrition[] = [
@@ -52,7 +52,7 @@ interface CalculatedNutrition {
 
 @Component({
 	selector: "app-nutrition-label",
-	imports: [NgClass, TitleCasePipe, DecimalPipe],
+	imports: [NgClass, DecimalPipe],
 	templateUrl: "./nutrition-label.component.html",
 	styleUrl: "./nutrition-label.component.scss"
 })

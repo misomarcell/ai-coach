@@ -18,13 +18,13 @@
 	}
 
 	<h4 class="text-center">{{ _calorieVision?.result?.foodName }}</h4>
-	<p class="text-center pt-2">{{ _calorieVision.result.evaluation.description }}</p>
 	<button mat-button class="score" (click)="onScoreClick()">
 		<mat-icon>info</mat-icon>
 		Score: {{ _calorieVision.result.evaluation.score }}/100
 	</button>
+	<p class="text-center">{{ _calorieVision.result.evaluation.description }}</p>
 
-	<button mat-flat-button class="w-100 mb-2" (click)="onAddClick()">Add to Servings</button>
+	<button mat-flat-button class="w-100 mt-2 mb-2" (click)="onAddClick()">Add to Servings</button>
 
 	@if (_result) {
 		<div class="nutrition-info">

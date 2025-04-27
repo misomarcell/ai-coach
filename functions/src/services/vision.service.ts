@@ -4,6 +4,7 @@ import { DocumentReference } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import visionService from "../services/vision.service";
 import aiService from "./ai.service";
+import userService from "./user.service";
 
 export class VisionService {
 	async processVisionUpload(uid: string, documentId: string) {
@@ -18,18 +19,10 @@ export class VisionService {
 				return;
 			}
 
-			const bucket = storage().bucket();
-			const file = bucket.file(`calorie-vision/${uid}/${docData.fileName}`);
-
-			const [metadata] = await file.getMetadata({});
-			const mimeType = metadata.contentType || "image/jpeg";
-
-			const [fileContent] = await file.download();
-			const base64Image = fileContent.toString("base64");
-			const dataUri = `data:${mimeType};base64,${base64Image}`;
-
+			const healthProfile = await userService.getHealthProfile(uid);
+			const dataUri = await this.getImageUri(uid, docData.fileName);
 			const result = await aiService
-				.analyzeVisionImage(dataUri, `${docData.imageDescription}`)
+				.analyzeVisionImage(dataUri, healthProfile, docData.imageDescription)
 				.catch((error) => this.handleError(error, uid, docRef.id));
 
 			if (!result) {
@@ -60,6 +53,19 @@ export class VisionService {
 		if (!doc.exists) return;
 
 		return doc.data() as CalorieVisionDb;
+	}
+
+	private async getImageUri(uid: string, fileName: string): Promise<string> {
+		const bucket = storage().bucket();
+		const file = bucket.file(`calorie-vision/${uid}/${fileName}`);
+
+		const [metadata] = await file.getMetadata({});
+		const mimeType = metadata.contentType || "image/jpeg";
+
+		const [fileContent] = await file.download();
+		const base64Image = fileContent.toString("base64");
+
+		return `data:${mimeType};base64,${base64Image}`;
 	}
 
 	private async handleError(error: unknown, userId?: string, documentId?: string) {

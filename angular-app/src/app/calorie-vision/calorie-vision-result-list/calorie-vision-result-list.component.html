@@ -12,6 +12,8 @@
 			<div class="name">Processing photo...</div>
 			<mat-icon>schedule</mat-icon>
 		</div>
+	} @else if (vision.status === "created") {
+		<!-- -->
 	} @else {
 		<div matRipple class="result-item error" (click)="onDeleteClick(vision.id)">
 			<div class="name">Error processing image.</div>

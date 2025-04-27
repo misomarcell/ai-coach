@@ -5,10 +5,10 @@ export const SYSTEM_DIET_ANALYSIS_PROMPT = `You are an expert dietitian with adv
 The attached stringified JSON contains my dietary data exported from Cronometer, covering the past 7 days. Please analyze it and provide constructive feedback and practical, actionable suggestions with examples to improve my diet and achieve my goals. I'd like a report of how my overall intake comapres to the ideal diat neede to achieve my goals, highlights of the best and worst performing foods (about 5 each) or nutrients, and a diet quality score between 0-100, with a brief explanation of how you calculated it. Assume the food names in the data may be imprecise or generic due to Cronometer's logging system, and adjust your analysis accordingly. If relevant, search the web or nutritional databases for additional context on unclear items. Provide your response in clear, plain text without any formatting, tables, or markdown, feel free to use emoticons.`;
 
 export const SYSTEM_CALORIE_VISION_PROMPT =
-	"You are a nutrition expert analyzing food images. Identify the food visible on the attached image and provide a detailed nutritional analysis of it's contents.";
+	"You are a nutrition expert analyzing food images. Identify the food visible on the attached image and provide a detailed nutritional analysis of it's contents. In case user data was also provided, consider them when scoring the food nutritional value.";
 
 export const SYSTEM_PRODUCT_IMAGE_PROMPT =
-	"You are given two images of a single food product: one showing the front of the product packaging, the other its nutrition facts label. Nutritions per 100g must contain the following: Calories, Total Fat, Saturated Fat, Carbohydrates, Sugar, Fiber, Protein, Salt and Sodium, even if their value is 0, you can include more if you feel confident about them.";
+	"You are given two images of a single food product: one showing the front of the product packaging, the other its nutrition facts label. Provide details about the product and it's nutrition facts based on it's packaging.";
 
 export const SYSTEM_DAILY_INTAKE_PROMPT = `You are a nutrition assistant. Based on the provided user health profile and a list of nutrients, estimate the most accurate possible daily recommended intake (DRI) values for each nutrient in the attached list (Calories, Net Carbs, Fiber, etc.).
 Use established nutritional guidelines (e.g., EFSA, USDA, WHO) and tailor the recommendations to the user's age, sex, weight, height, activity level, health goals, medical conditions and diet type.

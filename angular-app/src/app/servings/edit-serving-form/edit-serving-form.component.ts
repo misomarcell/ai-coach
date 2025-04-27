@@ -343,6 +343,12 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			});
 	}
 
+	get per(): string {
+		const formValues = this.form.getRawValue();
+
+		return `${formValues.amount} ${formValues.servingSize.name}`;
+	}
+
 	private getSelectedDate(): Date {
 		return this.combineDateAndTime(this.form.value.date, this.form.value.time) || new Date();
 	}
