@@ -1,4 +1,4 @@
-import { foodCategories, nutritionUnits, nutritionTypes, dietaryFlags, NutritionType } from "@aicoach/shared";
+import { foodCategories, nutritionUnits, nutritionTypes, dietaryFlags } from "@aicoach/shared";
 import { z } from "zod";
 
 export const SYSTEM_DIET_ANALYSIS_PROMPT = `You are an expert dietitian with advanced knowledge in nutrition and data analysis.
