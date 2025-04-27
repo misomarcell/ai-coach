@@ -4,6 +4,10 @@
 @let _healthProfile = healthProfile();
 @if (_profile && _healthProfile) {
 	<app-analysis-request-form class="mb-2" />
+} @else {
+	<div class="d-flex flex-column ai-c">
+		<span>You need to complete your <a [routerLink]="'/profile/health-profile'">Health Profile</a> first.</span>
+	</div>
 }
 
 @if (analyses(); as analyses) {

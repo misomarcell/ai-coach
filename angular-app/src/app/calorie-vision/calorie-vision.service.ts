@@ -3,6 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import {
 	collection,
 	collectionData,
+	deleteDoc,
 	doc,
 	docData,
 	Firestore,
@@ -108,6 +109,15 @@ export class CalorieVisionService {
 			map((uid) => `calorie-vision/${uid}/${fileName}`),
 			map((filePath) => ref(this.storage, filePath)),
 			switchMap((fileRef) => from(getDownloadURL(fileRef)))
+		);
+	}
+
+	deleteCalorieVision(documentId: string): Observable<void> {
+		return this.authService.uid.pipe(
+			filter((uid) => !!uid),
+			take(1),
+			map((uid) => doc(this.firestore, "users", uid!, "calorie-vision", documentId).withConverter(this.calorieVisionConverter)),
+			switchMap((docRef) => from(deleteDoc(docRef)))
 		);
 	}
 }

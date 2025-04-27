@@ -7,6 +7,7 @@ import { dailyTargetsResolver } from "./resolvers/daily-targets.resolver";
 import { healthProfileResolver } from "./resolvers/health-profile.resolver";
 import { servingsResolver } from "./resolvers/servings.resolver";
 import { userProfileResolver } from "./resolvers/user-profile.resolver";
+import { visionHistoryResolver } from "./resolvers/vision-history.resolver";
 
 export const routes: Routes = [
 	{
@@ -57,19 +58,20 @@ export const routes: Routes = [
 							)
 					},
 					{
+						path: "history",
+						loadComponent: () =>
+							import("./calorie-vision/calorie-vision-result-list/calorie-vision-result-list.component").then(
+								(m) => m.CalorieVisionResultListComponent
+							),
+						resolve: { visionHistory: visionHistoryResolver }
+					},
+					{
 						path: ":visionId",
 						loadComponent: () =>
 							import("./calorie-vision/calorie-vision-result/calorie-vision-result.component").then(
 								(m) => m.CalorieVisionResultComponent
 							),
 						resolve: { calorieVision: calorieVisionResolver }
-					},
-					{
-						path: "history",
-						loadComponent: () =>
-							import("./calorie-vision/calorie-vision-result-list/calorie-vision-result-list.component").then(
-								(m) => m.CalorieVisionResultListComponent
-							)
 					}
 				]
 			},

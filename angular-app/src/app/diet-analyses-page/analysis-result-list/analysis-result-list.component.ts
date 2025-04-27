@@ -1,16 +1,16 @@
 import { Component, inject } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { MatCardModule } from "@angular/material/card";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AnalysisService } from "../../services/analysis.service";
+import { HealthProfileService } from "../../services/health-profile.service";
 import { UserService } from "../../services/user.service";
 import { AnalysisCardComponent } from "../analysis-card/analysis-card.component";
 import { AnalysisRequestFormComponent } from "../analysis-request-form/analysis-request-form.component";
-import { HealthProfileService } from "../../services/health-profile.service";
+import { RouterLink } from "@angular/router";
 
 @Component({
 	selector: "app-analysis-result-list",
-	imports: [PageTitleComponent, AnalysisRequestFormComponent, AnalysisCardComponent, MatCardModule],
+	imports: [PageTitleComponent, AnalysisRequestFormComponent, AnalysisCardComponent, RouterLink],
 	templateUrl: "./analysis-result-list.component.html",
 	styleUrl: "./analysis-result-list.component.scss"
 })

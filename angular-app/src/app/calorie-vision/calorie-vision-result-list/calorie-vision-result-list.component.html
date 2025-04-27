@@ -1,124 +1,23 @@
 <app-page-title class="mb-2" title="Calorie Vision history" />
 
-@if (isLoading) {
-	<div class="results-status-wrapper">Loading your results...</div>
-} @else if (isEmpty) {
-	<div class="results-status-wrapper">No recent results.</div>
-}
-
-@for (result of results$ | async; track result.id) {
-	@if (result.status === "complete") {
-		<mat-expansion-panel #panel [expanded]="currentFileName === result.fileName">
-			<mat-expansion-panel-header>
-				<mat-panel-title>
-					<div class="food-name">
-						{{ result.result.foodName }}
-					</div>
-					<div class="created-date">
-						{{ result.created | date: "YYYY-MM-dd" }}
-					</div>
-				</mat-panel-title>
-			</mat-expansion-panel-header>
-
-			@if (!!panel.expanded) {
-				<div class="image-container" *ngIf="result.fileName">
-					<img [src]="getImageUrl(result.fileName) | async" [alt]="result.imageDescription ?? ''" class="food-image" />
-					<p *ngIf="result.imageDescription" class="image-description">{{ result.imageDescription }}</p>
-				</div>
-
-				<div *ngIf="result.result as result" class="result-content">
-					<b>{{ result.foodName }}</b>
-					<div class="food-info">
-						<span class="title">Total calories:</span>
-						<span>{{ result.nutitionalInfo.totalCalories }}kcal</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalCalories)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info">
-						<span class="title">Total weight:</span>
-						<span>{{ result.foodWeight }}g</span>
-						<button mat-icon-button (click)="copy(result.foodWeight)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<b>Macronutrients</b>
-					<div class="food-info">
-						<span class="title">Fat:</span>
-						<span>{{ result.nutitionalInfo.totalFat }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalFat)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info indented">
-						<span class="title">Saturated:</span>
-						<span>{{ result.nutitionalInfo.totalSaturatedFat }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalSaturatedFat)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info">
-						<span class="title">Carbs:</span>
-						<span>{{ result.nutitionalInfo.totalCarbs }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalCarbs)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info indented">
-						<span class="title">Sugars:</span>
-						<span>{{ result.nutitionalInfo.totalSugars }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalSugars)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info">
-						<span class="title">Fiber:</span>
-						<span>{{ result.nutitionalInfo.totalFiber }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalFiber)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info">
-						<span class="title">Protein:</span>
-						<span>{{ result.nutitionalInfo.totalProtein }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalProtein)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<div class="food-info">
-						<span class="title">Salt:</span>
-						<span>{{ result.nutitionalInfo.totalSalt }}g</span>
-						<button mat-icon-button (click)="copy(result.nutitionalInfo.totalSalt)">
-							<mat-icon>content_copy</mat-icon>
-						</button>
-					</div>
-					<b>Main ingredients</b>
-					<div class="food-info ingredient" *ngFor="let ingredient of result.nutitionalInfo.mainIngredients">
-						<span class="title">{{ ingredient.name }}</span>
-						<span>{{ ingredient.calories }}kcal / {{ ingredient.gramWeight }}g</span>
-					</div>
-				</div>
-				<mat-card-actions [align]="'end'">
-					<button mat-flat-button class="w-100" [disabled]="addingStatus() === 'processing'" (click)="addToCronometer(result)">
-						<mat-icon>add</mat-icon>
-						Save
-					</button>
-				</mat-card-actions>
-			}
-		</mat-expansion-panel>
-	} @else if (result.status === "processing") {
-		<mat-card>
-			<mat-card-content class="status-message">
-				<mat-spinner [diameter]="24" />
-				<p>Processing latest upload...</p>
-			</mat-card-content>
-		</mat-card>
+@let _visionItems = visionItems();
+@for (vision of _visionItems; track vision.id) {
+	@if (vision.status === "complete") {
+		<div matRipple class="result-item" [routerLink]="['/calorie-vision/', vision.id]">
+			<div class="name">{{ vision.result.foodName }}</div>
+			<div class="created-date">{{ vision.created | date: "YYYY-MM-dd" }}</div>
+		</div>
+	} @else if (vision.status === "processing") {
+		<div class="result-item">
+			<div class="name">Processing photo...</div>
+			<mat-icon>schedule</mat-icon>
+		</div>
 	} @else {
-		<mat-card>
-			<mat-card-content class="status-message">
-				<mat-icon>error</mat-icon>
-				<p>Something went wrong with processing this image. Please try again later.</p>
-			</mat-card-content>
-		</mat-card>
+		<div matRipple class="result-item error" (click)="onDeleteClick(vision.id)">
+			<div class="name">Error processing image.</div>
+			<mat-icon>warning</mat-icon>
+		</div>
 	}
+} @empty {
+	<div class="text-center mt-2 mb-2">Nothing found.</div>
 }

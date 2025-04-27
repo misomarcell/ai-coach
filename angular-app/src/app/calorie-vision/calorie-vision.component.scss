@@ -1,19 +1,5 @@
-.calorie-vision-container {
-	max-width: 800px;
+:host {
+	display: block;
 	margin: 0 auto;
-}
-
-h2 {
-	margin-bottom: 8px;
-}
-
-.description {
-	margin-bottom: 24px;
-	color: #666;
-}
-
-.content-container {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
+	width: 100%;
 }

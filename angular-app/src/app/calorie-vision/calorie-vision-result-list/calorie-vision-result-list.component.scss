@@ -17,72 +17,21 @@
 	}
 }
 
-.results-status-wrapper {
-	text-align: center;
-}
+.result-item {
+	background: var(--mat-sys-surface-container);
+	display: flex;
+	gap: 1rem;
+	padding: 0.5rem 1rem;
+	border-radius: 6px;
+	justify-content: space-between;
+	align-items: center;
+	min-height: 64px;
 
-.heading {
-	margin: 0;
-}
-
-.mat-expansion-panel-header-title {
-	gap: 0.5rem;
-	max-width: 95%;
-
-	.food-name {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		display: inline-block;
-		flex-grow: 1;
+	&.error {
+		color: var(--mat-sys-error);
 	}
 
 	.created-date {
 		flex-shrink: 0;
-	}
-
-	mat-icon {
-		flex-shrink: 0;
-	}
-}
-
-.image-container {
-	margin-bottom: 1rem;
-
-	.food-image {
-		max-width: 100%;
-		border-radius: 4px;
-		margin-bottom: 0.5rem;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
-
-	.image-description {
-		font-style: italic;
-		color: var(--mat-sys-color-on-surface-variant);
-		margin: 0.5rem 0;
-	}
-}
-
-.result-content {
-	display: flex;
-	flex-direction: column;
-
-	.food-info {
-		display: grid;
-		grid-auto-flow: column;
-		align-items: center;
-		grid-auto-columns: 50% 40% 10%;
-
-		&.indented {
-			margin-left: 0.5rem;
-		}
-
-		&.ingredient {
-			grid-auto-columns: 50% 50%;
-		}
-
-		.title {
-			font-weight: 500;
-		}
 	}
 }
