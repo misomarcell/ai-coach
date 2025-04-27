@@ -4,6 +4,19 @@
 		line-height: 1.5;
 		margin: 1.5rem 0 0 0;
 	}
+
+	a {
+		color: var(--mat-sys-tertiary);
+		font-weight: 600;
+	}
+}
+
+.score {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 1rem auto;
+	color: var(--mat-sys-tertiary);
 }
 
 .food-image {

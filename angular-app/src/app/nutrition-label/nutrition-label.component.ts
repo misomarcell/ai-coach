@@ -1,5 +1,5 @@
 import { Nutrition, NutritionType, NutritionUnit, toSmallestWholeUnit } from "@aicoach/shared";
-import { DecimalPipe, NgClass } from "@angular/common";
+import { DecimalPipe, NgClass, TitleCasePipe } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
 
 const DISPLAYED_NUTRITIONS: CalculatedNutrition[] = [
@@ -13,7 +13,7 @@ const DISPLAYED_NUTRITIONS: CalculatedNutrition[] = [
 	},
 	{
 		nutrition: { type: "Saturated Fat" },
-		label: "of which Saturated",
+		label: "Saturated Fat",
 		indented: true
 	},
 	{
@@ -22,12 +22,12 @@ const DISPLAYED_NUTRITIONS: CalculatedNutrition[] = [
 	},
 	{
 		nutrition: { type: "Sugar" },
-		label: "of which Sugar",
+		label: "Sugar",
 		indented: true
 	},
 	{
 		nutrition: { type: "Fiber" },
-		label: "of which Fiber",
+		label: "Fiber",
 		indented: true
 	},
 	{
@@ -40,7 +40,7 @@ const DISPLAYED_NUTRITIONS: CalculatedNutrition[] = [
 	},
 	{
 		nutrition: { type: "Sodium" },
-		label: "of which Sodium",
+		label: "Sodium",
 		indented: true
 	}
 ];
@@ -52,12 +52,13 @@ interface CalculatedNutrition {
 
 @Component({
 	selector: "app-nutrition-label",
-	imports: [NgClass, DecimalPipe],
+	imports: [NgClass, TitleCasePipe, DecimalPipe],
 	templateUrl: "./nutrition-label.component.html",
 	styleUrl: "./nutrition-label.component.scss"
 })
 export class NutritionLabelComponent {
 	nutritions = input.required<Nutrition[]>();
+	per = input<string | undefined>("100g");
 	calculated = signal<CalculatedNutrition[]>([]);
 
 	constructor() {

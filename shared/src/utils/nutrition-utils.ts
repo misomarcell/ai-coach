@@ -51,7 +51,7 @@ export function toSmallestWholeUnit(nutrition: Nutrition): Nutrition {
 
 		for (const targetUnit of CONVERTIBLE_UNITS.mass) {
 			const amountInTargetUnit = amountInMicrograms / CONVERSION_FACTORS[targetUnit];
-			if (!isNaN(amountInTargetUnit) && amountInTargetUnit > 1) {
+			if (!isNaN(amountInTargetUnit) && amountInTargetUnit >= 1) {
 				return { type, unit: targetUnit, amount: amountInTargetUnit };
 			}
 		}

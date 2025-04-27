@@ -1,11 +1,15 @@
-<h4 class="title">Nutrition Information</h4>
+<div class="label-header">
+	<h3 class="title">Nutrition Information</h3>
+	<div class="per-unit">per {{ per() | titlecase }}</div>
+</div>
+
 <div class="macros-list">
 	@let _calculated = calculated();
 
 	@for (item of _calculated; track item.nutrition.type) {
 		@if (item.nutrition.amount && item.nutrition.amount > 0) {
-			<div class="macro-item">
-				<span class="macro-label" [ngClass]="{ indent: item.indented }">{{ item.label }}</span>
+			<div class="macro-item" [ngClass]="{ indent: item.indented }">
+				<span class="macro-label">{{ item.label }}</span>
 				<span class="macro-value">{{ item.nutrition.amount | number: "1.0-2" }} {{ item.nutrition.unit }}</span>
 			</div>
 		}

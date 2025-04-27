@@ -1,25 +1,15 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { FoodCategory } from "./food.model";
-
-export interface NutritionalInfo {
-	totalCalories: number;
-	totalFat: number;
-	totalSaturatedFat: number;
-	totalCarbs: number;
-	totalSugars: number;
-	totalFiber: number;
-	totalProtein: number;
-	totalSalt: number;
-	mainIngredients: Ingredient[];
-}
+import { FoodCategory, Nutrition } from "./food.model";
 
 export interface CalorieVisionResult {
 	foodName: string;
 	foodWeight: number;
+	foodCalories: number;
 	isValidFoodImage: boolean;
-	evaluation: VisionFoodEvaluation;
 	foodCategory: FoodCategory;
-	nutitionalInfo: NutritionalInfo;
+	evaluation: VisionFoodEvaluation;
+	nutritions: Nutrition[];
+	mainIngredients: Ingredient[];
 }
 
 export interface VisionFoodEvaluation {

@@ -21,10 +21,14 @@ export const visionDocumentUpdated = onDocumentUpdated(
 			return;
 		}
 
-		const newData = snapshot.after.data() as CalorieVisionDb;
-		if (newData.status === CalorieVisionStatus.Submitted) {
-			logger.info("Vision document status updated to Submitted. Processing upload...");
-			await visionService.processVisionUpload(userId, documentId);
+		try {
+			const newData = snapshot.after.data() as CalorieVisionDb;
+			if (newData.status === CalorieVisionStatus.Submitted) {
+				logger.info("Vision document status updated to Submitted. Processing upload...");
+				await visionService.processVisionUpload(userId, documentId);
+			}
+		} catch (error) {
+			await visionService.updateVisionDocument(userId, documentId, { status: CalorieVisionStatus.Error });
 		}
 	}
 );

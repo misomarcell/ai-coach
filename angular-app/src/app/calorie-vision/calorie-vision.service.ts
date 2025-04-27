@@ -17,7 +17,7 @@ import {
 } from "@angular/fire/firestore";
 import { getDownloadURL, ref, Storage } from "@angular/fire/storage";
 import { setDoc, where } from "firebase/firestore";
-import { filter, from, map, Observable, of, switchMap, take, tap } from "rxjs";
+import { filter, from, map, Observable, of, switchMap, take } from "rxjs";
 import { AuthService } from "../services/auth.service";
 
 @Injectable({
@@ -88,8 +88,7 @@ export class CalorieVisionService {
 			filter((uid) => !!uid),
 			take(1),
 			map((uid) => doc(this.firestore, "users", uid!, "calorie-vision", documentId).withConverter(this.calorieVisionConverter)),
-			switchMap((docRef) => docData(docRef, { idField: "id" })),
-			tap((data) => console.log("CalorieVision data:", data))
+			switchMap((docRef) => docData(docRef, { idField: "id" }))
 		);
 	}
 
