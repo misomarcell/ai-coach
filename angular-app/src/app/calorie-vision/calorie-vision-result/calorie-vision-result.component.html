@@ -28,6 +28,8 @@
 
 	@if (_result) {
 		<div class="nutrition-info">
+			<app-nutrition-label [nutritions]="_result.nutritions" />
+
 			<h4>Food info</h4>
 			<div class="list-item">
 				<span class="title">Total calories:</span>
@@ -58,9 +60,7 @@
 					</div>
 				}
 			</div>
-
-			<app-nutrition-label [nutritions]="_result.nutritions" />
 		</div>
 	}
-	<p class="text-center">Estimated values!</p>
+	<p class="text-center">all values are estimated</p>
 }
