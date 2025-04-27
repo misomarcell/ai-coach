@@ -137,8 +137,6 @@ export class CalorieVisionUploadComponent {
 		if (!selectedFile) throw new Error("No file selected");
 		if (!documentId) throw new Error("No document ID available");
 
-		console.log("Full path:", fileRef.fullPath);
-
 		const pathSegments = fileRef.fullPath.split("/");
 		const fileName = pathSegments[pathSegments.length - 1];
 		const description = this.uploadForm.get("description")?.value;

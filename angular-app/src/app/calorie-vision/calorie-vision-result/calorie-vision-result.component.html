@@ -8,14 +8,14 @@
 		<span>Analyzing your image...</span>
 	</div>
 } @else {
-	@let _imgSrc = imageSrc();
-	@if (_imgSrc) {
-		<img class="food-image" [src]="_imgSrc" height="200" [alt]="_calorieVision.result.foodName" />
-	} @else {
-		<div class="d-flex ai-c jc-c" style="height: 200px">
-			<mat-spinner diameter="40" />
-		</div>
-	}
+	<div class="photo-wrapper">
+		@let _imgSrc = imageSrc();
+		@if (_imgSrc) {
+			<img class="food-image" [src]="_imgSrc" height="200" [alt]="_calorieVision.result.foodName" />
+		} @else {
+			<mat-icon>image</mat-icon>
+		}
+	</div>
 
 	<h4 class="text-center">{{ _calorieVision?.result?.foodName }}</h4>
 	<button mat-button class="score" (click)="onScoreClick()">

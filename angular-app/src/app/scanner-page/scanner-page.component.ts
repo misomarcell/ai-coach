@@ -2,12 +2,13 @@ import { Component, inject, signal } from "@angular/core";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Router } from "@angular/router";
 import { Result } from "@zxing/library";
-import { BarcodeScannerComponent } from "../barcode-scanner/barcode-scanner.component";
-import { FoodService } from "../services/food.service";
 import { from, switchMap, tap } from "rxjs";
+import { BarcodeScannerComponent } from "../barcode-scanner/barcode-scanner.component";
+import { PageTitleComponent } from "../page-title/page-title.component";
+import { FoodService } from "../services/food.service";
 
 @Component({
-	imports: [BarcodeScannerComponent, MatProgressSpinnerModule],
+	imports: [PageTitleComponent, BarcodeScannerComponent, MatProgressSpinnerModule],
 	templateUrl: "./scanner-page.component.html",
 	styleUrl: "./scanner-page.component.scss"
 })
