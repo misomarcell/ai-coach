@@ -1,31 +1,8 @@
-<mat-expansion-panel [expanded]="isExpanded" class="upload-panel">
-	<mat-expansion-panel-header>
-		<mat-panel-title class="upload-panel-title">
-			<mat-icon>cloud_upload</mat-icon>
-			Upload for AI estiamtion
-		</mat-panel-title>
-	</mat-expansion-panel-header>
-
-	<form class="upload-form" [formGroup]="uploadForm">
-		<div class="photo-buttons">
-			<button mat-stroked-button class="choose-file-button" (click)="fileInput.click()">
-				<input #fileInput type="file" id="file" (change)="onFileSelected($event)" accept="image/*" hidden />
-				<label for="file" class="file-label">
-					<mat-icon>attach_file</mat-icon>
-					<span>Choose image</span>
-				</label>
-			</button>
-			<button mat-stroked-button class="choose-file-button" (click)="fileCameraInput.click()">
-				<input #fileCameraInput type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" hidden />
-				<label for="file" class="file-label">
-					<mat-icon>photo_camera</mat-icon>
-					<span>Open camera</span>
-				</label>
-			</button>
-		</div>
-
-		@let _imagePreview = imagePreview();
-		<div *ngIf="_imagePreview" class="image-preview">
+<app-page-title [main]="true" title="Calorie Vision" />
+<form class="upload-form" [formGroup]="uploadForm">
+	@let _imagePreview = imagePreview();
+	@if (_imagePreview) {
+		<div class="image-preview">
 			<button mat-icon-button class="discard-button" color="warn" (click)="resetFileInput()">
 				<mat-icon>close</mat-icon>
 			</button>
@@ -33,25 +10,53 @@
 		</div>
 
 		<mat-form-field appearance="outline" class="image-description">
-			<mat-label>Description (optional)</mat-label>
+			<mat-label>Known details (optional)</mat-label>
 			<textarea
 				matInput
 				formControlName="description"
-				placeholder="e.g. A medium sized bowl of fried sweet potatoes with half an avocado"
+				placeholder="e.g. A bowl of sweet potatoes with half an avocado, 350g total"
 				rows="3"
 			></textarea>
 			<mat-hint>Add some known facts about the food for a more accurate estimation.</mat-hint>
 		</mat-form-field>
 
+		@let _isLoading = isLoading();
+		@let _documentId = documentId();
+		@let _selectedFile = selectedFile();
 		@let _uploadPercent = uploadPercent();
-		<button mat-flat-button color="primary" *ngIf="!_uploadPercent" [disabled]="!selectedFile() || loading" (click)="uploadImage()">
-			<mat-icon>file_upload</mat-icon>
-			Upload for estimation
-		</button>
+		@if (!_uploadPercent) {
+			<button mat-flat-button color="primary" [disabled]="!_selectedFile || !_documentId || _isLoading" (click)="uploadImage()">
+				Submit
+			</button>
+		}
 
-		<div *ngIf="_uploadPercent !== null && _uploadPercent !== 100" class="upload-progress">
-			<mat-progress-bar mode="determinate" [value]="_uploadPercent"></mat-progress-bar>
-			<span>{{ _uploadPercent | number: "1.0-0" }}%</span>
+		@if (_uploadPercent !== null && _uploadPercent !== 100) {
+			<div class="upload-progress">
+				<mat-progress-bar mode="determinate" [value]="_uploadPercent"></mat-progress-bar>
+				<span>{{ _uploadPercent | number: "1.0-0" }}%</span>
+			</div>
+		}
+	} @else {
+		<div class="upload-buttons d-flex flex-column gap-2 ai-c jc-e">
+			<p class="text-center">Upload a photo of your dish for an AI-powered macronutrient estimate.</p>
+			<button mat-stroked-button class="w-100" [routerLink]="['history']">
+				<mat-icon>history</mat-icon>
+				<span>Vision history</span>
+			</button>
+			<button mat-flat-button class="w-100" (click)="fileInput.click()">
+				<input #fileInput type="file" id="file" (change)="onFileSelected($event)" accept="image/*" hidden />
+				<label for="file" class="file-label">
+					<mat-icon>attach_file</mat-icon>
+					<span>Choose image</span>
+				</label>
+			</button>
+			<button mat-flat-button class="w-100" (click)="fileCameraInput.click()">
+				<input #fileCameraInput type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" hidden />
+				<label for="file" class="file-label">
+					<mat-icon>photo_camera</mat-icon>
+					<span>Open camera</span>
+				</label>
+			</button>
 		</div>
-	</form>
-</mat-expansion-panel>
+	}
+</form>

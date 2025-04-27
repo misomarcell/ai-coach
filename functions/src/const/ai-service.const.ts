@@ -4,12 +4,11 @@ import { z } from "zod";
 export const SYSTEM_DIET_ANALYSIS_PROMPT = `You are an expert dietitian with advanced knowledge in nutrition and data analysis.
 The attached stringified JSON contains my dietary data exported from Cronometer, covering the past 7 days. Please analyze it and provide constructive feedback and practical, actionable suggestions with examples to improve my diet and achieve my goals. I'd like a report of how my overall intake comapres to the ideal diat neede to achieve my goals, highlights of the best and worst performing foods (about 5 each) or nutrients, and a diet quality score between 0-100, with a brief explanation of how you calculated it. Assume the food names in the data may be imprecise or generic due to Cronometer's logging system, and adjust your analysis accordingly. If relevant, search the web or nutritional databases for additional context on unclear items. Provide your response in clear, plain text without any formatting, tables, or markdown, feel free to use emoticons.`;
 
-export const SYSTEM_CALORIE_VISION_PROMPT = `You are a nutrition expert analyzing food images.
-	Identify the food visible on the attached image and provide a detailed nutritional analysis of it's contents.
-	Include the food's name (you can prefix it with an emoji), estimated weight (in grams), main ingredients, macronutrient breakdown and calorie estimate.`;
+export const SYSTEM_CALORIE_VISION_PROMPT =
+	"You are a nutrition expert analyzing food images. Identify the food visible on the attached image and provide a detailed nutritional analysis of it's contents.";
 
 export const SYSTEM_PRODUCT_IMAGE_PROMPT =
-	"You are given two images of a single food product: one showing the front of the product packaging, the other its nutrition facts label. ";
+	"You are given two images of a single food product: one showing the front of the product packaging, the other its nutrition facts label.";
 
 export const SYSTEM_DAILY_INTAKE_PROMPT = `You are a nutrition assistant. Based on the provided user health profile and a list of nutrients, estimate the most accurate possible daily recommended intake (DRI) values for each nutrient in the attached list (Calories, Net Carbs, Fiber, etc.).
 Use established nutritional guidelines (e.g., EFSA, USDA, WHO) and tailor the recommendations to the user's age, sex, weight, height, activity level, health goals, medical conditions and diet type.
@@ -26,8 +25,14 @@ export const DietaryAnalysis = z.object({
 export const FoodPictureAnalysis = z.object({
 	foodName: z.string(),
 	foodWeight: z.number(),
+	isValidFoodImage: z.boolean().describe("True only if the attached image shows a food or dish"),
+	foodCategory: z.enum(foodCategories).describe("Select the most appropriate category from the list"),
+	evaluation: z.object({
+		score: z.number().describe("Score the food on a scale from 0 to 100 based on it's nutritional value."),
+		description: z.string().describe("A short description of the food's nutritional value.")
+	}),
 	nutitionalInfo: z.object({
-		totalCalories: z.number(),
+		totalCalories: z.number().describe("Total calories in the food, if possible use the Atwater specific or general factor system"),
 		totalFat: z.number(),
 		totalSaturatedFat: z.number(),
 		totalCarbs: z.number(),
@@ -39,7 +44,7 @@ export const FoodPictureAnalysis = z.object({
 			z.object({
 				name: z.string(),
 				calories: z.number(),
-				weight: z.number()
+				gramWeight: z.number()
 			})
 		)
 	})

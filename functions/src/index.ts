@@ -11,6 +11,7 @@ import { scheduledRun } from "./triggers/scheduler.trigger";
 import { servingCreatedTrigger } from "./triggers/serving-created.trigger";
 import { servingDeletedTrigger } from "./triggers/serving-deleted.trigger";
 import { storageTrigger } from "./triggers/storage.trigger";
+import { visionDocumentUpdated } from "./triggers/vision-document-updated.trigger";
 
 const FIREBASE_APP = initializeApp();
 const FIRESTORE = initializeFirestore(FIREBASE_APP);
@@ -28,3 +29,4 @@ exports.storage = storageTrigger;
 exports.healthProfileWritten = healthProfileWrittenTrigger;
 exports.servingCreatedTrigger = servingCreatedTrigger;
 exports.servingDeletedTrigger = servingDeletedTrigger;
+exports.visionDocumentUpdated = visionDocumentUpdated;

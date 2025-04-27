@@ -1,4 +1,5 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
+import { FoodCategory } from "./food.model";
 
 export interface NutritionalInfo {
 	totalCalories: number;
@@ -15,16 +16,26 @@ export interface NutritionalInfo {
 export interface CalorieVisionResult {
 	foodName: string;
 	foodWeight: number;
+	isValidFoodImage: boolean;
+	evaluation: VisionFoodEvaluation;
+	foodCategory: FoodCategory;
 	nutitionalInfo: NutritionalInfo;
+}
+
+export interface VisionFoodEvaluation {
+	score: number;
+	description: string;
 }
 
 export interface Ingredient {
 	name: string;
 	calories: number;
-	weight: number;
+	gramWeight: number;
 }
 
 export enum CalorieVisionStatus {
+	Created = "created",
+	Submitted = "submitted",
 	Processing = "processing",
 	Complete = "complete",
 	Error = "error"
@@ -34,7 +45,7 @@ export interface CalorieVision {
 	id: string;
 	fileName: string;
 	status: CalorieVisionStatus;
-	description?: string;
+	imageDescription?: string;
 	created: Date;
 	result: CalorieVisionResult;
 }

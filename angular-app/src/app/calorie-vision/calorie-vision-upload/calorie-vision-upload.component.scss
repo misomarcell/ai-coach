@@ -2,24 +2,6 @@
 	--mat-expansion-header-text-weight: 400;
 }
 
-.upload-panel {
-	.upload-panel-title {
-		gap: 1rem;
-	}
-
-	.photo-buttons {
-		--mat-outlined-button-horizontal-padding: 0.5rem;
-		display: grid;
-		grid-auto-columns: auto;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.5rem;
-	}
-
-	::ng-deep .mat-expansion-panel-body {
-		padding: 1rem;
-	}
-}
-
 .file-label {
 	display: flex;
 	align-items: center;
@@ -62,6 +44,10 @@
 	align-items: center;
 	gap: 8px;
 	margin-bottom: 16px;
+}
+
+.loader-wrapper {
+	height: 100vmin;
 }
 
 mat-progress-bar {

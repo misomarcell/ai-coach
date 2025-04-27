@@ -2,7 +2,6 @@ import { storage } from "firebase-admin";
 import { logger } from "firebase-functions";
 import { onObjectFinalized, StorageObjectData } from "firebase-functions/storage";
 import labelAnalyzerService from "../services/label-analyzer.service";
-import visionService from "../services/vision.service";
 
 export const storageTrigger = onObjectFinalized(
 	{
@@ -14,11 +13,7 @@ export const storageTrigger = onObjectFinalized(
 	},
 	async (object) => {
 		const filePath = object.data.name;
-
-		if (filePath.startsWith("calorie-vision/")) {
-			await visionService.processVisionUpload(filePath, object.data);
-			return;
-		} else if (filePath.startsWith("product-images/")) {
+		if (filePath.startsWith("product-images/")) {
 			await handleProductImageUpload(object.data);
 			return;
 		}

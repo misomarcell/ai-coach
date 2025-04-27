@@ -1,0 +1,53 @@
+:host {
+	h4 {
+		font-size: 1.5rem;
+		line-height: 1.5;
+		margin: 1.5rem 0 0 0;
+	}
+}
+
+.food-image {
+	border-radius: 6px;
+	max-height: 200px;
+	width: auto;
+	margin: 0 auto;
+	display: block;
+	height: auto;
+}
+
+.nutrition-info {
+	margin: 1rem 0;
+
+	.list-item {
+		display: grid;
+		align-items: center;
+		grid-template-columns: 1fr 1fr 40px;
+		padding: 0 0.5rem;
+		line-height: 2;
+
+		&.indented .title {
+			padding-left: 1rem;
+		}
+
+		&:nth-of-type(odd) {
+			background-color: var(--mat-sys-inverse-on-surface);
+		}
+	}
+
+	.ingredient-info {
+		margin: 1rem 0;
+
+		.ingredient {
+			grid-template-columns: 1fr 1fr 64px;
+		}
+	}
+}
+
+.loader-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	justify-items: center;
+	align-items: center;
+	height: 60vh;
+}

@@ -1,69 +1,48 @@
 import { CalorieVisionDb, CalorieVisionStatus } from "@aicoach/shared";
 import { firestore, storage } from "firebase-admin";
-import { DocumentReference, FieldValue } from "firebase-admin/firestore";
+import { DocumentReference } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { StorageObjectData } from "firebase-functions/storage";
 import visionService from "../services/vision.service";
 import aiService from "./ai.service";
 
 export class VisionService {
-	async processVisionUpload(filePath: string, data: StorageObjectData) {
+	async processVisionUpload(uid: string, documentId: string) {
 		try {
-			logger.info(`Processing vision file upload: ${filePath}`);
+			logger.info(`Processing vision file upload: ${documentId}`);
 
-			const pathParts = filePath.split("/");
-			if (pathParts.length < 3) {
-				logger.error(`Invalid file path structure: ${filePath}`);
+			const docRef = firestore().collection(`users/${uid}/calorie-vision`).doc(documentId);
+			const snapshot = await docRef.get();
+			const docData = snapshot.data() as CalorieVisionDb;
+			if (!snapshot.exists) {
+				logger.error(`Document with ID ${documentId} does not exist`);
 				return;
 			}
 
-			const userId = pathParts[1];
-			const fileName = pathParts[2];
-
-			const bucket = storage().bucket(data.bucket);
-			const file = bucket.file(filePath);
+			const bucket = storage().bucket();
+			const file = bucket.file(`calorie-vision/${uid}/${docData.fileName}`);
 
 			const [metadata] = await file.getMetadata({});
 			const mimeType = metadata.contentType || "image/jpeg";
-			const description = `${metadata.metadata?.description}` !== "null" ? `${metadata.metadata?.description}` : undefined;
-
-			const docRef = await visionService.createVisionDocument(userId, {
-				status: CalorieVisionStatus.Processing,
-				fileName,
-				description
-			});
 
 			const [fileContent] = await file.download();
 			const base64Image = fileContent.toString("base64");
 			const dataUri = `data:${mimeType};base64,${base64Image}`;
 
 			const result = await aiService
-				.analyzeVisionImage(dataUri, `${description}`)
-				.catch((error) => this.handleError(error, userId, docRef.id));
+				.analyzeVisionImage(dataUri, `${docData.imageDescription}`)
+				.catch((error) => this.handleError(error, uid, docRef.id));
 
 			if (!result) {
 				logger.error("Failed to get response from OpenAI Vision API");
 				return;
 			}
 
-			await visionService.updateVisionDocument(userId, docRef.id, { status: CalorieVisionStatus.Complete, result });
+			await visionService.updateVisionDocument(uid, docRef.id, { status: CalorieVisionStatus.Complete, result });
 
 			logger.info(`Vision analysis completed and saved to Firestore with ID: ${docRef.id}`);
 		} catch (error) {
 			await this.handleError(error);
 		}
-	}
-
-	async createVisionDocument(userId: string, content: Partial<CalorieVisionDb>): Promise<DocumentReference> {
-		const docRef = firestore().collection(`users/${userId}/calorie-vision`).doc();
-
-		await docRef.set({
-			id: docRef.id,
-			created: FieldValue.serverTimestamp(),
-			...content
-		} as CalorieVisionDb);
-
-		return docRef;
 	}
 
 	async updateVisionDocument(userId: string, visionId: string, content: Partial<CalorieVisionDb>): Promise<DocumentReference> {

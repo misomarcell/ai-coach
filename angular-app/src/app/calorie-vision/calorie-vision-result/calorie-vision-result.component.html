@@ -1,0 +1,113 @@
+@let _calorieVision = calorieVision();
+<app-page-title class="mb-2" title="Food details" />
+
+@let _result = _calorieVision?.result;
+@if (!_result) {
+	<div class="loader-wrapper">
+		<mat-spinner diameter="64" />
+		<span>Analyzing your image...</span>
+	</div>
+} @else {
+	@let _imgSrc = imageSrc();
+	@if (_imgSrc) {
+		<img class="food-image" [src]="_imgSrc" height="200" [alt]="_calorieVision.result.foodName" />
+	} @else {
+		<div class="d-flex ai-c jc-c" style="height: 200px">
+			<mat-spinner diameter="40" />
+		</div>
+	}
+
+	<h4 class="text-center">{{ _calorieVision?.result?.foodName }}</h4>
+	<p class="text-center pt-2">{{ _calorieVision.result.evaluation.description }}</p>
+	<p class="text-center bold">Score: {{ _calorieVision.result.evaluation.score }}/100</p>
+
+	<button mat-flat-button class="w-100 mb-2">Add to Servings</button>
+
+	<mat-divider />
+
+	@if (_result) {
+		<div class="nutrition-info">
+			<h4>Food info</h4>
+			<div class="list-item">
+				<span class="title">Total calories:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalCalories }}kcal</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalCalories)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item">
+				<span class="title">Total weight:</span>
+				<span class="text-center">{{ _result.foodWeight }}g</span>
+				<button mat-icon-button (click)="copy(_result.foodWeight)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item">
+				<span class="title">Category:</span>
+				<span class="text-center">{{ _result.foodCategory }}</span>
+			</div>
+
+			<h4>Macronutrients</h4>
+			<div class="list-item">
+				<span class="title">Fat:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalFat }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalFat)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item indented">
+				<span class="title">of which Saturates</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalSaturatedFat }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalSaturatedFat)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item">
+				<span class="title">Carbohydrates:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalCarbs }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalCarbs)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item indented">
+				<span class="title">of which Sugar:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalSugars }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalSugars)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item indented">
+				<span class="title">of which Fiber:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalFiber }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalFiber)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item">
+				<span class="title">Protein:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalProtein }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalProtein)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+			<div class="list-item">
+				<span class="title">Salt:</span>
+				<span class="text-center">{{ _result.nutitionalInfo.totalSalt }}g</span>
+				<button mat-icon-button (click)="copy(_result.nutitionalInfo.totalSalt)">
+					<mat-icon>content_copy</mat-icon>
+				</button>
+			</div>
+
+			<div class="ingredient-info">
+				<h4>Main ingredients</h4>
+				@for (ingredient of _result.nutitionalInfo.mainIngredients; track ingredient.name) {
+					<div class="list-item ingredient">
+						<span class="title">{{ ingredient.name }}</span>
+						<span class="text-center">{{ ingredient.gramWeight }}g</span>
+						<span>{{ ingredient.calories }}kcal</span>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}

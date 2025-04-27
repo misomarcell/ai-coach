@@ -45,7 +45,7 @@ export const appConfig: ApplicationConfig = {
 			return auth;
 		}),
 		provideStorage(() => {
-			const storage = getStorage();
+			const storage = getStorage(inject(FirebaseApp));
 			if (!environment.production) {
 				connectStorageEmulator(storage, "localhost", 9199);
 			}

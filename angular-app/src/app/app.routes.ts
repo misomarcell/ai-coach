@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { isAdminGuard } from "./admin.guard";
 import { loggedInGuard, loggedOutGuard } from "./auth.guard";
 import { analysisResolver } from "./resolvers/analysis.resolver";
+import { calorieVisionResolver } from "./resolvers/calorie-vision.resolver";
 import { dailyTargetsResolver } from "./resolvers/daily-targets.resolver";
 import { healthProfileResolver } from "./resolvers/health-profile.resolver";
 import { servingsResolver } from "./resolvers/servings.resolver";
@@ -46,7 +47,31 @@ export const routes: Routes = [
 			{
 				path: "calorie-vision",
 				loadComponent: () => import("./calorie-vision/calorie-vision.component").then((m) => m.CalorieVisionComponent),
-				canActivate: [loggedInGuard]
+				canActivate: [loggedInGuard],
+				children: [
+					{
+						path: "",
+						loadComponent: () =>
+							import("./calorie-vision/calorie-vision-upload/calorie-vision-upload.component").then(
+								(m) => m.CalorieVisionUploadComponent
+							)
+					},
+					{
+						path: ":visionId",
+						loadComponent: () =>
+							import("./calorie-vision/calorie-vision-result/calorie-vision-result.component").then(
+								(m) => m.CalorieVisionResultComponent
+							),
+						resolve: { calorieVision: calorieVisionResolver }
+					},
+					{
+						path: "history",
+						loadComponent: () =>
+							import("./calorie-vision/calorie-vision-result-list/calorie-vision-result-list.component").then(
+								(m) => m.CalorieVisionResultListComponent
+							)
+					}
+				]
 			},
 			{
 				path: "scan",

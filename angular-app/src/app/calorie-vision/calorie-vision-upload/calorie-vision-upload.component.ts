@@ -1,53 +1,60 @@
-import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Output, signal } from "@angular/core";
-import { Storage, StorageReference, getDownloadURL, ref, uploadBytesResumable } from "@angular/fire/storage";
+import { DecimalPipe } from "@angular/common";
+import { Component, DestroyRef, inject, signal } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { ref, Storage, StorageReference, uploadBytesResumable } from "@angular/fire/storage";
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
-import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
-import { catchError, EMPTY, map, take, tap } from "rxjs";
+import { Router, RouterLink } from "@angular/router";
+import { catchError, EMPTY, filter, map, take, tap } from "rxjs";
+import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
+import { CalorieVisionService } from "../calorie-vision.service";
 
 @Component({
 	selector: "app-calorie-vision-upload",
 	imports: [
-		CommonModule,
+		RouterLink,
+		PageTitleComponent,
+		DecimalPipe,
 		MatCardModule,
 		MatButtonModule,
 		MatFormFieldModule,
 		MatInputModule,
 		MatProgressBarModule,
+		MatProgressSpinnerModule,
 		MatIconModule,
 		MatSnackBarModule,
-		MatExpansionModule,
 		ReactiveFormsModule
 	],
 	templateUrl: "./calorie-vision-upload.component.html",
 	styleUrl: "./calorie-vision-upload.component.scss"
 })
 export class CalorieVisionUploadComponent {
-	@Output() uploadComplete = new EventEmitter<{ fileName: string; imageUrl: string }>();
-	@Output() uploadStarted = new EventEmitter<void>();
+	private storage = inject(Storage);
+	private destroyRef = inject(DestroyRef);
+	private router = inject(Router);
+	private calorieVisionService = inject(CalorieVisionService);
+	private authService = inject(AuthService);
+	private formBuilder = inject(FormBuilder);
+	private snackBar = inject(MatSnackBar);
 
+	isLoading = signal(false);
+	documentId = toSignal(this.calorieVisionService.getNewDocument());
 	selectedFile = signal<File | null>(null);
 	imagePreview = signal<string | null>(null);
 	uploadPercent = signal<number | null>(null);
 	uploadForm: FormGroup;
 	isExpanded = true;
-	loading = false;
 
-	constructor(
-		private storage: Storage,
-		private authService: AuthService,
-		private fb: FormBuilder,
-		private snackBar: MatSnackBar
-	) {
-		this.uploadForm = this.fb.group({
+	constructor() {
+		this.uploadForm = this.formBuilder.group({
 			image: [null],
 			description: [null]
 		});
@@ -90,9 +97,8 @@ export class CalorieVisionUploadComponent {
 	uploadImage() {
 		if (!this.selectedFile()) throw new Error("No file selected");
 
-		this.loading = true;
+		this.isLoading.set(true);
 		this.uploadPercent.set(0);
-		this.uploadStarted.emit();
 
 		this.authService.uid
 			.pipe(
@@ -106,7 +112,7 @@ export class CalorieVisionUploadComponent {
 				}),
 				tap((uid) => this.startUploadTask(this.getFileRef(uid!), uid!)),
 				catchError((error) => {
-					this.loading = false;
+					this.isLoading.set(false);
 					this.snackBar.open("Upload failed: " + error.message, "Close", {
 						duration: 5000
 					});
@@ -125,13 +131,19 @@ export class CalorieVisionUploadComponent {
 	}
 
 	private startUploadTask(fileRef: StorageReference, uid: string): void {
-		if (!this.selectedFile()) throw new Error("No file selected");
+		const selectedFile = this.selectedFile();
+		const documentId = this.documentId();
+
+		if (!selectedFile) throw new Error("No file selected");
+		if (!documentId) throw new Error("No document ID available");
+
+		console.log("Full path:", fileRef.fullPath);
 
 		const pathSegments = fileRef.fullPath.split("/");
 		const fileName = pathSegments[pathSegments.length - 1];
-
-		const task = uploadBytesResumable(fileRef, this.selectedFile()!, {
-			customMetadata: { uid, description: this.uploadForm.get("description")?.value }
+		const description = this.uploadForm.get("description")?.value;
+		const task = uploadBytesResumable(fileRef, selectedFile, {
+			customMetadata: { uid, description }
 		});
 
 		task.on(
@@ -141,33 +153,35 @@ export class CalorieVisionUploadComponent {
 				this.uploadPercent.set(progress);
 			},
 			(error) => {
-				this.loading = false;
+				this.isLoading.set(false);
 				this.snackBar.open("Upload failed: " + error.message, "Close", {
 					duration: 5000
 				});
 			},
-			() => {
-				getDownloadURL(fileRef).then((url) => {
-					this.loading = false;
-					this.isExpanded = false;
+			() =>
+				this.calorieVisionService
+					.submitDocument(documentId, fileName, description)
+					.pipe(
+						takeUntilDestroyed(this.destroyRef),
+						catchError(() => {
+							this.isLoading.set(false);
+							this.snackBar.open("Faield to submit. Please try again later.", "Close");
 
-					this.snackBar.open("Image uploaded successfully! Waiting for analysis...", "Close");
-
-					this.uploadComplete.emit({
-						fileName: fileName,
-						imageUrl: url
-					});
-
-					this.resetFileInput();
-				});
-			}
+							return EMPTY;
+						}),
+						filter((submittedId) => !!submittedId),
+						tap((submittedId) => {
+							this.isLoading.set(false);
+							this.router.navigate(["/calorie-vision", submittedId]);
+						})
+					)
+					.subscribe()
 		);
 	}
 
 	private getFileRef(uid: string): StorageReference {
 		const timestamp = new Date().getTime();
-		const fileExt = this.selectedFile?.name.split(".").pop();
-		const filename = `${timestamp}.${fileExt}`;
+		const filename = `${timestamp}`;
 		const filePath = `calorie-vision/${uid}/${filename}`;
 
 		return ref(this.storage, filePath);
