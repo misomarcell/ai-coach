@@ -21,6 +21,11 @@ export const visionDocumentUpdated = onDocumentUpdated(
 			return;
 		}
 
+		const newData = snapshot.after.data() as CalorieVisionDb;
+		if (newData.status === CalorieVisionStatus.Error) {
+			return;
+		}
+
 		try {
 			const newData = snapshot.after.data() as CalorieVisionDb;
 			if (newData.status === CalorieVisionStatus.Submitted) {

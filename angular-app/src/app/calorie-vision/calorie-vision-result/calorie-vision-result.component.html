@@ -1,66 +1,94 @@
 @let _calorieVision = calorieVision();
 <app-page-title class="mb-2" title="Food details" />
 
-@let _result = _calorieVision?.result;
-@if (!_result) {
-	<div class="loader-wrapper">
-		<mat-spinner diameter="64" />
-		<span>Analyzing your image...</span>
-	</div>
-} @else {
-	<div class="photo-wrapper">
-		@let _imgSrc = imageSrc();
-		@if (_imgSrc) {
-			<img class="food-image" [src]="_imgSrc" height="200" [alt]="_calorieVision.result.foodName" />
-		} @else {
-			<mat-icon>image</mat-icon>
-		}
-	</div>
-
-	<h4 class="text-center">{{ _calorieVision?.result?.foodName }}</h4>
-	<button mat-button class="score" (click)="onScoreClick()">
-		<mat-icon>info</mat-icon>
-		Score: {{ _calorieVision.result.evaluation.score }}/100
-	</button>
-	<p class="text-center">{{ _calorieVision.result.evaluation.description }}</p>
-
-	<button mat-flat-button class="w-100 mt-2 mb-2" (click)="onAddClick()">Add to Servings</button>
-
-	@if (_result) {
-		<div class="nutrition-info">
-			<app-nutrition-label [nutritions]="_result.nutritions" />
-
-			<h4>Food info</h4>
-			<div class="list-item">
-				<span class="title">Total calories:</span>
-				<span class="text-center">{{ _result.foodCalories }}kcal</span>
-				<button mat-icon-button (click)="copy(_result.foodCalories)">
-					<mat-icon>content_copy</mat-icon>
-				</button>
-			</div>
-			<div class="list-item">
-				<span class="title">Total weight:</span>
-				<span class="text-center">{{ _result.foodWeight }}g</span>
-				<button mat-icon-button (click)="copy(_result.foodWeight)">
-					<mat-icon>content_copy</mat-icon>
-				</button>
-			</div>
-			<div class="list-item">
-				<span class="title">Category:</span>
-				<span class="text-center">{{ _result.foodCategory }}</span>
-			</div>
-
-			<div class="ingredient-info">
-				<h4>Main ingredients</h4>
-				@for (ingredient of _result.mainIngredients; track ingredient.name) {
-					<div class="list-item ingredient">
-						<span class="title">{{ ingredient.name }}</span>
-						<span class="text-center">{{ ingredient.gramWeight }}g</span>
-						<span>{{ ingredient.calories }}kcal</span>
-					</div>
-				}
-			</div>
+@switch (_calorieVision?.status) {
+	@case ("created") {
+		<div class="loader-wrapper">
+			<mat-spinner diameter="64" />
+			<span>Waiting for image data...</span>
 		</div>
 	}
-	<p class="text-center">all values are estimated</p>
+	@case ("submitted") {
+		<div class="loader-wrapper">
+			<mat-spinner diameter="64" />
+			<span>Waiting for agent...</span>
+		</div>
+	}
+	@case ("processing") {
+		<div class="loader-wrapper">
+			<mat-spinner diameter="64" />
+			<span>Analyzing your image...</span>
+		</div>
+	}
+	@case ("error") {
+		<div class="error-wrapper">
+			<mat-icon>sentiment_dissatisfied</mat-icon>
+			<span>Sorry, we couldn't analyze your image. Please try again.</span>
+			<button mat-stroked-button class="mt-2" [routerLink]="'/calorie-vision'">Try again</button>
+		</div>
+	}
+	@case ("complete") {
+		<div class="photo-wrapper">
+			@let _imgSrc = imageSrc();
+			@if (_imgSrc) {
+				<img class="food-image" [src]="_imgSrc" height="200" [alt]="_calorieVision.result.foodName" />
+			} @else {
+				<mat-icon>image</mat-icon>
+			}
+		</div>
+
+		<h4 class="text-center">{{ _calorieVision?.result?.foodName }}</h4>
+		<button mat-button class="score" (click)="onScoreClick()">
+			<mat-icon>info</mat-icon>
+			Score: {{ _calorieVision.result.evaluation.score }}/100
+		</button>
+		<p class="text-center">{{ _calorieVision.result.evaluation.description }}</p>
+
+		<button mat-flat-button class="w-100 mt-2 mb-2" (click)="onAddClick()">Add to Servings</button>
+
+		@let _result = _calorieVision?.result;
+		@if (_result) {
+			<div class="nutrition-info">
+				<app-nutrition-label [nutritions]="_result.nutritions" />
+
+				<h4>Food info</h4>
+				<div class="list-item">
+					<span class="title">Total calories:</span>
+					<span class="text-center">{{ _result.foodCalories }}kcal</span>
+					<button mat-icon-button (click)="copy(_result.foodCalories)">
+						<mat-icon>content_copy</mat-icon>
+					</button>
+				</div>
+				<div class="list-item">
+					<span class="title">Total weight:</span>
+					<span class="text-center">{{ _result.foodWeight }}g</span>
+					<button mat-icon-button (click)="copy(_result.foodWeight)">
+						<mat-icon>content_copy</mat-icon>
+					</button>
+				</div>
+				<div class="list-item">
+					<span class="title">Category:</span>
+					<span class="text-center">{{ _result.foodCategory }}</span>
+				</div>
+
+				<div class="ingredient-info">
+					<h4>Main ingredients</h4>
+					@for (ingredient of _result.mainIngredients; track ingredient.name) {
+						<div class="list-item ingredient">
+							<span class="title">{{ ingredient.name }}</span>
+							<span class="text-center">{{ ingredient.gramWeight }}g</span>
+							<span>{{ ingredient.calories }}kcal</span>
+						</div>
+					}
+				</div>
+			</div>
+		}
+		<p class="text-center">all values are estimated</p>
+	}
+	@default {
+		<div class="loader-wrapper">
+			<mat-icon>search</mat-icon>
+			<span>Vision document does not exist.</span>
+		</div>
+	}
 }

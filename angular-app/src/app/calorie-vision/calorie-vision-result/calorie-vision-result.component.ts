@@ -9,17 +9,25 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { filter } from "rxjs";
+import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { PromptDialogComponent } from "../../prompt-dialog/prompt-dialog.component";
 import { EditServingFormComponent } from "../../servings/edit-serving-form/edit-serving-form.component";
 import { CalorieVisionService } from "../calorie-vision.service";
-import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 
 @Component({
 	selector: "app-calorie-vision-result",
-	imports: [PageTitleComponent, NutritionLabelComponent, MatButtonModule, MatProgressSpinnerModule, MatRippleModule, MatIconModule],
+	imports: [
+		PageTitleComponent,
+		NutritionLabelComponent,
+		RouterLink,
+		MatButtonModule,
+		MatProgressSpinnerModule,
+		MatRippleModule,
+		MatIconModule
+	],
 	templateUrl: "./calorie-vision-result.component.html",
 	styleUrl: "./calorie-vision-result.component.scss"
 })

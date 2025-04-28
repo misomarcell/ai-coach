@@ -63,11 +63,19 @@
 	}
 }
 
+.error-wrapper,
 .loader-wrapper {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	text-align: center;
 	gap: 1rem;
 	height: 60vh;
+
+	.mat-icon {
+		font-size: 3.5rem;
+		width: 64px;
+		height: 64px;
+	}
 }
