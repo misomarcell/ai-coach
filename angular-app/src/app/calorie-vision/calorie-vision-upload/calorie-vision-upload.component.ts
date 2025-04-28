@@ -16,7 +16,7 @@ import { catchError, EMPTY, filter, map, take, tap } from "rxjs";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
 import { CalorieVisionService } from "../calorie-vision.service";
-
+import { NgxImageCompressService } from "ngx-image-compress";
 @Component({
 	selector: "app-calorie-vision-upload",
 	imports: [
@@ -44,6 +44,7 @@ export class CalorieVisionUploadComponent {
 	private authService = inject(AuthService);
 	private formBuilder = inject(FormBuilder);
 	private snackBar = inject(MatSnackBar);
+	private imageCompress = inject(NgxImageCompressService);
 
 	isLoading = signal(false);
 	documentId = toSignal(this.calorieVisionService.getNewDocument());
@@ -64,38 +65,38 @@ export class CalorieVisionUploadComponent {
 		this.isExpanded = !this.isExpanded;
 	}
 
-	onFileSelected(event: Event) {
+	async onFileSelected(event: Event) {
 		const input = event.target as HTMLInputElement;
-		if (input.files && input.files.length > 0) {
-			this.selectedFile.set(input.files[0]);
-
-			if (!this.selectedFile()!.type.match(/image\/(jpeg|jpg|png|gif|bmp|webp)/)) {
-				this.snackBar.open("Please select a valid image file (JPEG, PNG, GIF, BMP, WEBP)", "Close", {
-					duration: 5000
-				});
-				this.resetFileInput();
-				return;
-			}
-
-			if (this.selectedFile()!.size > 10 * 1024 * 1024) {
-				this.snackBar.open("Image is too large. Maximum size is 10MB", "Close", {
-					duration: 5000
-				});
-				this.resetFileInput();
-				return;
-			}
-
-			const reader = new FileReader();
-			reader.onload = () => {
-				this.imagePreview.set(`${reader.result}`);
-			};
-
-			reader.readAsDataURL(this.selectedFile()!);
+		if (!input.files?.length) {
+			return;
 		}
+
+		const file = input.files[0];
+		if (!file.type.match(/image\/(jpeg|jpg|png|bmp|webp)/)) {
+			this.snackBar.open("Please select a valid image file (JPEG, PNG, BMP, WEBP)", "Close", { duration: 5000 });
+			this.resetFileInput();
+			return;
+		}
+
+		if (file.size > 10 * 1024 * 1024) {
+			this.snackBar.open("Image is too large. Maximum size is 10MB", "Close", {
+				duration: 5000
+			});
+			this.resetFileInput();
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = () => this.imagePreview.set(reader.result as string);
+		reader.readAsDataURL(file);
+
+		const compressed = await this.compressFile(file);
+		this.selectedFile.set(compressed ?? file);
 	}
 
-	uploadImage() {
-		if (!this.selectedFile()) throw new Error("No file selected");
+	async uploadImage() {
+		const selectedFile = this.selectedFile();
+		if (!selectedFile) throw new Error("No file selected");
 
 		this.isLoading.set(true);
 		this.uploadPercent.set(0);
@@ -104,16 +105,13 @@ export class CalorieVisionUploadComponent {
 			.pipe(
 				take(1),
 				map((uid) => {
-					if (!uid) {
-						throw new Error("User is not authenticated");
-					}
-
+					if (!uid) throw new Error("Not authenticated");
 					return uid;
 				}),
-				tap((uid) => this.startUploadTask(this.getFileRef(uid!), uid!)),
-				catchError((error) => {
+				tap((uid) => this.startUploadTask(this.getFileRef(uid), uid)),
+				catchError((err) => {
 					this.isLoading.set(false);
-					this.snackBar.open("Upload failed: " + error.message, "Close", {
+					this.snackBar.open("Upload failed: " + err.message, "Close", {
 						duration: 5000
 					});
 
@@ -128,6 +126,48 @@ export class CalorieVisionUploadComponent {
 		this.selectedFile.set(null);
 		this.imagePreview.set(null);
 		this.uploadPercent.set(null);
+	}
+
+	private async compressFile(file: File): Promise<File | null> {
+		try {
+			const dataUrl = await this.readFileAsDataUrl(file);
+			const orientation = await this.imageCompress.getOrientation(file);
+			const compressedDataUrl = await this.imageCompress.compressFile(dataUrl, orientation, 50, 50, 1280);
+			const blob = this.dataUrlToBlob(compressedDataUrl);
+
+			return new File([blob], file.name, {
+				type: blob.type,
+				lastModified: Date.now()
+			});
+		} catch (err) {
+			console.error("Image compression failed", err);
+			this.snackBar.open("Image compression failed", "Close", {
+				duration: 5000
+			});
+
+			return null;
+		}
+	}
+
+	private readFileAsDataUrl(file: File): Promise<string> {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				if (typeof reader.result === "string") resolve(reader.result);
+				else reject(new Error("Unexpected FileReader result"));
+			};
+			reader.onerror = () => reject(new Error("FileReader error"));
+			reader.readAsDataURL(file);
+		});
+	}
+
+	private dataUrlToBlob(dataUrl: string): Blob {
+		const [header, base64] = dataUrl.split(",");
+		const mime = header.match(/:(.*?);/)?.[1] || "";
+		const bin = atob(base64);
+		const buf = new Uint8Array(bin.length);
+		for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+		return new Blob([buf], { type: mime });
 	}
 
 	private startUploadTask(fileRef: StorageReference, uid: string): void {
