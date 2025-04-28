@@ -29,7 +29,7 @@ export const visionDocumentUpdated = onDocumentUpdated(
 		try {
 			const newData = snapshot.after.data() as CalorieVisionDb;
 			if (newData.status === CalorieVisionStatus.Submitted) {
-				logger.info("Vision document status updated to Submitted. Processing upload...");
+				await visionService.updateVisionDocument(userId, documentId, { status: CalorieVisionStatus.Processing });
 				await visionService.processVisionUpload(userId, documentId);
 			}
 		} catch (error) {
