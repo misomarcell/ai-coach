@@ -147,7 +147,7 @@ export class AuthService implements OnDestroy {
 
 	async providerLogin(providerName: "google" | "github"): Promise<UserCredential> {
 		const provider = providerName === "google" ? new GoogleAuthProvider() : new GithubAuthProvider();
-		const credential = await signInWithPopup(this.auth, provider);
+		const credential = await signInWithPopup(this.auth, provider).catch((error) => this.handleAuthError(error));
 
 		if (credential.user) {
 			cookies.set("__session", await credential.user.getIdToken());
@@ -207,6 +207,9 @@ export class AuthService implements OnDestroy {
 				break;
 			case "auth/operation-not-allowed":
 				message = "Account creation is disabled. Please contact support.";
+				break;
+			case "auth/account-exists-with-different-credential":
+				message = "An account already exists with the same email address.";
 				break;
 			default:
 				console.error("Auth error:", error);

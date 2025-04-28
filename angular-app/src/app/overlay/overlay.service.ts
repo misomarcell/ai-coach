@@ -27,7 +27,6 @@ export class OverlayService {
 		componentOrLoader: Type<T> | (() => Promise<Type<T>>),
 		config?: FullscreenOverlayConfig<D>
 	): Promise<FullscreenOverlayRef<T, R>> {
-		console.warn("Overlay open called.");
 		let componentTypePromise: Promise<Type<T>>;
 
 		if (
