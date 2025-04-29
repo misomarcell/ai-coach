@@ -44,6 +44,12 @@ body {
 		background: var(--mat-app-background-color);
 	}
 
+	.mat-mdc-button-base {
+		&.large {
+			--mdc-filled-button-container-height: 64px;
+		}
+	}
+
 	.mat-mdc-outlined-button:not(:disabled).mat-warn {
 		--mdc-outlined-button-label-text-color: var(--mat-sys-error);
 		--mdc-outlined-button-outline-color: var(--mat-sys-error);

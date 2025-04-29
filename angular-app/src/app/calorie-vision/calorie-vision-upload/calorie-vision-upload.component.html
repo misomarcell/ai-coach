@@ -43,14 +43,14 @@
 				<mat-icon>history</mat-icon>
 				<span>Vision history</span>
 			</button>
-			<button mat-flat-button class="w-100" (click)="fileInput.click()">
+			<button mat-flat-button class="w-100 large" (click)="fileInput.click()">
 				<input #fileInput type="file" id="file" (change)="onFileSelected($event)" accept="image/*" hidden />
 				<label for="file" class="file-label">
 					<mat-icon>attach_file</mat-icon>
 					<span>Choose image</span>
 				</label>
 			</button>
-			<button mat-flat-button class="w-100" (click)="fileCameraInput.click()">
+			<button mat-flat-button class="w-100 large" (click)="fileCameraInput.click()">
 				<input #fileCameraInput type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" hidden />
 				<label for="file" class="file-label">
 					<mat-icon>photo_camera</mat-icon>

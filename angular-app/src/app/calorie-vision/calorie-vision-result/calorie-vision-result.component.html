@@ -2,38 +2,6 @@
 <app-page-title class="mb-2" title="Food details" />
 
 @switch (_calorieVision?.status) {
-	@case ("created") {
-		<div class="loader-wrapper">
-			<mat-spinner diameter="64" />
-			<span>Waiting for image data...</span>
-		</div>
-	}
-	@case ("submitted") {
-		<div class="loader-wrapper">
-			<mat-spinner diameter="64" />
-			<span>Waiting for agent...</span>
-		</div>
-	}
-	@case ("processing") {
-		<div class="loader-wrapper">
-			<mat-spinner diameter="64" />
-			<span>Analyzing your image...</span>
-		</div>
-	}
-	@case ("not-food-image") {
-		<div class="error-wrapper">
-			<mat-icon>sentiment_dissatisfied</mat-icon>
-			<span>That doesn't look like food. Try with another image.</span>
-			<button mat-stroked-button class="mt-2" [routerLink]="'/calorie-vision'">Try again</button>
-		</div>
-	}
-	@case ("error") {
-		<div class="error-wrapper">
-			<mat-icon>sentiment_dissatisfied</mat-icon>
-			<span>Sorry, we couldn't analyze your image. Please try again.</span>
-			<button mat-stroked-button class="mt-2" [routerLink]="'/calorie-vision'">Try again</button>
-		</div>
-	}
 	@case ("complete") {
 		<div class="photo-wrapper">
 			@let _imgSrc = imageSrc();
@@ -91,6 +59,38 @@
 			</div>
 		}
 		<p class="text-center">all values are estimated</p>
+	}
+	@case ("created") {
+		<div class="loader-wrapper">
+			<mat-spinner diameter="64" />
+			<span>Waiting for image data...</span>
+		</div>
+	}
+	@case ("submitted") {
+		<div class="loader-wrapper">
+			<mat-spinner diameter="64" />
+			<span>Waiting for agent...</span>
+		</div>
+	}
+	@case ("processing") {
+		<div class="loader-wrapper">
+			<mat-spinner diameter="64" />
+			<span>Analyzing your image...</span>
+		</div>
+	}
+	@case ("not-food-image") {
+		<div class="error-wrapper">
+			<mat-icon>sentiment_dissatisfied</mat-icon>
+			<span>That doesn't look like food. Try with another image.</span>
+			<button mat-stroked-button class="mt-2" [routerLink]="'/calorie-vision'">Try again</button>
+		</div>
+	}
+	@case ("error") {
+		<div class="error-wrapper">
+			<mat-icon>sentiment_dissatisfied</mat-icon>
+			<span>Sorry, we couldn't analyze your image. Please try again.</span>
+			<button mat-stroked-button class="mt-2" [routerLink]="'/calorie-vision'">Try again</button>
+		</div>
 	}
 	@default {
 		<div class="loader-wrapper">
