@@ -28,6 +28,7 @@ export enum CalorieVisionStatus {
 	Submitted = "submitted",
 	Processing = "processing",
 	Complete = "complete",
+	NotFoodImage = "not-food-image",
 	Error = "error"
 }
 

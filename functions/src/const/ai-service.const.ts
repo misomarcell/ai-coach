@@ -1,11 +1,11 @@
 import { foodCategories, nutritionUnits, nutritionTypes, dietaryFlags } from "@aicoach/shared";
-import { z } from "zod";
+import { NEVER, z } from "zod";
 
 export const SYSTEM_DIET_ANALYSIS_PROMPT = `You are an expert dietitian with advanced knowledge in nutrition and data analysis.
-The attached stringified JSON contains my dietary data exported from Cronometer, covering the past 7 days. Please analyze it and provide constructive feedback and practical, actionable suggestions with examples to improve my diet and achieve my goals. I'd like a report of how my overall intake comapres to the ideal diat neede to achieve my goals, highlights of the best and worst performing foods (about 5 each) or nutrients, and a diet quality score between 0-100, with a brief explanation of how you calculated it. Assume the food names in the data may be imprecise or generic due to Cronometer's logging system, and adjust your analysis accordingly. If relevant, search the web or nutritional databases for additional context on unclear items. Provide your response in clear, plain text without any formatting, tables, or markdown, feel free to use emoticons.`;
+The attached stringified JSON contains my dietary data from the past 7 days. Please analyze it and provide constructive feedback and practical, actionable suggestions with examples to improve my diet and achieve my goals. I'd like a report of how my overall intake comapres to the ideal diet neede to achieve my goals, highlights of the best and worst performing foods or nutrients (about 5 each), and a diet quality score between 0-100, with a brief explanation of how you calculated it. Assume the food names in the data may be imprecise or generic, and adjust your analysis accordingly. If relevant, search the web or nutritional databases for additional context on unclear items. Provide your response in clear, plain text without any formatting, tables, or markdown, feel free to use emoticons.`;
 
 export const SYSTEM_CALORIE_VISION_PROMPT =
-	"You are a nutrition expert analyzing food images. Identify the food visible on the attached image and provide a detailed nutritional analysis of it's contents. In case user data was also provided, consider them when scoring the food nutritional value.";
+	"You are a nutrition expert analyzing food images. Identify the food visible on the attached image and provide a detailed nutritional analysis of it's ingredients and nutritional contents. In case user data was also provided, consider them when scoring the nutritional value of the food.";
 
 export const SYSTEM_PRODUCT_IMAGE_PROMPT =
 	"You are given two images of a single food product: one showing the front of the product packaging, the other its nutrition facts label. Provide details about the product and it's nutrition facts based on it's packaging.";
@@ -36,18 +36,18 @@ export const requiredNutritionTypes = [
 export type RequiredNutritionType = (typeof requiredNutritionTypes)[number];
 const RequiredNutritionTypeEnum = z.enum(requiredNutritionTypes).describe("Must be one of the 9 required nutrition types");
 
-export const FoodPictureAnalysis = z.object({
-	foodName: z.string(),
-	foodWeight: z.number(),
-	foodCalories: z.number().describe("Total calories in the entire food on the picture."),
-	isValidFoodImage: z.boolean().describe("True only if the attached image shows a food or dish"),
-	foodCategory: z.enum(foodCategories).describe("Select the most appropriate category from the list"),
-	evaluation: z.object({
-		score: z.number().describe("Score the food on a scale from 0 to 100 based on it's nutritional value."),
-		description: z.string().describe("A short description of the food's nutritional value.")
-	}),
-	nutritions: z
-		.array(
+export const FoodPictureAnalysis = z
+	.object({
+		foodName: z.string(),
+		foodWeight: z.number(),
+		foodCalories: z.number().describe("Total calories in the entire food on the picture."),
+		isValidFoodImage: z.boolean().describe("True only if the attached image shows a food or dish"),
+		foodCategory: z.enum(foodCategories).describe("Select the most appropriate category from the list"),
+		evaluation: z.object({
+			score: z.number().describe("Score the food on a scale from 0 to 100 based on it's nutritional value."),
+			description: z.string().describe("A short description of the food's nutritional value.")
+		}),
+		nutritions: z.array(
 			z
 				.object({
 					type: RequiredNutritionTypeEnum,
@@ -55,35 +55,42 @@ export const FoodPictureAnalysis = z.object({
 					amount: z.number().describe("Amount of this nutrient per 100 g of the dish")
 				})
 				.describe("One nutrition entry: type + unit + amount")
-		)
-		.superRefine((nutritions, ctx) => {
-			const seen = new Set(nutritions.map((n) => n.type));
-			for (const type of requiredNutritionTypes) {
-				if (!seen.has(type)) {
-					ctx.addIssue({
-						code: z.ZodIssueCode.custom,
-						path: [],
-						message: `Missing nutrition entry for “${type}”.`
-					});
-				}
-			}
+		),
 
-			if (seen.size !== nutritions.length) {
+		mainIngredients: z.array(
+			z.object({
+				name: z.string().describe("Name of the ingredient"),
+				calories: z.number().describe("Total calories in the ingredient"),
+				gramWeight: z.number().describe("Total weight of the ingredient in grams")
+			})
+		)
+	})
+	.superRefine((data, ctx) => {
+		if (!data.isValidFoodImage) {
+			return NEVER;
+		}
+
+		const seen = new Set(data.nutritions.map((n) => n.type));
+		for (const type of requiredNutritionTypes) {
+			if (!seen.has(type)) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					path: [],
-					message: "Duplicate nutrition types are not allowed."
+					path: ["nutritions"],
+					message: `Missing nutrition entry for “${type}”.`
 				});
 			}
-		}),
-	mainIngredients: z.array(
-		z.object({
-			name: z.string().describe("Name of the ingredient"),
-			calories: z.number().describe("Total calories in the ingredient"),
-			gramWeight: z.number().describe("Total weight of the ingredient in grams")
-		})
-	)
-});
+		}
+
+		if (seen.size !== data.nutritions.length) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["nutritions"],
+				message: "Duplicate nutrition types are not allowed."
+			});
+		}
+
+		return true;
+	});
 
 export const ProductImageAnalysis = z.object({
 	name: z.string().describe("Product name, preferably in english e.g. Corn Flakes, Chocolate"),

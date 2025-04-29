@@ -21,15 +21,22 @@ export class VisionService {
 
 			const healthProfile = await userService.getHealthProfile(uid);
 			const dataUri = await this.getImageUri(uid, docData.fileName);
-			const result = await aiService
-				.analyzeVisionImage(dataUri, healthProfile, docData.imageDescription)
-				.catch((error) => this.handleError(error, uid, docRef.id));
+			const result = await aiService.analyzeVisionImage(dataUri, healthProfile, docData.imageDescription).catch(async (error) => {
+				await this.handleError(error, uid, docRef.id);
+			});
 
 			if (!result) {
 				logger.error("Failed to get response from OpenAI Vision API");
 				return;
 			}
 
+			if (!result.isValidFoodImage) {
+				logger.warn("Image is not a valid food image, updating status to NotFoodImage");
+				await visionService.updateVisionDocument(uid, docRef.id, { status: CalorieVisionStatus.NotFoodImage });
+				return;
+			}
+
+			logger.info("Vision analysis completed. Updating status...");
 			await visionService.updateVisionDocument(uid, docRef.id, { status: CalorieVisionStatus.Complete, result });
 
 			logger.info(`Vision analysis completed and saved to Firestore with ID: ${docRef.id}`);

@@ -20,6 +20,13 @@
 			<span>Analyzing your image...</span>
 		</div>
 	}
+	@case ("not-food-image") {
+		<div class="error-wrapper">
+			<mat-icon>sentiment_dissatisfied</mat-icon>
+			<span>That doesn't look like food. Try with another image.</span>
+			<button mat-stroked-button class="mt-2" [routerLink]="'/calorie-vision'">Try again</button>
+		</div>
+	}
 	@case ("error") {
 		<div class="error-wrapper">
 			<mat-icon>sentiment_dissatisfied</mat-icon>
