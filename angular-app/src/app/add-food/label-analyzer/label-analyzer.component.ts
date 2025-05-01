@@ -173,7 +173,7 @@ export class LabelAnalyzerComponent {
 			this.analysisComplete.emit(food);
 		} else if (food.status === FoodStatus.Invalid) {
 			this.loadingStatus.set(null);
-			this.snackBar.open("Label analysis failed. Please try again.", "Close", {
+			this.snackBar.open("These photos couldn't be processed. Please try using different photos.", "Close", {
 				duration: 5000
 			});
 		}
