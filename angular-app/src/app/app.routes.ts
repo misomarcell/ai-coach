@@ -173,6 +173,10 @@ export const routes: Routes = [
 		canActivate: [loggedOutGuard]
 	},
 	{
+		path: "verify-email",
+		loadComponent: () => import("./verify-email/verify-email.component").then((m) => m.VerifyEmailComponent)
+	},
+	{
 		path: "forgot-password",
 		loadComponent: () => import("./forgot-password/forgot-password.component").then((m) => m.ForgotPasswordComponent),
 		canActivate: [loggedOutGuard]

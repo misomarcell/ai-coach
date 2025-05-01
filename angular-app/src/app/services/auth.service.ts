@@ -12,6 +12,7 @@ import {
 	onIdTokenChanged,
 	sendEmailVerification,
 	sendPasswordResetEmail,
+	applyActionCode,
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	updateProfile,
@@ -118,7 +119,7 @@ export class AuthService implements OnDestroy {
 			if (credential.user) {
 				cookies.set("__session", await credential.user.getIdToken());
 				await this.addDisplayName(credential.user.uid, displayName);
-				await sendEmailVerification(credential.user);
+				await this.requestEmailVerification(credential.user);
 				await updateProfile(credential.user, {
 					displayName
 				});
@@ -174,6 +175,14 @@ export class AuthService implements OnDestroy {
 
 	async updatePassword(code: string, email: string): Promise<void> {
 		await confirmPasswordReset(this.auth, code, email);
+	}
+
+	async verifyEmail(code: string): Promise<void> {
+		await applyActionCode(this.auth, code);
+	}
+
+	async requestEmailVerification(user: User): Promise<void> {
+		await sendEmailVerification(user);
 	}
 
 	async logout() {

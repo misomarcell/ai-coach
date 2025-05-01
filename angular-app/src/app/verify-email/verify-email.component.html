@@ -1,0 +1,32 @@
+<div class="centered-wrapper">
+	@let _currentStep = currentStep();
+	@switch (_currentStep) {
+		@case ("verify") {
+			@if (!oobCode) {
+				<p>Missing verification code. Please click the link in the verification e-mail.</p>
+			}
+
+			<button mat-flat-button [disabled]="!oobCode" (click)="onVerifyClick()">
+				@if (!isLoading()) {
+					Click to verify
+				} @else {
+					<mat-spinner diameter="20" />
+				}
+			</button>
+		}
+		@case ("error") {
+			<p>Verification failed. Please try again.</p>
+			<button mat-flat-button (click)="onRequestNewCodeClick()">
+				@if (!isLoading()) {
+					Request new code
+				} @else {
+					<mat-spinner diameter="20" />
+				}
+			</button>
+		}
+		@case ("new-code-sent") {
+			<p>A new verification e-mail sent.</p>
+			<button mat-flat-button [routerLink]="'/dashboard'">Home</button>
+		}
+	}
+</div>

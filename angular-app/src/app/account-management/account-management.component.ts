@@ -20,6 +20,7 @@ export class AccountManagementComponent {
 				this.router.navigate(["/forgot-password"], { queryParams: { step: "new-password" }, queryParamsHandling: "merge" });
 				break;
 			case "verifyEmail":
+				this.router.navigate(["/verify-email"], { queryParamsHandling: "merge" });
 				break;
 			default:
 				this.router.navigate(["/not-found"]);

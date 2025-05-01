@@ -1,0 +1,14 @@
+.centered-wrapper {
+	height: 90vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 2rem;
+	text-align: center;
+
+	.mdc-button {
+		min-width: 164px;
+	}
+}
