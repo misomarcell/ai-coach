@@ -159,6 +159,10 @@ export const routes: Routes = [
 		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
 	},
 	{
+		path: "acctmgmt",
+		loadComponent: () => import("./account-management/account-management.component").then((m) => m.AccountManagementComponent)
+	},
+	{
 		path: "login",
 		loadComponent: () => import("./login/login.component").then((m) => m.LoginComponent),
 		canActivate: [loggedOutGuard]

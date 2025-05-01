@@ -10,6 +10,7 @@ import {
 	GithubAuthProvider,
 	GoogleAuthProvider,
 	onIdTokenChanged,
+	sendEmailVerification,
 	sendPasswordResetEmail,
 	signInWithEmailAndPassword,
 	signInWithPopup,
@@ -60,7 +61,6 @@ export class AuthService implements OnDestroy {
 					cookies.set("__session", idToken);
 				} else {
 					cookies.remove("__session");
-					this.router.navigate(["login"]);
 				}
 			});
 
@@ -74,7 +74,6 @@ export class AuthService implements OnDestroy {
 						cookies.set("__session", idToken);
 					} else {
 						cookies.remove("__session");
-						this.router.navigate(["login"]);
 					}
 				},
 				async () => {
@@ -82,7 +81,6 @@ export class AuthService implements OnDestroy {
 						cookies.set("__session", priorCookieValue);
 					} else {
 						cookies.remove("__session");
-						this.router.navigate(["login"]);
 					}
 				}
 			);
@@ -120,6 +118,7 @@ export class AuthService implements OnDestroy {
 			if (credential.user) {
 				cookies.set("__session", await credential.user.getIdToken());
 				await this.addDisplayName(credential.user.uid, displayName);
+				await sendEmailVerification(credential.user);
 				await updateProfile(credential.user, {
 					displayName
 				});

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -9,9 +9,9 @@ import { MatIconModule } from "@angular/material/icon";
 import { from, tap } from "rxjs";
 import { passwordMatchValidator } from "../services/form.service";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
-	selector: "app-forgot-password",
 	imports: [
 		PageTitleComponent,
 		RouterLink,
@@ -28,6 +28,7 @@ import { PageTitleComponent } from "../page-title/page-title.component";
 export class ForgotPasswordComponent implements OnInit {
 	private authService = inject(AuthService);
 	private activatedRoute = inject(ActivatedRoute);
+	private destroyRef = inject(DestroyRef);
 	private oobCode = this.activatedRoute.snapshot.queryParamMap.get("oobCode") ?? undefined;
 
 	currentStep = signal<"email" | "email-sent" | "new-password" | "done" | "error">("email");
@@ -57,10 +58,12 @@ export class ForgotPasswordComponent implements OnInit {
 			return;
 		}
 
+		console.warn("forgot password component onInit", this.oobCode, this.currentStep());
+
 		from(this.authService.getResetPasswordEmail(this.oobCode))
 			.pipe(
+				takeUntilDestroyed(this.destroyRef),
 				tap(({ email, error }) => {
-					console.log("email", email, "error", error);
 					if (email) {
 						this.passwordResetEmail.set(email);
 					} else if (error) {
