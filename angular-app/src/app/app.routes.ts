@@ -169,7 +169,7 @@ export const routes: Routes = [
 	},
 	{
 		path: "register",
-		loadComponent: () => import("./register/register.component").then((m) => m.RegisterComponent),
+		loadComponent: () => import("./registration/registration.component").then((m) => m.RegistrationComponent),
 		canActivate: [loggedOutGuard]
 	},
 	{

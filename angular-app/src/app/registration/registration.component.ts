@@ -7,9 +7,9 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Router, RouterLink } from "@angular/router";
-import { first, from, switchMap } from "rxjs";
-import { AuthService } from "../services/auth.service";
 import { passwordMatchValidator } from "../services/form.service";
+import { RegistrationService } from "./registration.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
 	selector: "app-register",
@@ -25,12 +25,13 @@ import { passwordMatchValidator } from "../services/form.service";
 		MatProgressSpinnerModule,
 		RouterLink
 	],
-	templateUrl: "./register.component.html",
-	styleUrl: "./register.component.scss"
+	templateUrl: "./registration.component.html",
+	styleUrl: "./registration.component.scss"
 })
-export class RegisterComponent {
-	authService = inject(AuthService);
-	router = inject(Router);
+export class RegistrationComponent {
+	private registrationService = inject(RegistrationService);
+	private snackBar = inject(MatSnackBar);
+	private router = inject(Router);
 
 	showPassword = signal(false);
 	isRegistering = signal(false);
@@ -55,7 +56,13 @@ export class RegisterComponent {
 		this.isRegistering.set(true);
 
 		try {
-			await this.authService.register(this.formGroup.value.email!, this.formGroup.value.password!, this.formGroup.value.displayName!);
+			await this.registrationService.register(
+				this.formGroup.value.email!,
+				this.formGroup.value.password!,
+				this.formGroup.value.displayName!
+			);
+		} catch (error) {
+			this.handleRegistrationError(error);
 		} finally {
 			this.isRegistering.set(false);
 		}
@@ -69,15 +76,7 @@ export class RegisterComponent {
 		this.isRegistering.set(true);
 
 		try {
-			this.authService
-				.isLoggedIn()
-				.pipe(
-					first(),
-					switchMap((isLoggedIn) =>
-						isLoggedIn ? this.router.navigate(["dashboard"]) : from(this.authService.providerLogin(provider))
-					)
-				)
-				.subscribe();
+			await this.registrationService.registerWithProvider(provider);
 		} finally {
 			this.isRegistering.set(false);
 		}
@@ -110,9 +109,52 @@ export class RegisterComponent {
 					return `Maximum length is ${errors["maxlength"].requiredLength}`;
 				case "passwordMismatch":
 					return `Passwords do not match`;
+				case "wrongPassword":
+					return `This password cannot be used.`;
+				case "invalidEmail":
+					return `This e-mail cannot be used.`;
+				case "emailAlreadyInUse":
+					return `This e-mail is already in use.`;
+				case "invalidDisplayName":
+					return `This name cannot be used.`;
 				default:
 					return `Unknown error`;
 			}
+		});
+	}
+
+	private handleRegistrationError(error: any): any {
+		let message = "Registration failed. Please try again.";
+		switch (error.code) {
+			case "auth/email-already-in-use":
+				this.formGroup.get("email")?.setErrors({ emailAlreadyInUse: true });
+				message = "This e-mail is already in use.";
+				break;
+			case "auth/invalid-email":
+				this.formGroup.get("email")?.setErrors({ invalidEmail: true });
+				message = "Invalid email address. Please check your email address.";
+				break;
+			case "auth/invalid-display-name":
+				this.formGroup.get("displayName")?.setErrors({ invalidDisplayName: true });
+				message = "Invalid display name. Please check your display name.";
+				break;
+			case "auth/wrong-password":
+				this.formGroup.get("password")?.setErrors({ wrongPassword: true });
+				message = "Invalid password. Please check your password.";
+				break;
+			case "auth/operation-not-allowed":
+				message = "Account creation is disabled. Please contact support.";
+				break;
+			case "auth/account-exists-with-different-credential":
+				message = "An account already exists with the same email address.";
+				break;
+			default:
+				console.error("Auth error:", error);
+				break;
+		}
+
+		this.snackBar.open(message, "Close", {
+			panelClass: ["snackbar-error"]
 		});
 	}
 }

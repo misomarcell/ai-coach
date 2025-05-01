@@ -5,7 +5,6 @@ import {
 	authState,
 	beforeAuthStateChanged,
 	confirmPasswordReset,
-	createUserWithEmailAndPassword,
 	getRedirectResult,
 	GithubAuthProvider,
 	GoogleAuthProvider,
@@ -15,12 +14,11 @@ import {
 	applyActionCode,
 	signInWithEmailAndPassword,
 	signInWithPopup,
-	updateProfile,
 	User,
 	UserCredential,
 	verifyPasswordResetCode
 } from "@angular/fire/auth";
-import { doc, Firestore, setDoc } from "@angular/fire/firestore";
+import { Firestore } from "@angular/fire/firestore";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import cookies from "js-cookie";
@@ -113,27 +111,6 @@ export class AuthService implements OnDestroy {
 		);
 	}
 
-	async register(email: string, password: string, displayName: string): Promise<UserCredential | undefined> {
-		try {
-			const credential = await createUserWithEmailAndPassword(this.auth, email, password);
-			if (credential.user) {
-				cookies.set("__session", await credential.user.getIdToken());
-				await this.addDisplayName(credential.user.uid, displayName);
-				await this.requestEmailVerification(credential.user);
-				await updateProfile(credential.user, {
-					displayName
-				});
-
-				await this.router.navigate(["profile", "health-profile"]);
-			}
-
-			return credential;
-		} catch (error) {
-			this.handleAuthError(error);
-			return undefined;
-		}
-	}
-
 	async normalLogin(email: string, password: string): Promise<UserCredential | undefined> {
 		const credential = await signInWithEmailAndPassword(this.auth, email, password).catch((error) => this.handleAuthError(error));
 
@@ -189,17 +166,14 @@ export class AuthService implements OnDestroy {
 		await this.auth.signOut().then(() => this.router.navigate(["login"]));
 	}
 
-	private addDisplayName(uid: string, displayName: string): Promise<void> {
-		const docRef = doc(this.firestore, "users", uid);
-
-		return setDoc(docRef, { displayName }, { merge: true });
-	}
-
 	private handleAuthError(error: any): any {
 		let message = "Authentication failed. Please try again.";
 		switch (error.code) {
 			case "auth/user-not-found":
 				message = "User not found. Please check your email address.";
+				break;
+			case "auth/email-already-in-use":
+				message = "This e-mail is already in use.";
 				break;
 			case "auth/invalid-credential":
 				message = "Invalid credentials. Please check your email and password.";
