@@ -9,4 +9,15 @@
 		background-color: var(--mat-sys-secondary-container);
 		cursor: pointer;
 	}
+
+	.verify-email-bar {
+		--mdc-icon-button-icon-color: var(--mat-sys-on-primary-fixed);
+		background-color: var(--mat-sys-error);
+		color: var(--mat-sys-on-primary-fixed);
+		border-radius: 8px;
+
+		p {
+			margin: 0;
+		}
+	}
 }

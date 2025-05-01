@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
 import { RouterModule } from "@angular/router";
-import { map } from "rxjs";
+import { filter, map } from "rxjs";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
 import { PwaService } from "../../services/pwa.service";
@@ -19,6 +19,13 @@ export class ProfileMenuComponent {
 	private pwaService = inject(PwaService);
 
 	isInstallable = signal(false);
+	isEmailVerified = toSignal(
+		this.authService.getCurrentUser().pipe(
+			filter((user) => !!user),
+			map((user) => user?.emailVerified)
+		),
+		{ initialValue: true }
+	);
 	isAdmin = toSignal(this.authService.isAdmin(), { initialValue: false });
 	name = toSignal(this.authService.getCurrentUser().pipe(map((u) => u?.displayName || "")), { initialValue: "" });
 

@@ -96,7 +96,7 @@ export class AuthService implements OnDestroy {
 	}
 
 	isLoggedIn(): Observable<boolean> {
-		return this.getCurrentUser().pipe(map((user) => !!user));
+		return authState(this.auth).pipe(map((user) => !!user));
 	}
 
 	getRedirectResult(): Promise<UserCredential | null> {

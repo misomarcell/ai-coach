@@ -1,5 +1,12 @@
 <app-page-title [main]="true" [title]="name()" />
 
+@if (isEmailVerified() === false) {
+	<div matRipple class="verify-email-bar p-2 gap-2 d-flex">
+		<mat-icon>warning</mat-icon>
+		<p class="bold">Please verify your e-mail address.</p>
+	</div>
+}
+
 <div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['health-profile']">
 	<mat-icon>favorite</mat-icon>
 	<span>Health profile</span>

@@ -1,15 +1,13 @@
 import { Nutrition, Serving } from "@aicoach/shared";
 import { Component, effect, inject, signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { MatRippleModule } from "@angular/material/core";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute } from "@angular/router";
-import { map, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { DailyTargetsWidgetComponent } from "../daily-targets-widget/daily-targets-widget.component";
 import { DateSelectorComponent } from "../date-selector/date-selector.component";
-import { AuthService } from "../services/auth.service";
 import { ServingsListComponent } from "../servings/servings-list/servings-list.component";
 import { ServingsService } from "../servings/servings.service";
-import { MatRippleModule } from "@angular/material/core";
 
 @Component({
 	selector: "app-dashboard",
@@ -20,14 +18,12 @@ import { MatRippleModule } from "@angular/material/core";
 })
 export class DashboardComponent {
 	private route = inject(ActivatedRoute);
-	private authService = inject(AuthService);
 	private servingsService = inject(ServingsService);
 	private servingsSubscription: Subscription | undefined;
 
 	isLoading = signal<boolean>(false);
 	selectedDate = signal<Date>(new Date());
 	totalNutrition = signal<Nutrition[]>([]);
-	isEmailVerified = toSignal(this.authService.getCurrentUser().pipe(map((user) => user?.emailVerified)), { initialValue: true });
 	servings = signal<Serving[]>(this.route.snapshot.data["servings"] ?? {});
 
 	updateEffect = effect(() => {
