@@ -1,4 +1,11 @@
 <app-daily-targets-widget [actualNutritions]="totalNutrition()" />
+
+@if (!isEmailVerified()) {
+	<div matRipple class="verify-email-bar w-100 d-flex jc-c">
+		<p>Please verify your e-mail address.</p>
+	</div>
+}
+
 <app-date-selector (dateChanged)="onSelectedDateChanged($event)" />
 
 @if (isLoading()) {

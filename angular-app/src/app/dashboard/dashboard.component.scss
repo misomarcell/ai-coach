@@ -3,23 +3,20 @@
 	flex-direction: column;
 	gap: 1rem;
 
-	.user-creation-progress {
-		padding: 1rem;
-		gap: 1rem;
+	.verify-email-bar {
+		--mdc-icon-button-icon-color: var(--mat-sys-on-primary-fixed);
+		background-color: var(--mat-sys-error);
+		color: var(--mat-sys-on-primary-fixed);
 		align-items: center;
+		border-radius: 8px;
+		font-weight: 600;
+
+		p {
+			margin: 1rem;
+		}
 	}
 
 	.servings-section {
 		width: 100%;
-	}
-
-	.request-buttons {
-		display: flex;
-		flex-direction: row;
-		gap: 1rem;
-
-		button {
-			flex-grow: 1;
-		}
 	}
 }

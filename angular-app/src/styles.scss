@@ -44,6 +44,11 @@ body {
 		background: var(--mat-app-background-color);
 	}
 
+	.mdc-snackbar.snackbar-error {
+		--mdc-snackbar-container-color: var(--mat-sys-error);
+		--mat-snack-bar-button-color: var(--mat-sys-on-error);
+	}
+
 	.mat-mdc-button-base {
 		&.large {
 			--mdc-filled-button-container-height: 64px;
