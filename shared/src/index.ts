@@ -10,7 +10,7 @@ export * from "./models/food.model";
 export * from "./models/health-profile.model";
 export * from "./models/settings-profile.model";
 export * from "./models/serving.model";
-export * from "./models/user.model";
+export * from "./models/user-profile.model";
 export * from "./utils/csv-parser";
 export * from "./utils/health-utils";
 export * from "./utils/nutrition-utils";

@@ -6,37 +6,10 @@
 		</mat-panel-title>
 	</mat-expansion-panel-header>
 
-	@if (!exportStatus()) {
-		@if (credentials(); as credentials) {
-			@if (credentials.status === "processing") {
-				<div class="status-message">
-					<mat-spinner diameter="24" />
-					<span>Connecting to your account...</span>
-				</div>
-			} @else if (credentials.status === "invalid") {
-				<div class="status-message">
-					<mat-icon>error_outline</mat-icon>
-					<span>Could not log in to your Cronometer account with the provided credentials.</span>
-				</div>
-				<div class="try-again-button-wrapper">
-					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
-				</div>
-			} @else if (credentials.status === "error") {
-				<div class="status-message">
-					<mat-icon>error_outline</mat-icon>
-					<span>Could not log in to your Cronometer account with the provided credentials.</span>
-				</div>
-				<div class="try-again-button-wrapper">
-					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
-				</div>
-			} @else {
-				<div class="status-message column gap-2">
-					<span>Connected ({{ credentials.username }})</span>
-					<button mat-flat-button (click)="requestServingsExport('cronometer')">Export servings</button>
-					<button mat-stroked-button (click)="onDisconnectClick()">Disconnect</button>
-				</div>
-			}
-		} @else {
+	@let _exportStatus = exportStatus();
+	@if (!_exportStatus) {
+		@let _credentials = credentials();
+		@if (!_credentials) {
 			<form [formGroup]="formGroup" class="connect-form">
 				<mat-form-field>
 					<mat-label>Cronometer login E-mail</mat-label>
@@ -79,11 +52,40 @@
 					<span class="upload-progress-text">Uploading: {{ uploadProgress()!.toFixed(0) }}%</span>
 				</div>
 			}
+		} @else {
+			@if (_credentials.status === "processing") {
+				<div class="status-message">
+					<mat-spinner diameter="24" />
+					<span>Connecting to your account...</span>
+				</div>
+			} @else if (_credentials.status === "invalid") {
+				<div class="status-message">
+					<mat-icon>error_outline</mat-icon>
+					<span>Could not log in to your Cronometer account with the provided credentials.</span>
+				</div>
+				<div class="try-again-button-wrapper">
+					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
+				</div>
+			} @else if (_credentials.status === "error") {
+				<div class="status-message">
+					<mat-icon>error_outline</mat-icon>
+					<span>Could not log in to your Cronometer account with the provided credentials.</span>
+				</div>
+				<div class="try-again-button-wrapper">
+					<button mat-stroked-button (click)="onTryAgainClick()">Try again</button>
+				</div>
+			} @else {
+				<div class="status-message column gap-2">
+					<span>Connected ({{ _credentials.username }})</span>
+					<button mat-flat-button (click)="requestServingsExport('cronometer')">Export servings</button>
+					<button mat-stroked-button (click)="onDisconnectClick()">Disconnect</button>
+				</div>
+			}
 		}
 	} @else {
 		<div class="status-message">
 			<mat-spinner diameter="24" />
-			@switch (exportStatus()) {
+			@switch (_exportStatus) {
 				@case ("pending") {
 					<span>Export requested. Waiting for robots...</span>
 				}

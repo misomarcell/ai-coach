@@ -19,11 +19,11 @@ export const communicationCreated = onDocumentCreated(
 		}
 
 		const uid = event.params.userId;
-		const channel = communication.channel;
-		switch (channel) {
+		const channelType = communication.channelType;
+		switch (channelType) {
 			case "telegram":
-				const telegramChannel = await communicationService.getTelegramChannel(uid);
-				const chatId = telegramChannel?.chatId;
+				const telegramChannel = await communicationService.getChannel(uid, channelType);
+				const chatId = telegramChannel?.address;
 				if (!chatId) {
 					logger.warn("Communication couldn't be sent because user is missing chatId", { uid });
 
@@ -32,7 +32,7 @@ export const communicationCreated = onDocumentCreated(
 
 				if (communication.message.analysisResult) {
 					const formattedAnalysis = formatAnalysisResult(communication.message.analysisResult);
-					await sendTelegramMessage(chatId, formattedAnalysis).catch(logger.error);
+					await sendTelegramMessage(parseInt(chatId), formattedAnalysis).catch(logger.error);
 				}
 				break;
 			default:

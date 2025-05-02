@@ -1,4 +1,4 @@
-import { CommunicationChannel, HealthProfileDb, UserProfileDb } from "@aicoach/shared";
+import { HealthProfileDb, UserProfileDb } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
 import { WriteResult } from "firebase-admin/firestore";
 export class UserService {
@@ -28,16 +28,6 @@ export class UserService {
 		}
 
 		return userDoc.set(value, { merge: true });
-	}
-
-	async getUserCommunicationChannels(userId: string): Promise<CommunicationChannel[]> {
-		const collectionRef = await firestore().collection(`users/${userId}/communication-channels`);
-		const collectionSnapshot = await collectionRef.get();
-		if (collectionSnapshot.empty) {
-			return [];
-		}
-
-		return collectionSnapshot.docs.map((doc) => doc.id as CommunicationChannel);
 	}
 }
 

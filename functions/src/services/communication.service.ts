@@ -1,10 +1,10 @@
-import { CommunicationChannel, TelegramChannel } from "@aicoach/shared";
+import { CommunicationChannelDb, CommunicationChannelType } from "@aicoach/shared";
 import { firestore } from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { Communication, CommunicationMessage } from "../models/communication.model";
 
 export class CommunicationService {
-	async createCommunication(uid: string, channel: CommunicationChannel, message: CommunicationMessage): Promise<void> {
+	async createCommunication(uid: string, channelType: CommunicationChannelType, message: CommunicationMessage): Promise<void> {
 		if (!uid || !message) {
 			throw new Error("Failed to create communication, uid or message is missing.");
 		}
@@ -13,7 +13,7 @@ export class CommunicationService {
 		const data: Communication = {
 			uid,
 			message,
-			channel,
+			channelType,
 			id: doc.id,
 			created: FieldValue.serverTimestamp()
 		};
@@ -21,23 +21,34 @@ export class CommunicationService {
 		await doc.set(data);
 	}
 
-	async getTelegramChannel(uid: string): Promise<TelegramChannel | undefined> {
-		const doc = await firestore().doc(`users/${uid}/communication-channels/telegram`).get();
-		if (!doc.exists) {
+	async getCommunicationChannels(uid: string): Promise<CommunicationChannelDb[]> {
+		const coll = await firestore().collection(`users/${uid}/communication-channels`).get();
+
+		if (coll.empty) {
+			return [];
+		}
+
+		return coll.docs.map((doc) => doc.data() as CommunicationChannelDb);
+	}
+
+	async getChannel(uid: string, type: CommunicationChannelType): Promise<CommunicationChannelDb | undefined> {
+		const coll = await firestore().collection(`users/${uid}/communication-channels`).where("type", "==", type).get();
+
+		if (coll.empty) {
 			return undefined;
 		}
 
-		const channel = doc.data() as TelegramChannel;
-		return channel;
+		return coll.docs[0].data() as CommunicationChannelDb;
 	}
 
-	async setTelegramChannel(uid: string, channel: TelegramChannel): Promise<void> {
+	async setChannel(uid: string, channel: Omit<CommunicationChannelDb, "id">): Promise<void> {
 		if (!uid || !channel) {
-			throw new Error("Failed to set telegram channel, uid or channel is missing.");
+			throw new Error("Failed to set communication channel, uid or channel is missing.");
 		}
 
-		const doc = firestore().collection(`users/${uid}/communication-channels`).doc("telegram");
-		await doc.set(channel, { merge: true });
+		const docRef = firestore().collection(`users/${uid}/communication-channels`).doc();
+
+		await docRef.set(channel, { merge: true });
 	}
 }
 

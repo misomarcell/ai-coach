@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
+import { FieldValue } from "firebase-admin/firestore";
 import { TelegramUpdate } from "../models/telegram-message.model";
 import communicationService from "./communication.service";
 
@@ -30,7 +31,7 @@ export class TelegramService {
 		try {
 			const update: TelegramUpdate = request.body;
 			if (update.message?.text?.startsWith("/start")) {
-				this.handleStartCommand(update);
+				await this.handleStartCommand(update);
 			}
 
 			return response.status(200).send("OK");
@@ -62,29 +63,42 @@ export class TelegramService {
 			return;
 		}
 
-		await this.saveChatId(connectCode, chatId, username);
+		return this.saveChatId(connectCode, chatId, username);
+	}
+
+	private getUidByConnectCode(connectCode: string): Promise<string | undefined> {
+		return firestore()
+			.collection("users")
+			.where("telegramConnectCode", "==", connectCode)
+			.limit(1)
+			.get()
+			.then((querySnapshot) => {
+				if (querySnapshot.empty) {
+					return undefined;
+				}
+
+				const userDoc = querySnapshot.docs[0];
+
+				return userDoc.id;
+			});
 	}
 
 	private async saveChatId(connectCode: string, chatId: number, username: string): Promise<void> {
-		const query = firestore().collection("users").where("telegramConnection.connectCode", "==", connectCode).limit(1);
-		const relevantUserDocs = await query.get();
-		if (!relevantUserDocs.size) {
+		const uid = await this.getUidByConnectCode(connectCode);
+		if (!uid) {
 			await this.sendMessage(chatId, SOMETHING_WENT_WRONG_MESSAGE);
 
 			throw new Error("Connect code not found");
 		}
 
 		try {
-			const userDoc = relevantUserDocs.docs[0];
-			if (!userDoc.exists || !userDoc.id) {
-				logger.error("User document not found", { connectCode });
-
-				throw new Error("User document not found");
-			}
-
-			const uid = userDoc.id;
-
-			await communicationService.setTelegramChannel(uid, { connectCode, username, chatId });
+			await communicationService.setChannel(uid, {
+				name: username,
+				address: chatId.toString(),
+				type: "telegram",
+				lastUpdated: FieldValue.serverTimestamp(),
+				created: FieldValue.serverTimestamp()
+			});
 			await this.sendMessage(chatId, "You've successfully connected to your KombuchAI account.");
 			logger.info("ChatId saved to user document", chatId, username);
 		} catch (error) {

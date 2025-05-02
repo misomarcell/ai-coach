@@ -6,7 +6,6 @@ import { logger } from "firebase-functions";
 import { AnalysisResultBase } from "../models/ai-service.model";
 import { CommunicationMessageFormat } from "../models/communication.model";
 import communicationService from "./communication.service";
-import userService from "./user.service";
 
 export class DietAnalysisService {
 	async createAnalysisRequest(uid: string, model: AiModel): Promise<string> {
@@ -100,9 +99,9 @@ export class DietAnalysisService {
 			return;
 		}
 
-		const channels = await userService.getUserCommunicationChannels(uid);
+		const channels = await communicationService.getCommunicationChannels(uid);
 		for (const channel of channels) {
-			await communicationService.createCommunication(uid, channel, {
+			await communicationService.createCommunication(uid, channel.type, {
 				analysisResult: analysis.result,
 				format: CommunicationMessageFormat.HTML
 			});

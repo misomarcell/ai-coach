@@ -6,9 +6,10 @@
 		</mat-panel-title>
 	</mat-expansion-panel-header>
 
-	@if (telegramUsername(); as username) {
+	@let _telegramUsername = telegramUsername();
+	@if (_telegramUsername) {
 		<div class="connected-wrapper">
-			<strong>Connected</strong>
+			<strong>Connected</strong> {{ _telegramUsername }}
 			<p>Your Telegram account is already connected.</p>
 		</div>
 	} @else {
@@ -17,8 +18,12 @@
 			<p>Get notified when your analysis is ready.</p>
 		</div>
 
-		@if (connectCode(); as connectCode) {
-			<button mat-flat-button class="w-100" (click)="onConnectClick(connectCode)">Connect Telegram</button>
-		}
+		<button mat-flat-button class="w-100" (click)="onConnectClick()">
+			@if (isLoading()) {
+				<mat-spinner diameter="20" />
+			} @else {
+				Connect Telegram
+			}
+		</button>
 	}
 </mat-expansion-panel>
