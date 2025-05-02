@@ -37,18 +37,6 @@
 					<div class="info-value">{{ user().created | date: "YYYY-MM-dd HH:mm" }}</div>
 				</div>
 
-				@if (user().communicationPreferences) {
-					<h3>Communication Preferences</h3>
-					<div class="info-row">
-						<div class="info-label">Channel:</div>
-						<div class="info-value">{{ user().communicationPreferences?.communicationChannel || "None" }}</div>
-					</div>
-					<div class="info-row">
-						<div class="info-label">Frequency:</div>
-						<div class="info-value">{{ user().communicationPreferences?.communicationFrequency || "None" }}</div>
-					</div>
-				}
-
 				<mat-divider class="my-3"></mat-divider>
 
 				<p class="bold mb-2">Health profile</p>
