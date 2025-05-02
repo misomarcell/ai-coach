@@ -18,7 +18,6 @@ import {
 	UserCredential,
 	verifyPasswordResetCode
 } from "@angular/fire/auth";
-import { Firestore } from "@angular/fire/firestore";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import cookies from "js-cookie";
@@ -29,7 +28,6 @@ import { from, map, Observable, of, startWith, switchMap, take, tap } from "rxjs
 })
 export class AuthService implements OnDestroy {
 	private snackBar = inject(MatSnackBar);
-	private firestore = inject(Firestore);
 	private router = inject(Router);
 
 	private readonly auth = inject(Auth);
@@ -92,11 +90,11 @@ export class AuthService implements OnDestroy {
 	}
 
 	getCurrentUser(): Observable<User | null> {
-		return authState(this.auth);
+		return this.authState;
 	}
 
 	isLoggedIn(): Observable<boolean> {
-		return authState(this.auth).pipe(map((user) => !!user));
+		return this.authState.pipe(map((user) => !!user));
 	}
 
 	getRedirectResult(): Promise<UserCredential | null> {

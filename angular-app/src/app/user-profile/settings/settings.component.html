@@ -1,1 +1,97 @@
-<app-page-title title="Settings" />
+<app-page-title title="Settings" class="mb-2" />
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()" [hidden]="isLoading()">
+	<mat-card class="pb-2">
+		<mat-card-header class="mb-2">
+			<mat-card-title>Profile Settings</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<div class="avatar-container mb-2">
+				<div
+					matRipple
+					class="avatar d-flex jc-c ai-c"
+					[ngStyle]="{ 'background-image': 'url(' + (formGroup.get('photoURL')?.value || 'assets/user-default.svg') + ')' }"
+				>
+					<mat-icon class="camera-icon">photo_camera</mat-icon>
+				</div>
+				<input type="file" accept="image/*" #fileInput hidden />
+			</div>
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Display Name</mat-label>
+				<input matInput type="text" required formControlName="displayName" placeholder="Enter your name" />
+				<mat-error>{{ getErrorsFor("displayName") }}</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Email</mat-label>
+				<input matInput type="email" required formControlName="email" placeholder="Enter your email" />
+				<mat-error>{{ getErrorsFor("email") }}</mat-error>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Avatar URL</mat-label>
+				<input matInput type="text" formControlName="photoURL" placeholder="Enter avatar URL (optional)" />
+				<mat-hint>Link to an image for your profile picture</mat-hint>
+			</mat-form-field>
+		</mat-card-content>
+	</mat-card>
+
+	<mat-card>
+		<mat-card-header class="mb-2">
+			<mat-card-title>Communication Preferences</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<div class="checkbox-wrapper">
+				<mat-checkbox formControlName="receiveNewsAndUpdates"> Receive news and updates </mat-checkbox>
+			</div>
+		</mat-card-content>
+	</mat-card>
+
+	<mat-card>
+		<mat-card-header class="mb-2">
+			<mat-card-title>Payment Settings</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<p class="placeholder-text">Payment settings will be available soon.</p>
+		</mat-card-content>
+	</mat-card>
+
+	<mat-card class="pb-2">
+		<mat-card-header class="mb-2">
+			<mat-card-title>AI Model Settings</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Preferred AI Model</mat-label>
+				<mat-select formControlName="aiModel" required>
+					@for (model of aiModels; track model) {
+						<mat-option [value]="model">{{ model }}</mat-option>
+					}
+				</mat-select>
+				<mat-hint>Select your preferred AI model for analyses and suggestions</mat-hint>
+				<mat-error>{{ getErrorsFor("aiModel") }}</mat-error>
+			</mat-form-field>
+		</mat-card-content>
+	</mat-card>
+
+	@let _lastUpdated = lastUpdated();
+	@if (_lastUpdated) {
+		<span class="text-center tertiary-color">Last updated: {{ _lastUpdated | date: "YYYY-MM-dd HH:mm" }}</span>
+	} @else {
+		<span class="text-center tertiary-color">Last updated: Never</span>
+	}
+
+	<button mat-flat-button type="submit" class="w-100 mb-4" [disabled]="formGroup.invalid || isSubmitting()">
+		@if (isSubmitting()) {
+			<mat-spinner diameter="20" />
+		} @else {
+			Save
+		}
+	</button>
+</form>
+
+@if (isLoading()) {
+	<div class="loading-container">
+		<mat-spinner diameter="40" />
+	</div>
+}

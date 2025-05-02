@@ -42,6 +42,10 @@
 	justify-content: flex-end;
 }
 
+.tertiary-color {
+	color: var(--tertiary-color);
+}
+
 $spacing-unit: 0.5rem;
 $spacing-levels: 0, 1, 2, 3, 4, 5;
 @each $level in $spacing-levels {

@@ -5,6 +5,7 @@ import { analysisResolver } from "./resolvers/analysis.resolver";
 import { calorieVisionResolver } from "./resolvers/calorie-vision.resolver";
 import { dailyTargetsResolver } from "./resolvers/daily-targets.resolver";
 import { healthProfileResolver } from "./resolvers/health-profile.resolver";
+import { settingsProfileResolver } from "./resolvers/settings-profile.resolver";
 import { servingsResolver } from "./resolvers/servings.resolver";
 import { userProfileResolver } from "./resolvers/user-profile.resolver";
 import { visionHistoryResolver } from "./resolvers/vision-history.resolver";
@@ -113,7 +114,8 @@ export const routes: Routes = [
 					},
 					{
 						path: "settings",
-						loadComponent: () => import("./user-profile/settings/settings.component").then((m) => m.SettingsComponent)
+						loadComponent: () => import("./user-profile/settings/settings.component").then((m) => m.SettingsComponent),
+						resolve: { settingsProfile: settingsProfileResolver }
 					},
 					{
 						path: "health-profile",
