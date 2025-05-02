@@ -12,8 +12,8 @@ export class SettingsProfileService {
 	private firestore = inject(Firestore);
 
 	private settingsProfileConverter: FirestoreDataConverter<SettingsProfile, SettingsProfileDb> = {
-		toFirestore: (model: SettingsProfile): SettingsProfileDb => ({ 
-			...model, 
+		toFirestore: (model: SettingsProfile): SettingsProfileDb => ({
+			...model,
 			lastUpdated: model.lastUpdated ? Timestamp.fromDate(model.lastUpdated) : serverTimestamp()
 		}),
 		fromFirestore(snapshot, options): SettingsProfile {

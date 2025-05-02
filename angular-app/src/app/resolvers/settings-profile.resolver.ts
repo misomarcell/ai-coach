@@ -6,8 +6,6 @@ import { SettingsProfileService } from "../services/settings-profile.service";
 
 export const settingsProfileResolver: ResolveFn<SettingsProfile | undefined> = () => {
 	const settingsProfileService = inject(SettingsProfileService);
-	
-	return settingsProfileService.getSettingsProfile().pipe(
-		catchError(() => of(undefined))
-	);
+
+	return settingsProfileService.getSettingsProfile().pipe(catchError(() => of(undefined)));
 };

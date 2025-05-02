@@ -1,9 +1,12 @@
-import { AiModel, aiModels, SettingsProfile } from "@aicoach/shared";
-import { Component, inject, signal } from "@angular/core";
+import { AiModel, aiModels, SettingsProfile, UserProfile } from "@aicoach/shared";
+import { NgStyle } from "@angular/common";
+import { Component, ElementRef, inject, signal, ViewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatRippleModule } from "@angular/material/core";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
@@ -12,16 +15,15 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
-import { catchError, EMPTY, filter, finalize, from, of, switchMap, take } from "rxjs";
+import { catchError, EMPTY, filter, finalize, from, map, Observable, of, switchMap, take, tap } from "rxjs";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
+import { ImageUploadService } from "../../services/image-upload.service";
 import { SettingsProfileService } from "../../services/settings-profile.service";
-import { DatePipe, NgStyle } from "@angular/common";
-import { MatRippleModule } from "@angular/material/core";
+import { UserProfileService } from "../../services/user-profile.service";
 
 @Component({
 	imports: [
-		DatePipe,
 		NgStyle,
 		PageTitleComponent,
 		ReactiveFormsModule,
@@ -41,20 +43,36 @@ import { MatRippleModule } from "@angular/material/core";
 	styleUrl: "./settings.component.scss"
 })
 export class SettingsComponent {
+	private router = inject(Router);
+	private formBuilder = inject(FormBuilder);
+	private authService = inject(AuthService);
+	private settingsProfileService = inject(SettingsProfileService);
+	private profileService = inject(UserProfileService);
+	private snackBar = inject(MatSnackBar);
+	private actiavtedRoute = inject(ActivatedRoute);
+	private imageUploadService = inject(ImageUploadService);
+
 	formGroup: FormGroup;
 	lastUpdated = signal<Date | undefined>(undefined);
+	currentEmail: string | undefined = undefined;
 	isLoading = signal(false);
 	isSubmitting = signal(false);
+	isUploading = signal(false);
+	isEmailVerified = toSignal(
+		this.authService.getCurrentUser().pipe(
+			take(1),
+			filter((user) => !!user),
+			map((user) => user.emailVerified)
+		)
+	);
+
+	uploadProgress = signal<number>(0);
+	imagePreview = signal<string | null>(null);
+	selectedFile = signal<File | null>(null);
 
 	aiModels = aiModels;
 
-	private router = inject(Router);
-	private formBuilder = inject(FormBuilder);
-	private settingsProfileService = inject(SettingsProfileService);
-	private authService = inject(AuthService);
-	private snackBar = inject(MatSnackBar);
-	private actiavtedRoute = inject(ActivatedRoute);
-
+	@ViewChild("fileInput") fileInput!: ElementRef<HTMLInputElement>;
 	constructor() {
 		this.formGroup = this.formBuilder.group({
 			displayName: ["", [Validators.required]],
@@ -66,39 +84,122 @@ export class SettingsComponent {
 
 		this.isLoading.set(true);
 
-		const routeData = this.actiavtedRoute.snapshot.data["settingsProfile"];
+		const userProfile = this.actiavtedRoute.snapshot.data["userProfile"] as UserProfile;
+		if (userProfile) {
+			this.prefillProfile(userProfile);
+			this.currentEmail = userProfile.email;
+		}
 
-		if (routeData) {
-			this.prefillForm(routeData);
-			this.lastUpdated.set(routeData.lastUpdated);
+		const settingsProfile = this.actiavtedRoute.snapshot.data["settingsProfile"] as SettingsProfile;
+		if (settingsProfile) {
+			this.prefillSettings(settingsProfile);
+			this.lastUpdated.set(settingsProfile.lastUpdated);
 			this.isLoading.set(false);
-		} else {
-			this.authService
-				.getCurrentUser()
-				.pipe(
-					filter((user) => !!user),
-					take(1)
-				)
-				.subscribe((user) => {
-					this.formGroup.patchValue({
-						displayName: user.displayName || "",
-						email: user.email || "",
-						photoURL: user.photoURL || ""
-					});
-				});
+		}
 
-			this.isLoading.set(false);
+		this.isLoading.set(false);
+	}
+
+	prefillProfile(profile: UserProfile): void {
+		this.formGroup.patchValue({
+			displayName: profile.displayName || "",
+			email: profile.email || "",
+			photoURL: profile.photoURL || ""
+		});
+	}
+
+	prefillSettings(settingsProfile: SettingsProfile): void {
+		this.formGroup.patchValue({
+			receiveNewsAndUpdates: settingsProfile.receiveNewsAndUpdates,
+			aiModel: settingsProfile.aiModel || "gpt-4o"
+		});
+	}
+
+	openFileSelector(): void {
+		if (this.isUploading()) {
+			return;
+		}
+
+		this.fileInput.nativeElement.click();
+	}
+
+	async onFileSelected(event: Event): Promise<void> {
+		const input = event.target as HTMLInputElement;
+		if (!input.files?.length || this.isUploading()) {
+			return;
+		}
+
+		const file = input.files[0];
+
+		if (!this.imageUploadService.validateImageFile(file, 5)) {
+			this.resetFileInput();
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = () => this.imagePreview.set(reader.result as string);
+		reader.readAsDataURL(file);
+
+		try {
+			const compressed = await this.imageUploadService.compressImage(file, 512);
+			this.selectedFile.set(compressed || file);
+
+			this.uploadProfilePicture();
+		} catch (error) {
+			console.error("Error processing image", error);
+			this.snackBar.open("Failed to process image", "Close", { panelClass: "snackbar-error" });
+			this.resetFileInput();
 		}
 	}
 
-	prefillForm(settingsProfile: SettingsProfile): void {
-		this.formGroup.patchValue({
-			displayName: settingsProfile.displayName || "",
-			email: settingsProfile.email || "",
-			photoURL: settingsProfile.photoURL || "",
-			receiveNewsAndUpdates: settingsProfile.receiveNewsAndUpdates || false,
-			aiModel: settingsProfile.aiModel || "gpt-4o"
-		});
+	uploadProfilePicture(): void {
+		const file = this.selectedFile();
+		if (!file || this.isUploading()) {
+			return;
+		}
+
+		this.isUploading.set(true);
+
+		this.imageUploadService.uploadProgress$
+			.pipe(
+				tap((progress) => {
+					if (progress !== null) {
+						this.uploadProgress.set(progress);
+					}
+				})
+			)
+			.subscribe();
+
+		this.imageUploadService
+			.uploadImage(file, "profile-pictures", { type: "avatar" })
+			.pipe(
+				take(1),
+				tap((downloadUrl) => {
+					this.formGroup.patchValue({ photoURL: downloadUrl });
+					this.snackBar.open("Profile picture updated successfully", "Close");
+				}),
+				switchMap(({ downloadUrl }) => this.profileService.updateUserProfile({ photoURL: downloadUrl })),
+				catchError((error) => {
+					console.error("Error uploading profile picture", error);
+					this.snackBar.open("Failed to upload profile picture", "Close", { panelClass: "snackbar-error" });
+					this.isUploading.set(false);
+					this.resetFileInput();
+
+					return of(null);
+				}),
+				finalize(() => {
+					this.isUploading.set(false);
+					this.resetFileInput();
+				})
+			)
+			.subscribe();
+	}
+
+	resetFileInput(): void {
+		this.selectedFile.set(null);
+		if (this.fileInput?.nativeElement) {
+			this.fileInput.nativeElement.value = "";
+		}
 	}
 
 	onSubmit(): void {
@@ -108,14 +209,24 @@ export class SettingsComponent {
 
 		this.isSubmitting.set(true);
 
+		const formValues = this.formGroup.value;
 		const settingsData: SettingsProfile = {
-			...this.formGroup.value,
+			receiveNewsAndUpdates: formValues.receiveNewsAndUpdates,
+			aiModel: formValues.aiModel,
 			lastUpdated: new Date()
 		};
 
-		this.settingsProfileService
-			.setSettingsProfile(settingsData)
+		const profileData: Partial<UserProfile> = {
+			displayName: formValues.displayName,
+			email: formValues.email,
+			photoURL: formValues.photoURL
+		};
+
+		this.profileService
+			.updateUserProfile(profileData)
 			.pipe(
+				switchMap(() => this.settingsProfileService.setSettingsProfile(settingsData)),
+				switchMap(() => (formValues.email !== this.currentEmail ? this.updateUserEmail(formValues.email) : of(true))),
 				take(1),
 				switchMap(() => {
 					this.snackBar.open("Your settings have been updated successfully", "Close");
@@ -148,5 +259,9 @@ export class SettingsComponent {
 		}
 
 		return "Invalid value";
+	}
+
+	private updateUserEmail(newEmail: string): Observable<void> {
+		return this.authService.updateEmail(newEmail);
 	}
 }

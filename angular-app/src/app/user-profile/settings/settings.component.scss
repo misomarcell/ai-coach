@@ -22,14 +22,41 @@ form {
 		align-items: center;
 
 		.avatar {
-			width: 64px;
-			height: 64px;
+			position: relative;
+			width: 80px;
+			height: 80px;
 			border-radius: 50%;
 			border: 2px solid var(--tertiary-color);
 			cursor: pointer;
 			overflow: hidden;
-			background-size: contain;
+			background-size: cover;
 			background-position: center;
+			background-repeat: no-repeat;
+
+			&:hover {
+				opacity: 0.8;
+
+				.camera-icon {
+					opacity: 1;
+				}
+			}
+
+			.camera-icon {
+				position: absolute;
+				opacity: 0.5;
+				transition: opacity 0.3s ease;
+				background-color: rgba(0, 0, 0, 0.3);
+				border-radius: 50%;
+				padding: 5px;
+				color: white;
+			}
+
+			.mat-spinner {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
 		}
 	}
 

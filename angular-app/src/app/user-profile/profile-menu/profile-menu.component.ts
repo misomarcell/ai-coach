@@ -9,6 +9,7 @@ import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
 import { PromptService } from "../../services/prompt.service";
 import { PwaService } from "../../services/pwa.service";
+import { UserProfileService } from "../../services/user-profile.service";
 
 @Component({
 	selector: "app-profile-menu",
@@ -18,6 +19,7 @@ import { PwaService } from "../../services/pwa.service";
 })
 export class ProfileMenuComponent {
 	private authService = inject(AuthService);
+	private profileService = inject(UserProfileService);
 	private promptService = inject(PromptService);
 	private snackBar = inject(MatSnackBar);
 	private pwaService = inject(PwaService);
@@ -31,7 +33,7 @@ export class ProfileMenuComponent {
 		{ initialValue: true }
 	);
 	isAdmin = toSignal(this.authService.isAdmin(), { initialValue: false });
-	name = toSignal(this.authService.getCurrentUser().pipe(map((u) => u?.displayName || "")), { initialValue: "" });
+	name = toSignal(this.profileService.getUserProfile().pipe(map((u) => u?.displayName || "")), { initialValue: "" });
 
 	constructor() {
 		this.isInstallable.set(this.pwaService.isReadyToInstall());

@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
-import { UserService } from "../services/user.service";
+import { UserProfileService } from "../services/user-profile.service";
 import { CronometerIntegrationComponent } from "./cronometer-integration/cronometer-integration.component";
 import { TelegramIntegrationComponent } from "./telegram-integration/telegram-integration.component";
 import { PageTitleComponent } from "../page-title/page-title.component";
@@ -14,5 +14,5 @@ import { PageTitleComponent } from "../page-title/page-title.component";
 export class IntegrationsPageComponent {
 	private activatedRoute = inject(ActivatedRoute);
 
-	userProfile = toSignal(inject(UserService).getUserProfile$(this.activatedRoute.snapshot));
+	userProfile = toSignal(inject(UserProfileService).getUserProfile(this.activatedRoute.snapshot));
 }

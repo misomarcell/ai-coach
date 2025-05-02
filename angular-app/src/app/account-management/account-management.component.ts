@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 export class AccountManagementComponent {
 	private router = inject(Router);
 	private activatedRoute = inject(ActivatedRoute);
-	private mode: "resetPassword" | "verifyEmail" | undefined = undefined;
+	private mode: "resetPassword" | "verifyEmail" | "verifyAndChangeEmail" | undefined = undefined;
 
 	constructor() {
 		this.mode = this.activatedRoute.snapshot.queryParams["mode"] || "unknown";
@@ -20,6 +20,7 @@ export class AccountManagementComponent {
 				this.router.navigate(["/forgot-password"], { queryParams: { step: "new-password" }, queryParamsHandling: "merge" });
 				break;
 			case "verifyEmail":
+			case "verifyAndChangeEmail":
 				this.router.navigate(["/verify-email"], { queryParamsHandling: "merge" });
 				break;
 			default:

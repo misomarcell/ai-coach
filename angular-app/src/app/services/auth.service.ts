@@ -1,6 +1,7 @@
 import { isPlatformBrowser, isPlatformServer } from "@angular/common";
 import { inject, Injectable, makeStateKey, OnDestroy, PLATFORM_ID, TransferState } from "@angular/core";
 import {
+	applyActionCode,
 	Auth,
 	authState,
 	beforeAuthStateChanged,
@@ -11,17 +12,17 @@ import {
 	onIdTokenChanged,
 	sendEmailVerification,
 	sendPasswordResetEmail,
-	applyActionCode,
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	User,
 	UserCredential,
+	verifyBeforeUpdateEmail,
 	verifyPasswordResetCode
 } from "@angular/fire/auth";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import cookies from "js-cookie";
-import { from, map, Observable, of, startWith, switchMap, take, tap } from "rxjs";
+import { filter, from, map, Observable, of, startWith, switchMap, take, tap } from "rxjs";
 
 @Injectable({
 	providedIn: "root"
@@ -162,6 +163,14 @@ export class AuthService implements OnDestroy {
 		}
 
 		await sendEmailVerification(user);
+	}
+
+	updateEmail(newEmail: string): Observable<void> {
+		return this.getCurrentUser().pipe(
+			filter((user) => !!user),
+			take(1),
+			switchMap((user) => from(verifyBeforeUpdateEmail(user, newEmail)))
+		);
 	}
 
 	async logout() {

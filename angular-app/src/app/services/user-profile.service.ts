@@ -7,7 +7,7 @@ import { AuthService } from "./auth.service";
 @Injectable({
 	providedIn: "root"
 })
-export class UserService {
+export class UserProfileService {
 	private firestore = inject(Firestore);
 	private authService = inject(AuthService);
 
@@ -27,7 +27,7 @@ export class UserService {
 		}
 	};
 
-	getUserProfile$(activatedRoute?: ActivatedRouteSnapshot): Observable<UserProfile | undefined> {
+	getUserProfile(activatedRoute?: ActivatedRouteSnapshot): Observable<UserProfile | undefined> {
 		if (activatedRoute && activatedRoute.data["userProfile"]) {
 			return of(activatedRoute.data["userProfile"] as UserProfile);
 		}
@@ -41,15 +41,12 @@ export class UserService {
 		);
 	}
 
-	updateUserProfile$(value: Partial<UserProfile>): Observable<void> {
+	updateUserProfile(value: Partial<UserProfile>): Observable<void> {
 		return this.authService.uid.pipe(
 			filter((uid) => !!uid),
-			map((uid) => {
-				const userDoc = doc(this.firestore, "users", uid!).withConverter(this.userProfileConverter);
-
-				return setDoc(userDoc, value, { merge: true });
-			}),
-			from
+			take(1),
+			map((uid) => doc(this.firestore, "users", uid!).withConverter(this.userProfileConverter)),
+			switchMap((docRef) => from(setDoc(docRef, value, { merge: true })))
 		);
 	}
 }

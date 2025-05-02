@@ -5,7 +5,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { filter, finalize, from, switchMap, take, tap } from "rxjs";
-import { AuthService } from "../services/auth.service";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
 	imports: [RouterLink, MatButtonModule, MatProgressSpinnerModule],
@@ -19,6 +19,7 @@ export class VerifyEmailComponent implements OnInit {
 	private destroyRef = inject(DestroyRef);
 	private router = inject(Router);
 
+	mode = this.activatedRoute.snapshot.queryParams["mode"] || "unknown";
 	currentStep = signal<"verify" | "error" | "new-code-sent" | "already-verified">("verify");
 	oobCode = this.activatedRoute.snapshot.queryParams["oobCode"];
 	isLoading = signal(false);
@@ -49,7 +50,12 @@ export class VerifyEmailComponent implements OnInit {
 		try {
 			await this.authService.verifyEmail(this.oobCode);
 			this.snackService.open("Email verified successfully", "OK");
-			this.router.navigate(["/dashboard"]).then(() => window.location.reload());
+
+			if (this.mode === "recoverEmail") {
+				this.router.navigate(["/login"]).then(() => window.location.reload());
+			} else {
+				this.router.navigate(["/dashboard"]).then(() => window.location.reload());
+			}
 		} catch (error) {
 			this.handleVerificationError(error);
 		} finally {

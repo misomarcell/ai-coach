@@ -115,7 +115,7 @@ export const routes: Routes = [
 					{
 						path: "settings",
 						loadComponent: () => import("./user-profile/settings/settings.component").then((m) => m.SettingsComponent),
-						resolve: { settingsProfile: settingsProfileResolver }
+						resolve: { settingsProfile: settingsProfileResolver, userProfile: userProfileResolver }
 					},
 					{
 						path: "health-profile",
@@ -180,7 +180,7 @@ export const routes: Routes = [
 	},
 	{
 		path: "verify-email",
-		loadComponent: () => import("./verify-email/verify-email.component").then((m) => m.VerifyEmailComponent)
+		loadComponent: () => import("./account-management/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent)
 	},
 	{
 		path: "forgot-password",
