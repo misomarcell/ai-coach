@@ -3,7 +3,7 @@ import { ComponentPortal } from "@angular/cdk/portal";
 import { inject, Injectable, Injector, Type } from "@angular/core";
 import { FullscreenOverlayRef } from "./overlay-ref";
 import { FULLSCREEN_OVERLAY_DATA } from "./overlay.token";
-
+import { Location } from "@angular/common";
 export interface FullscreenOverlayConfig<D = any> {
 	data?: D;
 	panelClass?: string | string[];
@@ -16,6 +16,8 @@ export interface FullscreenOverlayConfig<D = any> {
 export class OverlayService {
 	private overlay = inject(Overlay);
 	private injector = inject(Injector);
+	private location = inject(Location);
+	private activeOverlay: FullscreenOverlayRef<any> | null = null;
 
 	open<T, R = any, D = any>(component: Type<T>, config?: FullscreenOverlayConfig<D>): Promise<FullscreenOverlayRef<T, R>>;
 	open<T, R = any, D = any>(
@@ -68,6 +70,28 @@ export class OverlayService {
 		const componentRef = cdkOverlayRef.attach(portal);
 		fullscreenOverlayRef.componentInstance = componentRef.instance;
 
+		this.activeOverlay = fullscreenOverlayRef;
+		window.history.pushState(null, "", `${window.location.pathname}#`);
+		this.listenForBackButton();
+
 		return fullscreenOverlayRef;
+	}
+
+	private listenForBackButton(): void {
+		const backButtonHandler = () => {
+			if (this.activeOverlay) {
+				this.activeOverlay.close();
+				this.location.replaceState(window.location.pathname);
+			}
+		};
+
+		window.addEventListener("popstate", backButtonHandler);
+
+		if (this.activeOverlay) {
+			this.activeOverlay.afterClosed$.subscribe(() => {
+				window.removeEventListener("popstate", backButtonHandler);
+				this.activeOverlay = null;
+			});
+		}
 	}
 }
