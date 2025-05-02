@@ -8,7 +8,6 @@ import { MatRippleModule } from "@angular/material/core";
 
 @Component({
 	selector: "app-add-menu-bottom-sheet",
-	standalone: true,
 	imports: [MatListModule, MatButtonModule, MatIconModule, MatRippleModule],
 	templateUrl: "./add-menu-bottom-sheet.component.html",
 	styleUrl: "./add-menu-bottom-sheet.component.scss"

@@ -11,7 +11,6 @@ import { AddMenuBottomSheetComponent } from "./add-menu-bottom-sheet/add-menu-bo
 
 @Component({
 	selector: "app-bottom-toolbar",
-	standalone: true,
 	imports: [RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatIconModule, MatBottomSheetModule],
 	templateUrl: "./bottom-toolbar.component.html",
 	styleUrl: "./bottom-toolbar.component.scss"
