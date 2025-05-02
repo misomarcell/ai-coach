@@ -1,149 +1,174 @@
 <app-page-title title="Health Profile" class="mb-2" />
 <p class="text-center">Your information powers your personalized nutrition plan.</p>
 
-<mat-divider />
-
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" [hidden]="isLoading()">
-	<div class="gender-selection d-flex flex-column">
-		<label class="form-label mb-2 bold">I'm a ...</label>
-		<mat-button-toggle-group class="gender-button-group" formControlName="gender">
-			<mat-button-toggle value="male">👨 Man</mat-button-toggle>
-			<mat-button-toggle value="female">👩 Woman</mat-button-toggle>
-		</mat-button-toggle-group>
-	</div>
+	<mat-card>
+		<mat-card-header>
+			<mat-card-title>Personal Information</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<mat-button-toggle-group class="gender-button-group mb-2" formControlName="gender">
+				<mat-button-toggle value="male">👨 I'm a Man</mat-button-toggle>
+				<mat-button-toggle value="female">👩 I'm a Woman</mat-button-toggle>
+			</mat-button-toggle-group>
 
-	<div class="form-row">
-		<mat-form-field appearance="outline">
-			<mat-label>Height (cm)</mat-label>
-			<input matInput type="number" required formControlName="heightCm" placeholder="Enter your height in cm" min="140" max="250" />
-			<mat-error>{{ getErrorsFor("heightCm") }}</mat-error>
-		</mat-form-field>
+			<div class="form-row">
+				<mat-form-field appearance="outline">
+					<mat-label>Height (cm)</mat-label>
+					<input
+						matInput
+						type="number"
+						required
+						formControlName="heightCm"
+						placeholder="Enter your height in cm"
+						min="140"
+						max="250"
+					/>
+					<mat-error>{{ getErrorsFor("heightCm") }}</mat-error>
+				</mat-form-field>
 
-		<mat-form-field appearance="outline">
-			<mat-label>Weight (kg)</mat-label>
-			<input matInput type="number" required formControlName="weightKg" placeholder="Enter your weight in kg" min="30" max="300" />
-			<mat-error>{{ getErrorsFor("weightKg") }}</mat-error>
-		</mat-form-field>
-	</div>
+				<mat-form-field appearance="outline">
+					<mat-label>Weight (kg)</mat-label>
+					<input
+						matInput
+						type="number"
+						required
+						formControlName="weightKg"
+						placeholder="Enter your weight in kg"
+						min="30"
+						max="300"
+					/>
+					<mat-error>{{ getErrorsFor("weightKg") }}</mat-error>
+				</mat-form-field>
+			</div>
 
-	<div class="form-row d-flex">
-		<mat-form-field appearance="outline" class="full-width">
-			<mat-label>Birth Date</mat-label>
-			<input matInput [matDatepicker]="picker" formControlName="birthDate" required />
-			<mat-datepicker-toggle matIconSuffix [for]="picker" />
-			<mat-datepicker #picker />
-			<mat-error>{{ getErrorsFor("birthDate") }}</mat-error>
-		</mat-form-field>
+			<div class="form-row d-flex">
+				<mat-form-field appearance="outline" class="full-width">
+					<mat-label>Birth Date</mat-label>
+					<input matInput [matDatepicker]="picker" formControlName="birthDate" required />
+					<mat-datepicker-toggle matIconSuffix [for]="picker" />
+					<mat-datepicker #picker />
+					<mat-error>{{ getErrorsFor("birthDate") }}</mat-error>
+				</mat-form-field>
 
-		@if (age()) {
-			<span class="age-label mt-2">{{ age() }} years old</span>
-		}
-	</div>
+				@if (age()) {
+					<span class="age-label mt-2">{{ age() }} years old</span>
+				}
+			</div>
+		</mat-card-content>
+	</mat-card>
 
-	<mat-form-field appearance="outline" class="full-width">
-		<mat-label>Activity Level</mat-label>
-		<mat-select formControlName="activityLevel" required>
-			@for (level of activityLevels; track level) {
-				<mat-option [value]="level.value">
-					{{ level.label }}
-				</mat-option>
-			}
-		</mat-select>
-		<mat-error>{{ getErrorsFor("activityLevel") }}</mat-error>
-	</mat-form-field>
+	<mat-card>
+		<mat-card-header>
+			<mat-card-title>Lifestyle</mat-card-title>
+		</mat-card-header>
+		<mat-card-content>
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Activity Level</mat-label>
+				<mat-select formControlName="activityLevel" required>
+					@for (level of activityLevels; track level) {
+						<mat-option [value]="level.value">
+							{{ level.label }}
+						</mat-option>
+					}
+				</mat-select>
+				<mat-error>{{ getErrorsFor("activityLevel") }}</mat-error>
+			</mat-form-field>
 
-	<mat-form-field appearance="outline" class="full-width">
-		<mat-label>Diet Goals</mat-label>
-		<mat-chip-grid #dietGoalsChipGrid formControlName="dietGoals">
-			@for (goal of dietGoals(); track goal) {
-				<mat-chip-row (removed)="removeItem($index, 'dietGoals')">
-					{{ goal }}
-					<button matChipRemove>
-						<mat-icon>cancel</mat-icon>
-					</button>
-				</mat-chip-row>
-			}
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Diet Goals</mat-label>
+				<mat-chip-grid #dietGoalsChipGrid formControlName="dietGoals">
+					@for (goal of dietGoals(); track goal) {
+						<mat-chip-row (removed)="removeItem($index, 'dietGoals')">
+							{{ goal }}
+							<button matChipRemove>
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</mat-chip-row>
+					}
 
-			<input
-				required
-				placeholder="Add goals (e.g., Weight loss, Muscle gain)"
-				name="dietGoalsInput"
-				[matChipInputFor]="dietGoalsChipGrid"
-				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-				[matAutocomplete]="dietGoalAuto"
-				[formControl]="dietGoalCtrl"
-				(matChipInputTokenEnd)="addItem($event, 'dietGoals')"
-			/>
-		</mat-chip-grid>
-		<mat-autocomplete #dietGoalAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'dietGoals')">
-			@for (goal of filteredDietGoals(); track goal) {
-				<mat-option [value]="goal">{{ goal }}</mat-option>
-			}
-		</mat-autocomplete>
-		<mat-hint>Select from the list or add your own</mat-hint>
-		<mat-error>{{ getErrorsFor("dietGoals") }}</mat-error>
-	</mat-form-field>
+					<input
+						required
+						placeholder="Add goals (e.g., Weight loss, Muscle gain)"
+						name="dietGoalsInput"
+						[matChipInputFor]="dietGoalsChipGrid"
+						[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+						[matAutocomplete]="dietGoalAuto"
+						[formControl]="dietGoalCtrl"
+						(matChipInputTokenEnd)="addItem($event, 'dietGoals')"
+					/>
+				</mat-chip-grid>
+				<mat-autocomplete #dietGoalAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'dietGoals')">
+					@for (goal of filteredDietGoals(); track goal) {
+						<mat-option [value]="goal">{{ goal }}</mat-option>
+					}
+				</mat-autocomplete>
+				<mat-hint>Select from the list or add your own</mat-hint>
+				<mat-error>{{ getErrorsFor("dietGoals") }}</mat-error>
+			</mat-form-field>
 
-	<mat-form-field appearance="outline" class="full-width">
-		<mat-label>Dietary Restrictions</mat-label>
-		<mat-chip-grid #restrictionsChipGrid formControlName="dietaryRestrictions">
-			@for (restriction of dietRestrictions(); track restriction) {
-				<mat-chip-row (removed)="removeItem($index, 'dietaryRestrictions')">
-					{{ restriction }}
-					<button matChipRemove>
-						<mat-icon>cancel</mat-icon>
-					</button>
-				</mat-chip-row>
-			}
-			<input
-				placeholder="Add restriction (e.g., Vegetarian, Gluten-free)"
-				name="dietaryRestrictionsInput"
-				[matChipInputFor]="restrictionsChipGrid"
-				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-				[matAutocomplete]="dietRestrictionAuto"
-				[formControl]="dietRestrictionCtrl"
-				(matChipInputTokenEnd)="addItem($event, 'dietaryRestrictions')"
-			/>
-		</mat-chip-grid>
-		<mat-autocomplete #dietRestrictionAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'dietaryRestrictions')">
-			@for (restriction of filteredDietRestrictions(); track restriction) {
-				<mat-option [value]="restriction">{{ restriction }}</mat-option>
-			}
-		</mat-autocomplete>
-		<mat-hint>(Optional) Select from the list or add your own</mat-hint>
-		<mat-error>{{ getErrorsFor("dietaryRestrictions") }}</mat-error>
-	</mat-form-field>
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Dietary Restrictions</mat-label>
+				<mat-chip-grid #restrictionsChipGrid formControlName="dietaryRestrictions">
+					@for (restriction of dietRestrictions(); track restriction) {
+						<mat-chip-row (removed)="removeItem($index, 'dietaryRestrictions')">
+							{{ restriction }}
+							<button matChipRemove>
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</mat-chip-row>
+					}
+					<input
+						placeholder="Add restriction (e.g., Vegetarian, Gluten-free)"
+						name="dietaryRestrictionsInput"
+						[matChipInputFor]="restrictionsChipGrid"
+						[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+						[matAutocomplete]="dietRestrictionAuto"
+						[formControl]="dietRestrictionCtrl"
+						(matChipInputTokenEnd)="addItem($event, 'dietaryRestrictions')"
+					/>
+				</mat-chip-grid>
+				<mat-autocomplete #dietRestrictionAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'dietaryRestrictions')">
+					@for (restriction of filteredDietRestrictions(); track restriction) {
+						<mat-option [value]="restriction">{{ restriction }}</mat-option>
+					}
+				</mat-autocomplete>
+				<mat-hint>(Optional) Select from the list or add your own</mat-hint>
+				<mat-error>{{ getErrorsFor("dietaryRestrictions") }}</mat-error>
+			</mat-form-field>
 
-	<mat-form-field appearance="outline" class="full-width">
-		<mat-label>Health Conditions</mat-label>
-		<mat-chip-grid #conditionsChipGrid formControlName="healthConditions">
-			@for (condition of healthConditions(); track condition) {
-				<mat-chip-row (removed)="removeItem($index, 'healthConditions')">
-					{{ condition }}
-					<button matChipRemove>
-						<mat-icon>cancel</mat-icon>
-					</button>
-				</mat-chip-row>
-			}
+			<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Health Conditions</mat-label>
+				<mat-chip-grid #conditionsChipGrid formControlName="healthConditions">
+					@for (condition of healthConditions(); track condition) {
+						<mat-chip-row (removed)="removeItem($index, 'healthConditions')">
+							{{ condition }}
+							<button matChipRemove>
+								<mat-icon>cancel</mat-icon>
+							</button>
+						</mat-chip-row>
+					}
 
-			<input
-				placeholder="Add condition (e.g., Diabetes, Hypertension)"
-				name="healthConditionsInput"
-				[matChipInputFor]="conditionsChipGrid"
-				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-				[matAutocomplete]="healthConditionAuto"
-				[formControl]="healthConditionCtrl"
-				(matChipInputTokenEnd)="addItem($event, 'healthConditions')"
-			/>
-		</mat-chip-grid>
-		<mat-autocomplete #healthConditionAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'healthConditions')">
-			@for (condition of filteredHealthConditions(); track condition) {
-				<mat-option [value]="condition">{{ condition }}</mat-option>
-			}
-		</mat-autocomplete>
-		<mat-hint>(Optional) Select from the list or add your own</mat-hint>
-		<mat-error>{{ getErrorsFor("healthConditions") }}</mat-error>
-	</mat-form-field>
+					<input
+						placeholder="Add condition (e.g., Diabetes, Hypertension)"
+						name="healthConditionsInput"
+						[matChipInputFor]="conditionsChipGrid"
+						[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+						[matAutocomplete]="healthConditionAuto"
+						[formControl]="healthConditionCtrl"
+						(matChipInputTokenEnd)="addItem($event, 'healthConditions')"
+					/>
+				</mat-chip-grid>
+				<mat-autocomplete #healthConditionAuto="matAutocomplete" (optionSelected)="selectedItem($event, 'healthConditions')">
+					@for (condition of filteredHealthConditions(); track condition) {
+						<mat-option [value]="condition">{{ condition }}</mat-option>
+					}
+				</mat-autocomplete>
+				<mat-hint>(Optional) Select from the list or add your own</mat-hint>
+				<mat-error>{{ getErrorsFor("healthConditions") }}</mat-error>
+			</mat-form-field>
+		</mat-card-content>
+	</mat-card>
 
 	@let _bmi = bmi();
 	@let _maintanenceCalories = maintanenceCalories();
@@ -152,7 +177,7 @@
 			<span> BMI: {{ _bmi | number: "1.0-1" }} • BMR: ~{{ _maintanenceCalories | number: "1.0-0" }}kcal </span>
 		</div>
 	}
-	<div class="button-container">
+	<div class="button-container mb-4">
 		<button mat-flat-button type="submit" class="w-100" [disabled]="formGroup.invalid || isSubmitting()">
 			@if (isSubmitting()) {
 				<mat-spinner diameter="20" />

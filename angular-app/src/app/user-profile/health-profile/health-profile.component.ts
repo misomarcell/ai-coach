@@ -9,6 +9,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { MatCardModule } from "@angular/material/card";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -22,10 +23,10 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { catchError, EMPTY, from, map, of, startWith, switchMap, take, tap } from "rxjs";
+import { PageTitleComponent } from "../../page-title/page-title.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { HealthProfileService } from "../../services/health-profile.service";
 import { DIET_GOALS, DIETARY_RESTRICTIONS, HEALTH_CONDITIONS } from "./health-options";
-import { PageTitleComponent } from "../../page-title/page-title.component";
 
 @Component({
 	selector: "app-health-profile",
@@ -39,6 +40,7 @@ import { PageTitleComponent } from "../../page-title/page-title.component";
 		MatButtonModule,
 		MatButtonToggleModule,
 		MatProgressSpinnerModule,
+		MatCardModule,
 		MatDividerModule,
 		MatChipsModule,
 		MatIconModule,
