@@ -112,6 +112,10 @@ export const routes: Routes = [
 							import("./user-profile/profile-menu/profile-menu.component").then((m) => m.ProfileMenuComponent)
 					},
 					{
+						path: "settings",
+						loadComponent: () => import("./user-profile/settings/settings.component").then((m) => m.SettingsComponent)
+					},
+					{
 						path: "health-profile",
 						loadComponent: () =>
 							import("./user-profile/health-profile/health-profile.component").then((m) => m.HealthProfileComponent),
