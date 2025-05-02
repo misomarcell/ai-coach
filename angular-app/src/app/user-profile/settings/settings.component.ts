@@ -55,6 +55,7 @@ export class SettingsComponent {
 	formGroup: FormGroup;
 	lastUpdated = signal<Date | undefined>(undefined);
 	currentEmail: string | undefined = undefined;
+	currentPhotoURL: string | undefined = undefined;
 	isLoading = signal(false);
 	isSubmitting = signal(false);
 	isUploading = signal(false);
@@ -87,6 +88,7 @@ export class SettingsComponent {
 		if (userProfile) {
 			this.prefillProfile(userProfile);
 			this.currentEmail = userProfile.email;
+			this.currentPhotoURL = userProfile.photoURL;
 		}
 
 		const settingsProfile = this.actiavtedRoute.snapshot.data["settingsProfile"] as SettingsProfile;

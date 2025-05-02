@@ -11,7 +11,7 @@
 					matRipple
 					class="avatar d-flex jc-c ai-c"
 					[ngStyle]="{
-						'background-image': 'url(' + (imagePreview() || formGroup.get('photoURL')?.value || 'assets/user-default.svg') + ')'
+						'background-image': 'url(' + (imagePreview() || currentPhotoURL || 'assets/user-default.svg') + ')'
 					}"
 					(click)="openFileSelector()"
 				>
