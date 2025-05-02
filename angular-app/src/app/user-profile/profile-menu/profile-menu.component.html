@@ -23,6 +23,12 @@
 	<mat-icon>bug_report</mat-icon>
 	<span>Report a problem</span>
 </div>
+@if (isShareAvailable()) {
+	<div matRipple class="menu-item bold d-flex gap-2 p-2" (click)="onShareClick()">
+		<mat-icon>share</mat-icon>
+		<span>Share with friends</span>
+	</div>
+}
 @if (isAdmin()) {
 	<div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['../admin-dashboard']">
 		<mat-icon>shield</mat-icon>

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, PLATFORM_ID, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
@@ -10,6 +10,7 @@ import { AuthService } from "../../services/auth.service";
 import { PromptService } from "../../services/prompt.service";
 import { PwaService } from "../../services/pwa.service";
 import { UserProfileService } from "../../services/user-profile.service";
+import { isPlatformBrowser } from "@angular/common";
 
 @Component({
 	selector: "app-profile-menu",
@@ -18,6 +19,7 @@ import { UserProfileService } from "../../services/user-profile.service";
 	styleUrl: "./profile-menu.component.scss"
 })
 export class ProfileMenuComponent {
+	private platformId = inject(PLATFORM_ID);
 	private authService = inject(AuthService);
 	private profileService = inject(UserProfileService);
 	private promptService = inject(PromptService);
@@ -25,6 +27,7 @@ export class ProfileMenuComponent {
 	private pwaService = inject(PwaService);
 
 	isInstallable = signal(false);
+	isShareAvailable = signal(false);
 	isEmailVerified = toSignal(
 		this.authService.getCurrentUser().pipe(
 			filter((user) => !!user),
@@ -37,6 +40,10 @@ export class ProfileMenuComponent {
 
 	constructor() {
 		this.isInstallable.set(this.pwaService.isReadyToInstall());
+
+		if (isPlatformBrowser(this.platformId)) {
+			this.isShareAvailable.set("share" in navigator);
+		}
 	}
 
 	onVerifyCLick() {
@@ -61,6 +68,16 @@ export class ProfileMenuComponent {
 		if (this.pwaService.isReadyToInstall()) {
 			this.pwaService.promptInstallPwa();
 		}
+	}
+
+	async onShareClick(): Promise<void> {
+		return navigator
+			.share({
+				title: "KombuchAI - Smart Nutrition",
+				text: "Counting calories is easy using AI!",
+				url: "https://kombuch-ai.web.app/"
+			})
+			.catch((error) => console.error("Error sharing:", error));
 	}
 
 	onFeedbackClick() {
