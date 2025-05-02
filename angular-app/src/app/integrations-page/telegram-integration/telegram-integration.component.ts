@@ -32,7 +32,7 @@ export class TelegramIntegrationComponent {
 		this.isLoading.set(true);
 
 		this.telegramService
-			.setTelegramConnectCode(this.getRandomCode())
+			.setTelegramConnectCode(connectCode)
 			.pipe(
 				tap(() => window.open(`https://t.me/${environment.telegramBotName}?start=${connectCode}`, "_blank")),
 				catchError(() => {
