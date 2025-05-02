@@ -1,7 +1,7 @@
 <app-page-title [main]="true" [title]="name()" />
 
 @if (isEmailVerified() === false) {
-	<div matRipple class="verify-email-bar p-2 gap-2 d-flex">
+	<div matRipple class="verify-email-bar p-2 gap-2 d-flex" (click)="onVerifyCLick()">
 		<mat-icon>warning</mat-icon>
 		<p class="bold">Please verify your e-mail address.</p>
 	</div>

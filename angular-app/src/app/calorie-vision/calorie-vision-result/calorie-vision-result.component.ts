@@ -5,7 +5,6 @@ import { Component, inject, OnInit, PLATFORM_ID, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatRippleModule } from "@angular/material/core";
-import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -13,7 +12,7 @@ import { ActivatedRoute, RouterLink } from "@angular/router";
 import { filter } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { PageTitleComponent } from "../../page-title/page-title.component";
-import { PromptDialogComponent } from "../../prompt-dialog/prompt-dialog.component";
+import { PromptService } from "../../services/prompt.service";
 import { EditServingFormComponent } from "../../servings/edit-serving-form/edit-serving-form.component";
 import { CalorieVisionService } from "../calorie-vision.service";
 
@@ -37,7 +36,7 @@ export class CalorieVisionResultComponent implements OnInit {
 	private activatedRoute = inject(ActivatedRoute);
 	private calorieVisionService = inject(CalorieVisionService);
 	private overlayService = inject(OverlayService);
-	private dialog = inject(MatDialog);
+	private promptService = inject(PromptService);
 
 	documentId = this.activatedRoute.snapshot.paramMap.get("visionId")!;
 	calorieVision = signal<CalorieVision>(this.activatedRoute.snapshot.data["calorieVision"]);
@@ -66,14 +65,11 @@ export class CalorieVisionResultComponent implements OnInit {
 	}
 
 	onScoreClick() {
-		this.dialog.open(PromptDialogComponent, {
-			data: {
-				title: "About scoring",
-				message:
-					"This score reflects the personalized nutritional value of the food. A higher score can indicates better nutritional value or a better fit to your needs and goals.",
-				buttonLayout: "ok"
-			}
-		});
+		this.promptService.prompt(
+			"About scoring",
+			"This score reflects the personalized nutritional value of the food. A higher score can indicates better nutritional value or a better fit to your needs and goals.",
+			"ok"
+		);
 	}
 
 	copy(value: string | number) {

@@ -1,4 +1,5 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -11,15 +12,31 @@ import { AuthService } from "../services/auth.service";
 	templateUrl: "./verify-email.component.html",
 	styleUrl: "./verify-email.component.scss"
 })
-export class VerifyEmailComponent {
+export class VerifyEmailComponent implements OnInit {
 	private activatedRoute = inject(ActivatedRoute);
 	private authService = inject(AuthService);
 	private snackService = inject(MatSnackBar);
+	private destroyRef = inject(DestroyRef);
 	private router = inject(Router);
 
-	currentStep = signal<"verify" | "error" | "new-code-sent">("verify");
+	currentStep = signal<"verify" | "error" | "new-code-sent" | "already-verified">("verify");
 	oobCode = this.activatedRoute.snapshot.queryParams["oobCode"];
 	isLoading = signal(false);
+
+	ngOnInit(): void {
+		this.authService
+			.getCurrentUser()
+			.pipe(
+				takeUntilDestroyed(this.destroyRef),
+				filter((user) => !!user),
+				tap((user) => {
+					if (user?.emailVerified) {
+						this.currentStep.set("already-verified");
+					}
+				})
+			)
+			.subscribe();
+	}
 
 	async onVerifyClick(): Promise<void> {
 		if (!this.oobCode) {
@@ -32,7 +49,7 @@ export class VerifyEmailComponent {
 		try {
 			await this.authService.verifyEmail(this.oobCode);
 			this.snackService.open("Email verified successfully", "OK");
-			await this.router.navigate(["/dashboard"]);
+			this.router.navigate(["/dashboard"]).then(() => window.location.reload());
 		} catch (error) {
 			this.handleVerificationError(error);
 		} finally {

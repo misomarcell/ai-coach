@@ -2,10 +2,12 @@ import { Component, inject, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { RouterModule } from "@angular/router";
-import { filter, map } from "rxjs";
+import { catchError, EMPTY, filter, from, map, switchMap } from "rxjs";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
+import { PromptService } from "../../services/prompt.service";
 import { PwaService } from "../../services/pwa.service";
 
 @Component({
@@ -16,6 +18,8 @@ import { PwaService } from "../../services/pwa.service";
 })
 export class ProfileMenuComponent {
 	private authService = inject(AuthService);
+	private promptService = inject(PromptService);
+	private snackBar = inject(MatSnackBar);
 	private pwaService = inject(PwaService);
 
 	isInstallable = signal(false);
@@ -31,6 +35,24 @@ export class ProfileMenuComponent {
 
 	constructor() {
 		this.isInstallable.set(this.pwaService.isReadyToInstall());
+	}
+
+	onVerifyCLick() {
+		const promptResult = this.promptService.prompt("Verify Email", "Do you need a new verification e-mail?", "yes-no");
+
+		promptResult
+			.pipe(
+				filter((result) => result === "yes"),
+				switchMap(() => this.authService.getCurrentUser()),
+				filter((user) => !!user),
+				switchMap((user) => from(this.authService.requestEmailVerification(user))),
+				catchError(() => {
+					this.snackBar.open("Error sending verification e-mail", "OK", { panelClass: "snackbar-error", duration: 60000 });
+
+					return EMPTY;
+				})
+			)
+			.subscribe(() => this.snackBar.open("Verification e-mail sent", "OK"));
 	}
 
 	onInstallClick() {

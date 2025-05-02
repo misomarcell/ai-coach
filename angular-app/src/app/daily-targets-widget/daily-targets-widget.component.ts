@@ -3,13 +3,12 @@ import { DecimalPipe, isPlatformServer } from "@angular/common";
 import { Component, computed, effect, inject, input, PLATFORM_ID, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
-import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, RouterModule } from "@angular/router";
-import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../prompt-dialog/prompt-dialog.component";
 import { DailyTargetsService } from "../services/daily-targets.service";
+import { PromptService } from "../services/prompt.service";
 
 export interface Target {
 	nutrition: Nutrition;
@@ -25,7 +24,7 @@ const DEFAULT_NUTRITION_TYPES: NutritionType[] = ["Calories", "Net Carbs", "Tota
 	styleUrl: "./daily-targets-widget.component.scss"
 })
 export class DailyTargetsWidgetComponent {
-	private dialog = inject(MatDialog);
+	private promptService = inject(PromptService);
 	private dailyTargetsService = inject(DailyTargetsService);
 	private activatedRoute = inject(ActivatedRoute);
 	private platformId = inject(PLATFORM_ID);
@@ -76,13 +75,7 @@ export class DailyTargetsWidgetComponent {
 	}
 
 	showExplanation(): void {
-		this.dialog.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
-			data: {
-				title: "Nutrition Targets",
-				message: this.explanation() || "No explanation available.",
-				buttonLayout: "ok"
-			}
-		});
+		this.promptService.prompt("Nutrition Targets", this.explanation() || "No explanation available.", "ok");
 	}
 
 	private calculateNutritionPercentage(actualNutrition?: Nutrition, targetNutrition?: Nutrition): number {

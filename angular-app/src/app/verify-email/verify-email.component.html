@@ -28,5 +28,9 @@
 			<p>A new verification e-mail sent.</p>
 			<button mat-flat-button [routerLink]="'/dashboard'">Home</button>
 		}
+		@case ("already-verified") {
+			<p>Your e-mail is already verified.</p>
+			<button mat-stroked-button [routerLink]="'/dashboard'">Home</button>
+		}
 	}
 </div>

@@ -8,8 +8,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { RouterLink } from "@angular/router";
 import { take } from "rxjs";
-import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { AnalysisService } from "../../services/analysis.service";
+import { PromptService } from "../../services/prompt.service";
 
 @Component({
 	selector: "app-analysis-card",
@@ -20,7 +20,8 @@ import { AnalysisService } from "../../services/analysis.service";
 })
 export class AnalysisCardComponent {
 	analysis = input.required<Analysis>();
-	dialog = inject(MatDialog);
+	private dialog = inject(MatDialog);
+	private promptService = inject(PromptService);
 	private analysisService = inject(AnalysisService);
 
 	get result(): AnalysisResult | undefined {
@@ -36,21 +37,16 @@ export class AnalysisCardComponent {
 			return;
 		}
 
-		const dialogRef = this.dialog.open<PromptDialogComponent, PromptDialogData, PromptDialogResult>(PromptDialogComponent, {
-			data: {
-				title: "Delete analysis",
-				message: "Are you sure you want to delete this analysis? This action cannot be undone.",
-				buttonLayout: "yes-no"
+		const promptResult = this.promptService.prompt(
+			"Delete analysis",
+			"Are you sure you want to delete this analysis? This action cannot be undone.",
+			"yes-no"
+		);
+
+		promptResult.subscribe((result) => {
+			if (result === "yes") {
+				this.analysisService.deleteAnalysis(this.analysis().id).pipe(take(1)).subscribe();
 			}
 		});
-
-		dialogRef
-			.afterClosed()
-			.pipe(take(1))
-			.subscribe((result) => {
-				if (result === "yes") {
-					this.analysisService.deleteAnalysis(this.analysis().id).pipe(take(1)).subscribe();
-				}
-			});
 	}
 }

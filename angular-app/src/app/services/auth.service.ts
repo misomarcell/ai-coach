@@ -159,11 +159,18 @@ export class AuthService implements OnDestroy {
 	}
 
 	async requestEmailVerification(user: User): Promise<void> {
+		if (!user || user.emailVerified) {
+			throw new Error("User not logged in or email is already verified.");
+		}
+
 		await sendEmailVerification(user);
 	}
 
 	async logout() {
-		await this.auth.signOut().then(() => this.router.navigate(["login"]));
+		await this.auth
+			.signOut()
+			.then(() => this.router.navigate(["login"]))
+			.then(() => window.location.reload());
 	}
 
 	private handleAuthError(error: any): any {
