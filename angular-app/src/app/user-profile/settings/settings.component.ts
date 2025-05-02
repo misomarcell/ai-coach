@@ -77,7 +77,6 @@ export class SettingsComponent {
 		this.formGroup = this.formBuilder.group({
 			displayName: ["", [Validators.required]],
 			email: ["", [Validators.required, Validators.email]],
-			photoURL: [""],
 			receiveNewsAndUpdates: [true],
 			aiModel: ["gpt-4o" as AiModel, [Validators.required]]
 		});
@@ -103,8 +102,7 @@ export class SettingsComponent {
 	prefillProfile(profile: UserProfile): void {
 		this.formGroup.patchValue({
 			displayName: profile.displayName || "",
-			email: profile.email || "",
-			photoURL: profile.photoURL || ""
+			email: profile.email || ""
 		});
 	}
 
@@ -218,8 +216,7 @@ export class SettingsComponent {
 
 		const profileData: Partial<UserProfile> = {
 			displayName: formValues.displayName,
-			email: formValues.email,
-			photoURL: formValues.photoURL
+			email: formValues.email
 		};
 
 		this.profileService
