@@ -1,12 +1,26 @@
-import { animate, group, query, style, transition, trigger } from "@angular/animations";
+import { animate, style, transition, trigger } from "@angular/animations";
 
-export const slideInOut = trigger("slideInOut", [
+export const popInEffect = trigger("popInEffect", [
 	transition(":enter", [
-		style({ transform: "translateX(-100%)", opacity: 0 }),
-		group([
-			query(":self", animate("1ms")),
-			animate("250ms cubic-bezier(0.0, 0.0, 0.2, 1)", style({ transform: "translateY(0)", opacity: 1 }))
-		])
+		style({
+			transform: "scale(0.5)",
+			opacity: 0
+		}),
+		animate(
+			"300ms cubic-bezier(0.25, 0.8, 0.25, 1)",
+			style({
+				transform: "scale(1)",
+				opacity: 1
+			})
+		)
 	]),
-	transition(":leave", [animate("200ms cubic-bezier(0.4, 0.0, 1, 1)", style({ transform: "translateX(100%)", opacity: 0 }))])
+	transition(":leave", [
+		animate(
+			"200ms cubic-bezier(0.4, 0.0, 1, 1)",
+			style({
+				transform: "scale(0.5)",
+				opacity: 0
+			})
+		)
+	])
 ]);

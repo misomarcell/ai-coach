@@ -1,4 +1,4 @@
-import { slideInOut } from "@aicoach/animations";
+import { popInEffect } from "@aicoach/animations";
 import { FULLSCREEN_OVERLAY_DATA, FullscreenOverlayRef } from "@aicoach/overlay";
 import { Food, Nutrition, Serving, servingCategories, ServingCategory, ServingFood, ServingSize } from "@aicoach/shared";
 import { CustomDateAdapter } from "@aicoach/utils/date-adapter.util";
@@ -56,9 +56,9 @@ interface PrefillOptions {
 		{ provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE, Platform] },
 		{ provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
 	],
-	animations: [slideInOut],
+	animations: [popInEffect],
 	host: {
-		"[@slideInOut]": ""
+		"[@popInEffect]": ""
 	},
 	templateUrl: "./edit-serving-form.component.html",
 	styleUrl: "./edit-serving-form.component.scss"
