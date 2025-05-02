@@ -18,7 +18,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgxMaskDirective, provideNgxMask } from "ngx-mask";
-import { filter, finalize, switchMap, take, tap } from "rxjs";
+import { catchError, EMPTY, filter, finalize, switchMap, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
@@ -134,6 +134,12 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		this.foodService
 			.getFood(this.overlayData.foodId)
 			.pipe(
+				catchError(() => {
+					this.snackService.open("This food can't be added right now.", "Close");
+					this.closeOverlay();
+
+					return EMPTY;
+				}),
 				filter((food) => !!food),
 				tap((food) => this.food.set(food)),
 				tap((food) => {

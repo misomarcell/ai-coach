@@ -9,7 +9,7 @@
 	@let _telegramUsername = telegramUsername();
 	@if (_telegramUsername) {
 		<div class="connected-wrapper">
-			<strong>Connected</strong> {{ _telegramUsername }}
+			<strong>Connected</strong> ({{ "@" + _telegramUsername }})
 			<p>Your Telegram account is already connected.</p>
 		</div>
 	} @else {
