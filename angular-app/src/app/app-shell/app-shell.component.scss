@@ -1,9 +1,9 @@
 .app-container {
+	max-width: var(--app-max-width);
 	display: flex;
 	flex-direction: column;
 	position: relative;
 	padding: 1rem;
-	max-width: 800px;
 	margin: 0 auto;
 }
 

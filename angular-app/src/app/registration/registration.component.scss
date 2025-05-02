@@ -1,6 +1,6 @@
 :host {
+	max-width: var(--app-max-width);
 	display: block;
-	max-width: 650px;
 	transform: translateY(2rem);
 	margin: 0 auto;
 }

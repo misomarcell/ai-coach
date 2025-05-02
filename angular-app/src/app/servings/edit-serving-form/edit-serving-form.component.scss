@@ -3,10 +3,10 @@
 	--mdc-dialog-subhead-line-height: 1.2;
 	--mdc-fab-small-container-color: var(--mat-sys-surface-variant);
 	--mat-fab-small-foreground-color: var(--mat-sys-on-surface);
+	max-width: var(--app-max-width);
 	display: block;
 	position: relative;
 	padding: 4rem 0;
-	max-width: 800px;
 	margin: 0 auto;
 }
 
@@ -40,9 +40,9 @@
 
 .top-wrapper,
 .bottom-wrapper {
+	max-width: var(--app-max-width);
 	background: var(--mat-app-background-color);
 	position: fixed;
-	max-width: 800px;
 	max-height: 3rem;
 	margin: 0 auto;
 	padding: 1rem;

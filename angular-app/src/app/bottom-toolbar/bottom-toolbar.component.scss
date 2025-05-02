@@ -12,8 +12,8 @@
 }
 
 .bottom-nav-container {
+	max-width: var(--app-max-width);
 	width: 100%;
-	max-width: 850px;
 	margin: 0 auto;
 	display: flex;
 	justify-content: space-around;
