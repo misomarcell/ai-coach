@@ -3,7 +3,7 @@
 	"name": "KombuchAI - Smart Nutrition",
 	"short_name": "KombuchAI",
 	"description": "KombuchAI is a smart nutrition app that helps you track your food intake and provides personalized recommendations.",
-	"theme_color": "#364a52",
+	"theme_color": "#111415",
 	"background_color": "#111415",
 	"display": "standalone",
 	"orientation": "portrait",
