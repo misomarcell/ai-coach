@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
-import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
-import { filter, map } from "rxjs";
+import { filter } from "rxjs";
 import { BottomToolbarComponent } from "../bottom-toolbar/bottom-toolbar.component";
 import { AuthService } from "../services/auth.service";
 
@@ -15,12 +15,6 @@ export class AppShellComponent {
 	private router = inject(Router);
 
 	isMenuOpen = false;
-	userPhotoUrl = toSignal(
-		this.authService.getCurrentUser().pipe(
-			takeUntilDestroyed(),
-			map((user) => user?.photoURL || undefined)
-		)
-	);
 
 	constructor() {
 		this.router.events

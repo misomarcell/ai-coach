@@ -1,7 +1,12 @@
 <app-page-title title="Health Profile" class="mb-2" />
-<p class="text-center">Your information powers your personalized nutrition plan.</p>
 
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" [hidden]="isLoading()">
+	<mat-card appearance="outlined">
+		<mat-card-content>
+			<p class="text-center">This information powers your personalized nutrition plan.</p>
+		</mat-card-content>
+	</mat-card>
+
 	<mat-card>
 		<mat-card-header>
 			<mat-card-title>Personal Information</mat-card-title>
