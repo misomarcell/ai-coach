@@ -78,19 +78,21 @@
 	</form>
 
 	@if (_serving?.isEditable === false) {
-		<div class="text-center mb-2">
-			<span>This serving is not editable.</span>
+		<div class="d-flex italic ai-c jc-c gap-1 pl-2 pr-2">
+			<mat-icon>lock</mat-icon>
+			<span>Serving is not editable.</span>
 		</div>
 	} @else if (_serving?.isFinalized) {
-		<div class="text-center mb-2">
-			<span>The amount of this serving is not editable.</span>
+		<div class="d-flex italic ai-c jc-c gap-1 pl-2 pr-2">
+			<mat-icon>lock</mat-icon>
+			<span>Serving size is not editable.</span>
 		</div>
 	}
 
 	@if (_serving?.isCalorieVision) {
 		<div class="d-flex italic ai-c jc-c gap-1 pl-2 pr-2">
 			<mat-icon color="tertiary">visibility</mat-icon>
-			<span>Generated width Calorie Vision</span>
+			<span>Generated with Calorie Vision</span>
 		</div>
 	}
 

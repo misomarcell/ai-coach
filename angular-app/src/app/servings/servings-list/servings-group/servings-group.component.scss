@@ -1,4 +1,4 @@
-::ng-deep .mat-expansion-panel {
+::ng-deep .mat-expansion-panel.servings-panel {
 	.mat-expansion-panel-body {
 		padding: 0 1rem 1rem 1rem;
 	}
@@ -14,6 +14,12 @@
 
 .panel-title {
 	flex-grow: 1;
+}
+
+.category-servings-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .serving-item {

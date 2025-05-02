@@ -1,12 +1,12 @@
 @let _servings = servings();
 @let _caloriesTotal = caloriesTotal();
 
-<mat-expansion-panel [expanded]="_servings.length > 0">
+<mat-expansion-panel class="servings-panel" [expanded]="_servings.length > 0">
 	<mat-expansion-panel-header>
 		<mat-panel-title>
 			<button mat-icon-button (click)="onAddClick($event)" [matMenuTriggerFor]="menu"><mat-icon>add</mat-icon></button>
 			<span class="panel-title">{{ groupName() }} ({{ _servings.length }}) </span>
-			<span class="total-calories bold">{{ _caloriesTotal ? (_caloriesTotal | number: "1.0-0") + " kcal" : "" }}</span>
+			<span class="total-calories xbold">{{ _caloriesTotal ? (_caloriesTotal | number: "1.0-0") + " kcal" : "" }}</span>
 		</mat-panel-title>
 	</mat-expansion-panel-header>
 
