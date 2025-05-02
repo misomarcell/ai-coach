@@ -65,16 +65,16 @@
 .info-row {
 	display: flex;
 	margin-bottom: 8px;
-}
 
-.info-label {
-	width: 150px;
-	font-weight: 500;
-	color: #555;
-}
+	.info-label {
+		width: 150px;
+		font-weight: 500;
+		color: #555;
+	}
 
-.info-value {
-	flex: 1;
+	.info-value {
+		flex: 1;
+	}
 }
 
 .tag-list {
@@ -88,10 +88,6 @@
 	padding: 16px 0;
 }
 
-.no-data {
-	color: #666;
-}
-
-.my-3 {
-	margin: 24px 0;
+.mat-divider {
+	margin: 1rem 0;
 }

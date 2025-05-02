@@ -1,4 +1,4 @@
-import { HealthProfile, HealthProfileDb, UserProfile, UserProfileDb } from "@aicoach/shared";
+import { HealthProfile, HealthProfileDb, SettingsProfile, SettingsProfileDb, UserProfile, UserProfileDb } from "@aicoach/shared";
 import { Injectable, inject } from "@angular/core";
 import {
 	Firestore,
@@ -11,6 +11,7 @@ import {
 	limit,
 	orderBy,
 	query,
+	serverTimestamp,
 	startAfter
 } from "@angular/fire/firestore";
 import { Observable } from "rxjs";
@@ -50,6 +51,20 @@ export class AdminUserService {
 		}
 	};
 
+	private settingsProfileConverter: FirestoreDataConverter<SettingsProfile, SettingsProfileDb> = {
+		toFirestore: (model: SettingsProfile): SettingsProfileDb => ({
+			...model,
+			lastUpdated: model.lastUpdated ? Timestamp.fromDate(model.lastUpdated) : serverTimestamp()
+		}),
+		fromFirestore(snapshot, options): SettingsProfile {
+			const data = snapshot.data(options) as SettingsProfileDb;
+			return {
+				...data,
+				lastUpdated: (data.lastUpdated as unknown as Timestamp)?.toDate()
+			};
+		}
+	};
+
 	getUsers(pageSize = 15, lastUser?: UserProfile): Observable<UserProfile[]> {
 		const usersCollection = collection(this.firestore, "users").withConverter(this.userProfileConverter);
 		let userQuery = query(usersCollection, orderBy("created", "desc"), limit(pageSize));
@@ -65,5 +80,13 @@ export class AdminUserService {
 		const healthProfileDoc = doc(this.firestore, `users/${userId}/profiles/health-profile`).withConverter(this.healthProfileConverter);
 
 		return docData(healthProfileDoc);
+	}
+
+	getUserSettingsProfile(userId: string): Observable<SettingsProfile | undefined> {
+		const settingsProfileDoc = doc(this.firestore, `users/${userId}/profiles/settings-profile`).withConverter(
+			this.settingsProfileConverter
+		);
+
+		return docData(settingsProfileDoc);
 	}
 }

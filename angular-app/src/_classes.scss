@@ -76,6 +76,16 @@ $spacing-levels: 0, 1, 2, 3, 4, 5;
 	.mr-#{$level} {
 		margin-right: $level * $spacing-unit;
 	}
+
+	.mx-#{$level} {
+		margin-left: $level * $spacing-unit;
+		margin-right: $level * $spacing-unit;
+	}
+
+	.my-#{$level} {
+		margin-top: $level * $spacing-unit;
+		margin-bottom: $level * $spacing-unit;
+	}
 }
 
 @each $level in $spacing-levels {
@@ -97,6 +107,16 @@ $spacing-levels: 0, 1, 2, 3, 4, 5;
 
 	.pr-#{$level} {
 		padding-right: $level * $spacing-unit;
+	}
+
+	.px-#{$level} {
+		padding-left: $level * $spacing-unit;
+		padding-right: $level * $spacing-unit;
+	}
+
+	.py-#{$level} {
+		padding-top: $level * $spacing-unit;
+		padding-bottom: $level * $spacing-unit;
 	}
 }
 

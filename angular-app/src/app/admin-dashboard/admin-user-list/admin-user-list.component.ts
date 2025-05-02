@@ -29,7 +29,13 @@ export class AdminUserListComponent implements OnInit {
 		this.loadUsers();
 	}
 
-	loadUsers(loadMore = false): void {
+	loadMoreUsers(): void {
+		if (!this.isLoading() && this.hasMoreUsers()) {
+			this.loadUsers(true);
+		}
+	}
+
+	private loadUsers(loadMore = false): void {
 		this.isLoading.set(true);
 
 		const lastUser = loadMore ? this.users()[this.users().length - 1] : undefined;
@@ -49,11 +55,5 @@ export class AdminUserListComponent implements OnInit {
 				})
 			)
 			.subscribe();
-	}
-
-	loadMoreUsers(): void {
-		if (!this.isLoading() && this.hasMoreUsers()) {
-			this.loadUsers(true);
-		}
 	}
 }

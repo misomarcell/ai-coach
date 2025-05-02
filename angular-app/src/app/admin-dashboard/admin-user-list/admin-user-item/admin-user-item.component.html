@@ -24,90 +24,116 @@
 		<mat-card>
 			<mat-card-content>
 				<p class="bold mb-2">User Information</p>
-				<div class="info-row">
-					<div class="info-label">UID:</div>
-					<div class="info-value">{{ user().id }}</div>
-				</div>
-				<div class="info-row">
-					<div class="info-label">Auth Provider:</div>
-					<div class="info-value">{{ user().providerId }}</div>
-				</div>
-				<div class="info-row">
-					<div class="info-label">Created:</div>
-					<div class="info-value">{{ user().created | date: "YYYY-MM-dd HH:mm" }}</div>
-				</div>
 
-				<mat-divider class="my-3"></mat-divider>
+				@if (user(); as user) {
+					<div class="info-row">
+						<div class="info-label">UID:</div>
+						<div class="info-value">{{ user.id }}</div>
+					</div>
+					<div class="info-row">
+						<div class="info-label">E-mail:</div>
+						<div class="info-value">{{ user.email }}</div>
+					</div>
+					<div class="info-row">
+						<div class="info-label">Auth Provider:</div>
+						<div class="info-value">{{ user.providerId }}</div>
+					</div>
+					<div class="info-row">
+						<div class="info-label">Created:</div>
+						<div class="info-value">{{ user.created | date: "YYYY-MM-dd HH:mm" }}</div>
+					</div>
+				}
+				<mat-divider />
 
-				<p class="bold mb-2">Health profile</p>
 				@if (isLoading()) {
 					<div class="loading-container">
 						<mat-spinner diameter="30"></mat-spinner>
 					</div>
-				} @else if (healthProfile()) {
-					<div class="health-profile">
-						<div class="info-row">
-							<div class="info-label">Gender:</div>
-							<div class="info-value">{{ healthProfile()!.gender }}</div>
-						</div>
-						<div class="info-row">
-							<div class="info-label">Height:</div>
-							<div class="info-value">{{ healthProfile()!.heightCm }} cm</div>
-						</div>
-						<div class="info-row">
-							<div class="info-label">Weight:</div>
-							<div class="info-value">{{ healthProfile()!.weightKg }} kg</div>
-						</div>
-						<div class="info-row">
-							<div class="info-label">Birth Date:</div>
-							<div class="info-value">{{ healthProfile()!.birthDate | date: "yyyy-MM-dd" }}</div>
-						</div>
-						<div class="info-row">
-							<div class="info-label">Activity Level:</div>
-							<div class="info-value">{{ healthProfile()!.activityLevel }}</div>
-						</div>
-
-						@if (healthProfile()!.dietGoals.length) {
-							<div class="info-row">
-								<div class="info-label">Diet Goals:</div>
-								<div class="info-value">
-									<ul class="tag-list">
-										@for (goal of healthProfile()!.dietGoals; track goal) {
-											<li>{{ goal }}</li>
-										}
-									</ul>
-								</div>
-							</div>
-						}
-
-						@if (healthProfile()!.dietaryRestrictions?.length) {
-							<div class="info-row">
-								<div class="info-label">Dietary Restrictions:</div>
-								<div class="info-value">
-									<ul class="tag-list">
-										@for (restriction of healthProfile()!.dietaryRestrictions; track restriction) {
-											<li>{{ restriction }}</li>
-										}
-									</ul>
-								</div>
-							</div>
-						}
-
-						@if (healthProfile()!.healthConditions?.length) {
-							<div class="info-row">
-								<div class="info-label">Health Conditions:</div>
-								<div class="info-value">
-									<ul class="tag-list">
-										@for (condition of healthProfile()!.healthConditions; track condition) {
-											<li>{{ condition }}</li>
-										}
-									</ul>
-								</div>
-							</div>
-						}
-					</div>
 				} @else {
-					<p class="no-data">No health profile found for this user.</p>
+					<p class="bold mb-2">Health profile</p>
+					@if (healthProfile(); as healthProfile) {
+						<div class="health-profile">
+							<div class="info-row">
+								<div class="info-label">Gender:</div>
+								<div class="info-value">{{ healthProfile.gender }}</div>
+							</div>
+							<div class="info-row">
+								<div class="info-label">Height:</div>
+								<div class="info-value">{{ healthProfile.heightCm }} cm</div>
+							</div>
+							<div class="info-row">
+								<div class="info-label">Weight:</div>
+								<div class="info-value">{{ healthProfile.weightKg }} kg</div>
+							</div>
+							<div class="info-row">
+								<div class="info-label">Birth Date:</div>
+								<div class="info-value">{{ healthProfile.birthDate | date: "yyyy-MM-dd" }}</div>
+							</div>
+							<div class="info-row">
+								<div class="info-label">Activity Level:</div>
+								<div class="info-value">{{ healthProfile.activityLevel }}</div>
+							</div>
+
+							@if (healthProfile.dietGoals.length) {
+								<div class="info-row">
+									<div class="info-label">Diet Goals:</div>
+									<div class="info-value">
+										<ul class="tag-list">
+											@for (goal of healthProfile.dietGoals; track goal) {
+												<li>{{ goal }}</li>
+											}
+										</ul>
+									</div>
+								</div>
+							}
+
+							@if (healthProfile.dietaryRestrictions?.length) {
+								<div class="info-row">
+									<div class="info-label">Dietary Restrictions:</div>
+									<div class="info-value">
+										<ul class="tag-list">
+											@for (restriction of healthProfile.dietaryRestrictions; track restriction) {
+												<li>{{ restriction }}</li>
+											}
+										</ul>
+									</div>
+								</div>
+							}
+
+							@if (healthProfile.healthConditions?.length) {
+								<div class="info-row">
+									<div class="info-label">Health Conditions:</div>
+									<div class="info-value">
+										<ul class="tag-list">
+											@for (condition of healthProfile.healthConditions; track condition) {
+												<li>{{ condition }}</li>
+											}
+										</ul>
+									</div>
+								</div>
+							}
+						</div>
+					} @else {
+						<p class="no-data">No health profile found for this user.</p>
+					}
+
+					<mat-divider />
+
+					<p class="bold mb-2">Settings profile</p>
+					@if (settings(); as settings) {
+						<div class="info-row">
+							<div class="info-label">Receive updates</div>
+							<div class="info-value">{{ settings.receiveNewsAndUpdates }}</div>
+						</div>
+						<div class="info-row">
+							<div class="info-label">Preferred model</div>
+							<div class="info-value">{{ settings.aiModel }}</div>
+						</div>
+						<div class="info-row">
+							<div class="info-label">Last updated</div>
+							<div class="info-value">{{ settings.lastUpdated | date: "yyyy-MM-dd" }}</div>
+						</div>
+					}
 				}
 			</mat-card-content>
 		</mat-card>
