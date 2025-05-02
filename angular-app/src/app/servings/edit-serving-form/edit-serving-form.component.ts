@@ -188,8 +188,10 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			return;
 		}
 
+		console.log({ serving: this.serving() });
+
 		this.isSubmitting.set(true);
-		this.addServing(food);
+		this.addServing(food, { ...this.serving() });
 	}
 
 	onServingSizeChange(servingSize: ServingSize): void {
@@ -327,6 +329,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 					category: servingData?.category || formValues.category,
 					servingSize: servingData?.servingSize || formValues.servingSize,
 					servingAmount: servingData?.servingAmount || formValues.amount,
+					isCalorieVision: servingData?.isCalorieVision || false,
 					comment: formValues.comment
 				},
 				selectedDate

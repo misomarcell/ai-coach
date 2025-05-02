@@ -14,6 +14,9 @@
 		@for (serving of _servings; track serving.id) {
 			<div matRipple class="serving-item" (click)="onServingClick(serving)">
 				<div class="food-info w-100 d-flex ai-c">
+					@if (serving.isCalorieVision) {
+						<mat-icon color="tertiary" class="calorie-vision-icon">visibility</mat-icon>
+					}
 					<div class="food-name d-flex ai-c">
 						{{ serving.food.name || "Unknown food" }}
 					</div>

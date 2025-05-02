@@ -44,6 +44,16 @@ body {
 		background: var(--mat-app-background-color);
 	}
 
+	.mat-icon {
+		&[color="primary"] {
+			--mat-icon-color: var(--primary-color);
+		}
+
+		&[color="tertiary"] {
+			--mat-icon-color: var(--tertiary-color);
+		}
+	}
+
 	.mdc-snackbar.snackbar-error {
 		--mdc-snackbar-container-color: var(--mat-sys-error);
 		--mat-snack-bar-button-color: var(--mat-sys-on-error);

@@ -18,6 +18,7 @@ export interface Serving {
 	servingSize: ServingSize;
 	isFinalized: boolean;
 	isEditable?: boolean;
+	isCalorieVision?: boolean;
 	comment?: string;
 }
 

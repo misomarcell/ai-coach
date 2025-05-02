@@ -87,6 +87,13 @@
 		</div>
 	}
 
+	@if (_serving?.isCalorieVision) {
+		<div class="d-flex ai-c jc-c gap-2 pl-2 pr-2">
+			<mat-icon color="tertiary">visibility</mat-icon>
+			<span>Generated width Calorie Vision</span>
+		</div>
+	}
+
 	<div class="food-details d-flex flex-column gap-1 m-2">
 		@if (_food && _food.nutritions.length > 0) {
 			<app-nutrition-label [nutritions]="nutritions()" [per]="per" />

@@ -86,6 +86,7 @@ export class CalorieVisionResultComponent implements OnInit {
 
 		return {
 			servingAmount: 1,
+			isCalorieVision: true,
 			servingSize: {
 				name: "Serving",
 				gramWeight: result.foodWeight,
