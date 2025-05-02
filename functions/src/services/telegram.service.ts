@@ -37,7 +37,7 @@ export class TelegramService {
 			return response.status(200).send("OK");
 		} catch (error) {
 			logger.error("Error handling bot update", error);
-			return response.status(500).send("Internal server error");
+			return response.status(200).send("OK");
 		}
 	}
 
@@ -77,9 +77,7 @@ export class TelegramService {
 					return undefined;
 				}
 
-				const userDoc = querySnapshot.docs[0];
-
-				return userDoc.id;
+				return querySnapshot.docs[0].id;
 			});
 	}
 
@@ -88,7 +86,7 @@ export class TelegramService {
 		if (!uid) {
 			await this.sendMessage(chatId, SOMETHING_WENT_WRONG_MESSAGE);
 
-			throw new Error("Connect code not found");
+			throw new Error(`Connect code not found. ConnectCode: ${connectCode} ChatId: ${chatId}`);
 		}
 
 		try {
