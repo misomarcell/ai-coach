@@ -23,10 +23,6 @@ export class TelegramIntegrationComponent {
 	isLoading = signal(false);
 	telegramUsername = toSignal(this.telegramService.getTelegramUsername());
 
-	private getRandomCode(): string {
-		return Math.floor(100000 + Math.random() * 900000).toString();
-	}
-
 	onConnectClick(): void {
 		const connectCode = this.getRandomCode();
 		this.isLoading.set(true);
@@ -42,5 +38,9 @@ export class TelegramIntegrationComponent {
 				finalize(() => this.isLoading.set(false))
 			)
 			.subscribe();
+	}
+
+	private getRandomCode(): string {
+		return Math.floor(100000 + Math.random() * 900000).toString();
 	}
 }
