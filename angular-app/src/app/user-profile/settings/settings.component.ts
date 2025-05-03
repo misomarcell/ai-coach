@@ -1,7 +1,7 @@
-import { AiModel, aiModels, SettingsProfile, UserProfile } from "@aicoach/shared";
+import { aiModels, SettingsProfile, UserProfile } from "@aicoach/shared";
 import { NgStyle } from "@angular/common";
-import { Component, ElementRef, inject, signal, ViewChild } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { Component, DestroyRef, ElementRef, inject, signal, ViewChild } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -46,6 +46,7 @@ export class SettingsComponent {
 	private router = inject(Router);
 	private formBuilder = inject(FormBuilder);
 	private authService = inject(AuthService);
+	private destroyRef = inject(DestroyRef);
 	private settingsProfileService = inject(SettingsProfileService);
 	private profileService = inject(UserProfileService);
 	private snackBar = inject(MatSnackBar);
@@ -76,43 +77,30 @@ export class SettingsComponent {
 	@ViewChild("fileInput") fileInput!: ElementRef<HTMLInputElement>;
 	constructor() {
 		this.formGroup = this.formBuilder.group({
-			displayName: ["", [Validators.required]],
+			displayName: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(32)]],
 			email: ["", [Validators.required, Validators.email]],
 			receiveNewsAndUpdates: [true],
-			aiModel: ["gpt-4o" as AiModel, [Validators.required]]
+			aiModel: [aiModels[0], [Validators.required]]
 		});
 
 		this.isLoading.set(true);
 
 		const userProfile = this.actiavtedRoute.snapshot.data["userProfile"] as UserProfile;
 		if (userProfile) {
-			this.prefillProfile(userProfile);
+			this.formGroup.patchValue(userProfile);
+
 			this.currentEmail = userProfile.email;
 			this.currentPhotoURL = userProfile.photoURL;
 		}
 
 		const settingsProfile = this.actiavtedRoute.snapshot.data["settingsProfile"] as SettingsProfile;
 		if (settingsProfile) {
-			this.prefillSettings(settingsProfile);
+			this.formGroup.patchValue(settingsProfile);
 			this.lastUpdated.set(settingsProfile.lastUpdated);
 			this.isLoading.set(false);
 		}
 
 		this.isLoading.set(false);
-	}
-
-	prefillProfile(profile: UserProfile): void {
-		this.formGroup.patchValue({
-			displayName: profile.displayName || "",
-			email: profile.email || ""
-		});
-	}
-
-	prefillSettings(settingsProfile: SettingsProfile): void {
-		this.formGroup.patchValue({
-			receiveNewsAndUpdates: settingsProfile.receiveNewsAndUpdates,
-			aiModel: settingsProfile.aiModel || "gpt-4o"
-		});
 	}
 
 	openFileSelector(): void {
@@ -162,6 +150,7 @@ export class SettingsComponent {
 
 		this.imageUploadService.uploadProgress$
 			.pipe(
+				takeUntilDestroyed(this.destroyRef),
 				tap((progress) => {
 					if (progress !== null) {
 						this.uploadProgress.set(progress);
@@ -224,6 +213,7 @@ export class SettingsComponent {
 		this.profileService
 			.updateUserProfile(profileData)
 			.pipe(
+				takeUntilDestroyed(this.destroyRef),
 				switchMap(() => this.settingsProfileService.setSettingsProfile(settingsData)),
 				switchMap(() => (formValues.email !== this.currentEmail ? this.updateUserEmail(formValues.email) : of(true))),
 				take(1),
@@ -255,6 +245,16 @@ export class SettingsComponent {
 
 		if (control.hasError("email")) {
 			return "Please enter a valid email address";
+		}
+
+		if (control.hasError("minlength")) {
+			const minLength = control.getError("minlength").requiredLength;
+			return `Minimum length is ${minLength} characters`;
+		}
+
+		if (control.hasError("maxlength")) {
+			const maxLength = control.getError("maxlength").requiredLength;
+			return `Maximum length is ${maxLength} characters`;
 		}
 
 		return "Invalid value";
