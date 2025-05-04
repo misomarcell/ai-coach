@@ -58,7 +58,7 @@ export const openFoodFactsToNutritionMapping: { [key: string]: { type: Nutrition
 	"sugars": { type: "Sugar", unit: "g" },
 	"fiber": { type: "Fiber", unit: "g" },
 	"starch": { type: "Starch", unit: "g" },
-	"protein": { type: "Protein", unit: "g" },
+	"proteins": { type: "Protein", unit: "g" },
 	"cystine": { type: "Cystine", unit: "g" },
 	"histidine": { type: "Histidine", unit: "g" },
 	"isoleucine": { type: "Isoleucine", unit: "g" },
