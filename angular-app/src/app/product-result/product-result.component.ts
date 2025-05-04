@@ -62,9 +62,9 @@ export class ProductResultComponent implements OnInit {
 						this.snackBar.open("Error fetching product data. Please try again.", "Close", {
 							panelClass: "error-snackbar"
 						});
-					}
 
-					return EMPTY;
+						return from(this.router.navigate(["/scan"]));
+					}
 				}),
 				finalize(() => this.isLoading.set(false))
 			)
