@@ -30,7 +30,8 @@ const ICONS = [
 	"utensils-solid",
 	"question-solid",
 	"wheat-awn-solid",
-	"barcode-solid"
+	"barcode-solid",
+	"barcode-scanner"
 ];
 
 @Component({

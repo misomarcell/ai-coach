@@ -31,7 +31,7 @@
 				<mat-label>Barcode</mat-label>
 				<input matInput formControlName="barcode" placeholder="Barcode" />
 				<button mat-icon-button matSuffix type="button" class="mr-1" (click)="onScanBarcodeClick()">
-					<mat-icon svgIcon="barcode-solid"></mat-icon>
+					<mat-icon svgIcon="barcode-scanner"></mat-icon>
 				</button>
 				@if (foodForm.get("barcode")?.invalid && foodForm.get("barcode")?.touched) {
 					<mat-error>{{ getErrorMessage("barcode") }}</mat-error>

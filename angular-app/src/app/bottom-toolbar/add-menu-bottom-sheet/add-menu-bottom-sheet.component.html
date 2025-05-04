@@ -1,22 +1,16 @@
 <div class="add-menu-container">
-	<div matRipple class="menu-item" (click)="navigateTo('/foods', { focus: true })">
-		<a class="d-flex ai-c gap-2 pl-4">
-			<mat-icon>add</mat-icon>
-			<span>Add new entry</span>
-		</a>
-	</div>
-
 	<div matRipple class="menu-item" (click)="navigateTo('/calorie-vision')">
-		<a class="d-flex ai-c gap-2 pl-4">
-			<mat-icon>visibility</mat-icon>
-			<span>Calorie vision</span>
-		</a>
+		<mat-icon>visibility</mat-icon>
+		<span class="label">Calorie vision</span>
 	</div>
 
 	<div matRipple class="menu-item" (click)="navigateTo('/scan')">
-		<a class="d-flex ai-c gap-2 pl-4">
-			<mat-icon svgIcon="barcode-solid"></mat-icon>
-			<span>Scan barcode</span>
-		</a>
+		<mat-icon svgIcon="barcode-scanner"></mat-icon>
+		<span class="label">Scan barcode</span>
+	</div>
+
+	<div matRipple class="menu-item" (click)="navigateTo('/foods', { focus: true })">
+		<mat-icon>add</mat-icon>
+		<span class="label">New entry</span>
 	</div>
 </div>

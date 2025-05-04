@@ -1,20 +1,30 @@
 .add-menu-container {
-	padding: 1rem 0;
+	padding: 2rem 1rem 0 1rem;
 	border-radius: 16px 16px 0 0;
 	background-color: var(--mat-sys-secondary-container);
 	color: var(--mat-sys-on-secondary-container);
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
 	align-items: center;
 }
 
 .menu-item {
-	align-content: center;
-	width: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
 	font-size: 1.2rem;
-	height: 56px;
+	gap: 0.5rem;
+	flex-grow: 1;
+	height: 86px;
+	border-radius: 16px;
 
-	&:not(:last-of-type) {
-		border-bottom: 1px solid #ccc;
+	&:nth-of-type(even) {
+		margin-bottom: 4rem;
+	}
+
+	.label {
+		font-size: 1rem;
+		line-height: 1;
 	}
 }
