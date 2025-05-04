@@ -7,10 +7,11 @@ import { MatChipsModule } from "@angular/material/chips";
 import { MatIconModule } from "@angular/material/icon";
 import { NutritionLabelComponent } from "../nutrition-label/nutrition-label.component";
 import { ApiService } from "../services/api.service";
-import { finalize, take, tap } from "rxjs";
+import { catchError, EMPTY, finalize, from, take, tap } from "rxjs";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
 	imports: [
@@ -31,6 +32,8 @@ import { PageTitleComponent } from "../page-title/page-title.component";
 })
 export class ProductResultComponent implements OnInit {
 	private apiService = inject(ApiService);
+	private router = inject(Router);
+	private snackBar = inject(MatSnackBar);
 	private activatedRoute = inject(ActivatedRoute);
 	private platformId = inject(PLATFORM_ID);
 
@@ -51,6 +54,17 @@ export class ProductResultComponent implements OnInit {
 				tap((product) => {
 					this.product.set(product);
 					this.nutrientTags.set((product.nutrientTags ?? []).map((tag) => this.getNutrientTagLabel(tag)).filter((tag) => !!tag));
+				}),
+				catchError((error) => {
+					if (error.status === 404) {
+						return from(this.router.navigate(["/foods/add"]));
+					} else {
+						this.snackBar.open("Error fetching product data. Please try again.", "Close", {
+							panelClass: "error-snackbar"
+						});
+					}
+
+					return EMPTY;
 				}),
 				finalize(() => this.isLoading.set(false))
 			)
