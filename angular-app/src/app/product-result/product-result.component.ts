@@ -7,7 +7,7 @@ import { MatChipsModule } from "@angular/material/chips";
 import { MatIconModule } from "@angular/material/icon";
 import { NutritionLabelComponent } from "../nutrition-label/nutrition-label.component";
 import { ApiService } from "../services/api.service";
-import { catchError, EMPTY, finalize, from, take, tap } from "rxjs";
+import { catchError, finalize, from, take, tap } from "rxjs";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, Router } from "@angular/router";
 import { PageTitleComponent } from "../page-title/page-title.component";
