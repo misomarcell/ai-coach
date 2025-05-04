@@ -18,6 +18,10 @@
 								'background-image': 'url(' + _product.images[0].url + ')'
 							}"
 						></div>
+					} @else {
+						<div class="product-image missing d-flex ai-c jc-c">
+							<mat-icon>broken_image</mat-icon>
+						</div>
 					}
 
 					<div class="d-flex flex-column ai-c mb-2">

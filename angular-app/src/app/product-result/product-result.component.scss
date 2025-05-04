@@ -1,6 +1,7 @@
 :host {
 	display: block;
 	margin: 0 auto;
+	width: 100%;
 	max-width: var(--app-max-width);
 
 	.loading-container {
@@ -46,6 +47,10 @@
 				background-size: contain;
 				background-repeat: no-repeat;
 				background-color: var(--mat-sys-surface-bright);
+
+				&.missing {
+					background-color: var(--mat-sys-inverse-on-surface);
+				}
 			}
 
 			.product-name {
