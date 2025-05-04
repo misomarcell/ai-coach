@@ -38,7 +38,9 @@
 					}
 				</mat-chip-set>
 
-				<button mat-flat-button class="my-2 w-100" disabled>Add to Lunch</button>
+				<button mat-flat-button class="my-2 w-100" [disabled]="_isLoading || !_product" (click)="onAddClick()">
+					Add to Servings
+				</button>
 
 				<app-nutrition-label [nutritions]="_product.nutritions" />
 			</div>

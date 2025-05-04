@@ -1,8 +1,8 @@
 <div class="add-menu-container">
-	<div matRipple class="menu-item" (click)="navigateTo('/scan')">
+	<div matRipple class="menu-item" (click)="navigateTo('/foods', { focus: true })">
 		<a class="d-flex ai-c gap-2 pl-4">
-			<mat-icon svgIcon="barcode-solid"></mat-icon>
-			<span>Scan barcode</span>
+			<mat-icon>add</mat-icon>
+			<span>Add new entry</span>
 		</a>
 	</div>
 
@@ -13,10 +13,10 @@
 		</a>
 	</div>
 
-	<div matRipple class="menu-item" (click)="navigateTo('/foods', { focus: true })">
+	<div matRipple class="menu-item" (click)="navigateTo('/scan')">
 		<a class="d-flex ai-c gap-2 pl-4">
-			<mat-icon>add</mat-icon>
-			<span>Add new entry</span>
+			<mat-icon svgIcon="barcode-solid"></mat-icon>
+			<span>Scan barcode</span>
 		</a>
 	</div>
 </div>

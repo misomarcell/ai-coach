@@ -19,6 +19,7 @@ export class ScannerPageComponent {
 		this.isLoading.set(true);
 
 		const barcode = result.getText();
-		this.router.navigate(["/scan", barcode]);
+
+		this.router.navigate(["/scan", barcode], { queryParamsHandling: "preserve" });
 	}
 }

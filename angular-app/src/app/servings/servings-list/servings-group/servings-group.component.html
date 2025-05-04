@@ -36,11 +36,11 @@
 		<mat-icon>add</mat-icon>
 		<span>Add new entry</span>
 	</button>
-	<button mat-menu-item routerLink="/calorie-vision">
+	<button mat-menu-item routerLink="/calorie-vision" [queryParams]="{ group: groupName(), date: getFormattedDate() }">
 		<mat-icon>visibility</mat-icon>
 		<span>Calorie vision</span>
 	</button>
-	<button mat-menu-item routerLink="/scan">
+	<button mat-menu-item routerLink="/scan" [queryParams]="{ group: groupName(), date: getFormattedDate() }">
 		<mat-icon>qr_code_scanner</mat-icon>
 		<span>Scan barcode</span>
 	</button>

@@ -73,7 +73,7 @@ export class OverlayService {
 
 		if (isPlatformBrowser(this.platformId)) {
 			this.activeOverlay = fullscreenOverlayRef;
-			window.history.pushState(null, "", `${window.location.pathname}#`);
+			window.history.pushState(null, "", `${window.location.pathname}${window.location.search}#`);
 			this.listenForBackButton();
 		}
 

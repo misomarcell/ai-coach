@@ -1,6 +1,7 @@
-import { DietaryFlag, FoodProduct, NutrientTag, Nutrition } from "@aicoach/shared";
+import { DietaryFlag, FoodProduct, NutrientTag, Nutrition, ServingSize } from "@aicoach/shared";
 import OpenFoodFacts, { ProductV2 } from "@openfoodfacts/openfoodfacts-nodejs";
 import { Request, Response } from "express";
+import { logger } from "firebase-functions";
 import {
 	openFoodFactsToDietaryFlagMapping,
 	openFoodFactsToNutrientTagMapping,
@@ -11,14 +12,19 @@ export async function handle(request: Request, response: Response): Promise<Resp
 	const client = new OpenFoodFacts(fetch, { country: "en" });
 	const barcode = request.params["barcode"];
 
-	const product = await client.getProduct(barcode);
-	if (!product) {
-		return response.status(404).json({ error: "Product not found" });
+	try {
+		const product = await client.getProduct(barcode);
+		if (!product) {
+			return response.status(404).json({ error: "Product not found" });
+		}
+
+		const openFFProductMatch = await getExternalProduct(barcode);
+
+		return response.status(200).json(openFFProductMatch);
+	} catch (error) {
+		logger.error("Error fetching product data:", error);
+		return response.status(500).json({ error: "Internal server error" });
 	}
-
-	const openFFProductMatch = await getExternalProduct(barcode);
-
-	return response.status(200).json(openFFProductMatch);
 }
 
 async function getExternalProduct(barcode: string): Promise<FoodProduct | undefined> {
@@ -44,6 +50,7 @@ function convertProduct(openffProduct: ProductV2): FoodProduct {
 		nutritions: convertToNutrition(openffProduct.nutriments),
 		nutrientTags: convertToNutrientTags(openffProduct.nutrient_levels_tags),
 		dietaryFlags: convertToDietaryFlags(openffProduct.ingredients_analysis_tags),
+		servingSizes: [convertServingSizes(openffProduct)],
 		images: [{ url: openffProduct.image_url, type: "package" }]
 	};
 
@@ -66,6 +73,35 @@ function convertToNutrientTags(nutrientLevels: string[]): NutrientTag[] {
 	}
 
 	return nutrientLevels.map((tag) => openFoodFactsToNutrientTagMapping[tag]).filter((tag): tag is NutrientTag => tag !== undefined);
+}
+
+function convertServingSizes(openffProduct: ProductV2): ServingSize {
+	if (openffProduct && openffProduct.serving_size) {
+		return {
+			name: normalizeServingName(openffProduct.serving_size),
+			gramWeight: normalizeServingWeight(openffProduct.serving_size),
+			isAiEstimate: false
+		};
+	}
+
+	return { name: "100g", gramWeight: 100, isAiEstimate: false };
+}
+
+function normalizeServingName(servingName: string): string {
+	if (servingName.endsWith(".0g")) {
+		return `${servingName.slice(0, -3)}g`;
+	}
+
+	return servingName;
+}
+
+function normalizeServingWeight(input: string): number {
+	const servingWeight = parseFloat(input);
+	if (isNaN(servingWeight)) {
+		throw new Error(`Invalid serving weight: ${input}`);
+	}
+
+	return servingWeight % 1 === 0 ? Math.floor(servingWeight) : servingWeight;
 }
 
 function convertToNutrition(nutriments: { [key: string]: number }): Nutrition[] {

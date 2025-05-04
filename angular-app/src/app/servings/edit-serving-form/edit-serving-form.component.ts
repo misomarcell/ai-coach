@@ -79,6 +79,12 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		return this.food()?.dietaryFlags || [];
 	}
 
+	get per(): string {
+		const formValues = this.form.getRawValue();
+
+		return `${formValues.amount} ${formValues.servingSize.name}`;
+	}
+
 	dialogService = inject(MatDialog);
 	overlayRef = inject(FullscreenOverlayRef<EditServingFormComponent>);
 	overlayData = inject<{ foodId?: string; serving?: Serving }>(FULLSCREEN_OVERLAY_DATA);
@@ -96,7 +102,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		this.form = this.formBuilder.group({
 			amount: ["", [Validators.required, Validators.min(0.01)]],
 			servingSize: [[], Validators.required],
-			date: [today, Validators.required],
+			date: [this.getDefaultDate(), Validators.required],
 			time: [this.getFormattedTime(today), [Validators.required, Validators.pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)]],
 			category: [this.getDefaultCategory(), Validators.required],
 			comment: [""]
@@ -160,7 +166,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	prefillForm(options?: PrefillOptions): void {
-		const createdDate = options?.created || new Date();
+		const createdDate = options?.created || this.getDefaultDate();
 		const formattedTime = this.getFormattedTime(createdDate);
 
 		let servingSize = options?.servingSize;
@@ -187,8 +193,6 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		if (!food || this.form.invalid || this.isSubmitting()) {
 			return;
 		}
-
-		console.log({ serving: this.serving() });
 
 		this.isSubmitting.set(true);
 		this.addServing(food, { ...this.serving() });
@@ -348,12 +352,6 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			});
 	}
 
-	get per(): string {
-		const formValues = this.form.getRawValue();
-
-		return `${formValues.amount} ${formValues.servingSize.name}`;
-	}
-
 	private getSelectedDate(): Date {
 		return this.combineDateAndTime(this.form.value.date, this.form.value.time) || new Date();
 	}
@@ -364,6 +362,15 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 			minute: "2-digit",
 			hour12: false
 		});
+	}
+
+	private getDefaultDate(): Date {
+		const preselectedDate = this.activatedRoute.snapshot.queryParams["date"];
+		if (preselectedDate) {
+			return new Date(preselectedDate);
+		}
+
+		return new Date();
 	}
 
 	private getDefaultCategory(): ServingCategory {

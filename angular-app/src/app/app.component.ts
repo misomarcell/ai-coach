@@ -77,7 +77,7 @@ export class AppComponent implements OnInit {
 
 	private showUpdateSnackbar() {
 		const snackBarRef = this.snackBar.open("A new version is available!", "Reload", {
-			duration: 6000
+			duration: 30_000
 		});
 
 		snackBarRef.onAction().subscribe(() => window.location.reload());

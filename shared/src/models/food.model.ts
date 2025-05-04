@@ -197,6 +197,7 @@ export interface FoodProduct {
 	barcode: string;
 	nutritions: Nutrition[];
 	images: ProductImage[];
+	servingSizes: ServingSize[];
 	dietaryFlags?: DietaryFlag[];
 	nutrientTags?: NutrientTag[];
 	brand?: string;

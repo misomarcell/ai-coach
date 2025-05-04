@@ -1,7 +1,7 @@
 import { popInEffect } from "@aicoach/animations";
-import { FoodProduct, NUTRIENT_TAG_MAP, NutrientTag, NutrientTagLabel } from "@aicoach/shared";
+import { FoodProduct, NUTRIENT_TAG_MAP, NutrientTag, NutrientTagLabel, Serving } from "@aicoach/shared";
 import { isPlatformServer, NgStyle } from "@angular/common";
-import { Component, inject, OnInit, PLATFORM_ID, signal } from "@angular/core";
+import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatIconModule } from "@angular/material/icon";
@@ -12,6 +12,9 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ActivatedRoute, Router } from "@angular/router";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { OverlayService } from "@aicoach/overlay";
+import { EditServingFormComponent } from "../servings/edit-serving-form/edit-serving-form.component";
 
 @Component({
 	imports: [
@@ -34,7 +37,9 @@ export class ProductResultComponent implements OnInit {
 	private apiService = inject(ApiService);
 	private router = inject(Router);
 	private snackBar = inject(MatSnackBar);
+	private overlayService = inject(OverlayService);
 	private activatedRoute = inject(ActivatedRoute);
+	private destroyRef = inject(DestroyRef);
 	private platformId = inject(PLATFORM_ID);
 
 	isLoading = signal(true);
@@ -47,16 +52,53 @@ export class ProductResultComponent implements OnInit {
 			return;
 		}
 
+		this.fetchProduct(barcode);
+	}
+
+	onAddClick(): void {
+		this.overlayService.open(EditServingFormComponent, {
+			data: {
+				serving: this.getAsServing()
+			}
+		});
+	}
+
+	private getAsServing(): Partial<Serving> {
+		const product = this.product();
+		if (!product) {
+			throw new Error("Product is not defined");
+		}
+
+		return {
+			servingSize: product.servingSizes[0],
+			servingAmount: 1,
+			food: {
+				name: product.name,
+				images: product.images,
+				nutrientTags: product.nutrientTags,
+				brand: product.brand,
+				nutritions: product.nutritions,
+				dietaryFlags: product.dietaryFlags,
+				category: "Other",
+				isApproved: true
+			}
+		};
+	}
+
+	private fetchProduct(barcode: string): void {
 		this.apiService
 			.get<FoodProduct>(`p/${barcode}`)
 			.pipe(
 				take(1),
+				takeUntilDestroyed(this.destroyRef),
 				tap((product) => {
 					this.product.set(product);
 					this.nutrientTags.set((product.nutrientTags ?? []).map((tag) => this.getNutrientTagLabel(tag)).filter((tag) => !!tag));
 				}),
 				catchError((error) => {
 					if (error.status === 404) {
+						this.snackBar.open("No information available of this product.", "Close");
+
 						return from(this.router.navigate(["/foods/add"]));
 					} else {
 						this.snackBar.open("Error fetching product data. Please try again.", "Close", {
