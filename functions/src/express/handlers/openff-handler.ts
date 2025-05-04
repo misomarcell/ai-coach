@@ -51,16 +51,28 @@ function convertProduct(openffProduct: ProductV2): FoodProduct {
 }
 
 function convertToDietaryFlags(ingredientsAnalysisTags: string[]): DietaryFlag[] {
+	if (!ingredientsAnalysisTags || ingredientsAnalysisTags.length === 0) {
+		return [];
+	}
+
 	return ingredientsAnalysisTags
 		.map((tag) => openFoodFactsToDietaryFlagMapping[tag])
 		.filter((flag): flag is DietaryFlag => flag !== undefined);
 }
 
 function convertToNutrientTags(nutrientLevels: string[]): NutrientTag[] {
+	if (!nutrientLevels || nutrientLevels.length === 0) {
+		return [];
+	}
+
 	return nutrientLevels.map((tag) => openFoodFactsToNutrientTagMapping[tag]).filter((tag): tag is NutrientTag => tag !== undefined);
 }
 
 function convertToNutrition(nutriments: { [key: string]: number }): Nutrition[] {
+	if (!nutriments || Object.keys(nutriments).length === 0) {
+		return [];
+	}
+
 	return Object.entries(nutriments)
 		.map(([key, amount]) => {
 			const mapping = openFoodFactsToNutritionMapping[key];
