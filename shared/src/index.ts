@@ -1,3 +1,4 @@
+export * from "./consts/nutrient-map.const";
 export * from "./models/ai-shared.model";
 export * from "./models/analysis.model";
 export * from "./models/calorie-vision.model";
@@ -8,8 +9,8 @@ export * from "./models/cronometer-food.model";
 export * from "./models/daily-targets.model";
 export * from "./models/food.model";
 export * from "./models/health-profile.model";
-export * from "./models/settings-profile.model";
 export * from "./models/serving.model";
+export * from "./models/settings-profile.model";
 export * from "./models/user-profile.model";
 export * from "./utils/csv-parser";
 export * from "./utils/health-utils";

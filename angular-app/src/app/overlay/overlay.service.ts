@@ -1,9 +1,9 @@
 import { GlobalPositionStrategy, Overlay, OverlayConfig, OverlayRef } from "@angular/cdk/overlay";
 import { ComponentPortal } from "@angular/cdk/portal";
-import { inject, Injectable, Injector, Type } from "@angular/core";
+import { inject, Injectable, Injector, PLATFORM_ID, Type } from "@angular/core";
 import { FullscreenOverlayRef } from "./overlay-ref";
 import { FULLSCREEN_OVERLAY_DATA } from "./overlay.token";
-import { Location } from "@angular/common";
+import { isPlatformBrowser, Location } from "@angular/common";
 export interface FullscreenOverlayConfig<D = any> {
 	data?: D;
 	panelClass?: string | string[];
@@ -14,6 +14,7 @@ export interface FullscreenOverlayConfig<D = any> {
 	providedIn: "root"
 })
 export class OverlayService {
+	private platformId = inject(PLATFORM_ID);
 	private overlay = inject(Overlay);
 	private injector = inject(Injector);
 	private location = inject(Location);
@@ -70,9 +71,11 @@ export class OverlayService {
 		const componentRef = cdkOverlayRef.attach(portal);
 		fullscreenOverlayRef.componentInstance = componentRef.instance;
 
-		this.activeOverlay = fullscreenOverlayRef;
-		window.history.pushState(null, "", `${window.location.pathname}#`);
-		this.listenForBackButton();
+		if (isPlatformBrowser(this.platformId)) {
+			this.activeOverlay = fullscreenOverlayRef;
+			window.history.pushState(null, "", `${window.location.pathname}#`);
+			this.listenForBackButton();
+		}
 
 		return fullscreenOverlayRef;
 	}

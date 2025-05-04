@@ -2,6 +2,7 @@ export const environment = {
 	production: false,
 	recaptcha3SiteKey: "6LcDX98qAAAAAHk5M2TfO2oEAW03cfJtHb3KitHy",
 	telegramBotName: "Bombuch_AI_Local_bot",
+	apiUrl: "http://localhost:5001/kombuch-ai/europe-west1/api",
 	firebase: {
 		apiKey: "AIzaSyArC2-1ayuMdtKFHx0BmDtcAwzdpyD_7Lo",
 		authDomain: "kombuch-ai.firebaseapp.com",

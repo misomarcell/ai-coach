@@ -1,0 +1,64 @@
+:host {
+	display: block;
+	margin: 0 auto;
+	max-width: var(--app-max-width);
+
+	.loading-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 80vh;
+	}
+
+	.title-bar {
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: 1px solid var(--mat-divider-color);
+
+		.title {
+			font-size: 1.2rem;
+			line-height: 1.2;
+			margin: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: normal;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 3;
+		}
+	}
+
+	.content-wrapper {
+		.header-wrapper {
+			display: flex;
+			gap: 1rem;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+
+			.product-image {
+				width: 250px;
+				height: 250px;
+				border-radius: 8px;
+				background-position: center;
+				background-size: contain;
+				background-repeat: no-repeat;
+				background-color: var(--mat-sys-surface-bright);
+			}
+
+			.product-name {
+				font-size: 1.5rem;
+				line-height: 1.5;
+				margin: 0;
+			}
+
+			.brand-name {
+				font-size: 1rem;
+				color: var(--tertiary-color);
+				font-style: italic;
+			}
+		}
+	}
+}

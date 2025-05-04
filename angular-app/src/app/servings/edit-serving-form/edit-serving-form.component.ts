@@ -311,11 +311,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	closeOverlay(): void {
-		if (!this.overlayRef) {
-			console.error("Overlay reference is not available.");
-		}
-
-		this.overlayRef.close();
+		this.overlayRef?.close();
 	}
 
 	private addServing(food: ServingFood, servingData?: Partial<Serving>): void {

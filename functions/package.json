@@ -19,6 +19,7 @@
 		"@langchain/anthropic": "^0.3.15",
 		"@langchain/core": "^0.3.43",
 		"@langchain/openai": "^0.5.2",
+		"@openfoodfacts/openfoodfacts-nodejs": "^2.0.0-alpha.5",
 		"@sparticuz/chromium": "^133.0.0",
 		"algoliasearch": "^5.23.2",
 		"axios": "^1.8.1",
