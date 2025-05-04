@@ -1,0 +1,63 @@
+import { popInEffect } from "@aicoach/animations";
+import { FoodProduct, NUTRIENT_TAG_MAP, NutrientTag, NutrientTagLabel } from "@aicoach/shared";
+import { isPlatformServer, NgStyle } from "@angular/common";
+import { Component, inject, OnInit, PLATFORM_ID, signal } from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
+import { MatChipsModule } from "@angular/material/chips";
+import { MatIconModule } from "@angular/material/icon";
+import { NutritionLabelComponent } from "../nutrition-label/nutrition-label.component";
+import { ApiService } from "../services/api.service";
+import { finalize, take, tap } from "rxjs";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ActivatedRoute } from "@angular/router";
+import { PageTitleComponent } from "../page-title/page-title.component";
+
+@Component({
+	imports: [
+		NgStyle,
+		PageTitleComponent,
+		NutritionLabelComponent,
+		MatButtonModule,
+		MatChipsModule,
+		MatProgressSpinnerModule,
+		MatIconModule
+	],
+	animations: [popInEffect],
+	host: {
+		"[@popInEffect]": ""
+	},
+	templateUrl: "./product-result.component.html",
+	styleUrl: "./product-result.component.scss"
+})
+export class ProductResultComponent implements OnInit {
+	private apiService = inject(ApiService);
+	private activatedRoute = inject(ActivatedRoute);
+	private platformId = inject(PLATFORM_ID);
+
+	isLoading = signal(true);
+	product = signal<FoodProduct | null>(null);
+	nutrientTags = signal<NutrientTagLabel[]>([]);
+
+	ngOnInit(): void {
+		const barcode = this.activatedRoute.snapshot.paramMap.get("barcode");
+		if (!barcode || isPlatformServer(this.platformId)) {
+			return;
+		}
+
+		this.apiService
+			.get<FoodProduct>(`p/${barcode}`)
+			.pipe(
+				take(1),
+				tap((product) => {
+					this.product.set(product);
+					this.nutrientTags.set((product.nutrientTags ?? []).map((tag) => this.getNutrientTagLabel(tag)).filter((tag) => !!tag));
+				}),
+				finalize(() => this.isLoading.set(false))
+			)
+			.subscribe();
+	}
+
+	private getNutrientTagLabel(tag?: NutrientTag): NutrientTagLabel | undefined {
+		return NUTRIENT_TAG_MAP.find((item) => item.name === tag);
+	}
+}

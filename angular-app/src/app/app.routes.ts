@@ -81,6 +81,10 @@ export const routes: Routes = [
 				loadComponent: () => import("./scanner-page/scanner-page.component").then((m) => m.ScannerPageComponent)
 			},
 			{
+				path: "scan/:barcode",
+				loadComponent: () => import("./product-result/product-result.component").then((m) => m.ProductResultComponent)
+			},
+			{
 				path: "foods",
 				loadComponent: () => import("./foods-page/foods-page.component").then((m) => m.FoodsPageComponent),
 				canActivate: [loggedInGuard],

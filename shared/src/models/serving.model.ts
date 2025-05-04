@@ -1,8 +1,9 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { DietaryFlag, Food, ServingSize } from "./food.model";
+import { DietaryFlag, Food, ProductImage, ServingSize } from "./food.model";
 
-export type ServingFood = Pick<Food, "name" | "brand" | "category" | "source" | "isApproved" | "tags" | "nutritions"> & {
+export type ServingFood = Pick<Food, "name" | "brand" | "category" | "source" | "isApproved" | "tags" | "nutrientTags" | "nutritions"> & {
 	id?: string;
+	images?: ProductImage[];
 	dietaryFlags?: DietaryFlag[];
 };
 export const servingCategories = ["Breakfast", "Snacks", "Lunch", "Dinner", "Uncategorized"] as const;

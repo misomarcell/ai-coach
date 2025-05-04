@@ -102,6 +102,37 @@ export const foodCategories = [
 ] as const;
 export type FoodCategory = (typeof foodCategories)[number];
 
+export const nutrientTags = [
+	"fat-in-high-quantity",
+	"fat-in-moderate-quantity",
+	"fat-in-low-quantity",
+	"saturated-fat-in-high-quantity",
+	"saturated-fat-in-moderate-quantity",
+	"saturated-fat-in-low-quantity",
+	"trans-fat-in-high-quantity",
+	"trans-fat-in-moderate-quantity",
+	"trans-fat-in-low-quantity",
+	"sugars-in-high-quantity",
+	"sugars-in-moderate-quantity",
+	"sugars-in-low-quantity",
+	"salt-in-high-quantity",
+	"salt-in-moderate-quantity",
+	"salt-in-low-quantity",
+	"energy-in-high-quantity",
+	"energy-in-moderate-quantity",
+	"energy-in-low-quantity",
+	"carbohydrates-in-high-quantity",
+	"carbohydrates-in-moderate-quantity",
+	"carbohydrates-in-low-quantity",
+	"proteins-in-high-quantity",
+	"proteins-in-moderate-quantity",
+	"proteins-in-low-quantity",
+	"fiber-in-high-quantity",
+	"fiber-in-moderate-quantity",
+	"fiber-in-low-quantity"
+] as const;
+export type NutrientTag = (typeof nutrientTags)[number];
+
 export const nutritionUnits = ["kcal", "g", "mg", "µg", "IU", "ml", "%"] as const;
 export type NutritionUnit = (typeof nutritionUnits)[number];
 
@@ -157,7 +188,18 @@ export interface Food {
 	source?: string;
 	variation?: string;
 	dietaryFlags?: DietaryFlag[];
+	nutrientTags?: NutrientTag[];
 	tags?: string[];
+}
+
+export interface FoodProduct {
+	name: string;
+	barcode: string;
+	nutritions: Nutrition[];
+	images: ProductImage[];
+	dietaryFlags?: DietaryFlag[];
+	nutrientTags?: NutrientTag[];
+	brand?: string;
 }
 
 export interface FoodDb extends Omit<Food, "created" | "lastUpdatedAt"> {
