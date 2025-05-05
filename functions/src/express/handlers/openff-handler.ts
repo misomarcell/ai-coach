@@ -13,7 +13,7 @@ export async function handle(request: Request, response: Response): Promise<Resp
 	const barcode = request.params["barcode"];
 
 	try {
-		const product = await client.getProduct(barcode);
+		const product = await client.getProduct(barcode); // TODO: use axios and filter fields
 		if (!product) {
 			return response.status(404).json({ error: "Product not found" });
 		}
@@ -50,7 +50,7 @@ function convertProduct(openffProduct: ProductV2): FoodProduct {
 		nutritions: convertToNutrition(openffProduct.nutriments),
 		nutrientTags: convertToNutrientTags(openffProduct.nutrient_levels_tags),
 		dietaryFlags: convertToDietaryFlags(openffProduct.ingredients_analysis_tags),
-		servingSizes: [convertServingSizes(openffProduct)],
+		servingSizes: convertServingSizes(openffProduct),
 		images: [{ url: openffProduct.image_url, type: "package" }]
 	};
 
@@ -75,24 +75,20 @@ function convertToNutrientTags(nutrientLevels: string[]): NutrientTag[] {
 	return nutrientLevels.map((tag) => openFoodFactsToNutrientTagMapping[tag]).filter((tag): tag is NutrientTag => tag !== undefined);
 }
 
-function convertServingSizes(openffProduct: ProductV2): ServingSize {
+function convertServingSizes(openffProduct: ProductV2): ServingSize[] {
+	const defaultServingSize: ServingSize = { name: "g", gramWeight: 1, isAiEstimate: false };
 	if (openffProduct && openffProduct.serving_size) {
-		return {
-			name: normalizeServingName(openffProduct.serving_size),
-			gramWeight: normalizeServingWeight(openffProduct.serving_size),
-			isAiEstimate: false
-		};
+		return [
+			{
+				name: "Serving",
+				gramWeight: normalizeServingWeight(openffProduct.serving_size),
+				isAiEstimate: false
+			},
+			defaultServingSize
+		];
 	}
 
-	return { name: "100g", gramWeight: 100, isAiEstimate: false };
-}
-
-function normalizeServingName(servingName: string): string {
-	if (servingName.endsWith(".0g")) {
-		return `${servingName.slice(0, -3)}g`;
-	}
-
-	return servingName;
+	return [defaultServingSize, { name: "100g", gramWeight: 100, isAiEstimate: false }];
 }
 
 function normalizeServingWeight(input: string): number {

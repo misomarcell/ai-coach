@@ -18,7 +18,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgxMaskDirective, provideNgxMask } from "ngx-mask";
-import { catchError, EMPTY, filter, finalize, switchMap, take, tap } from "rxjs";
+import { filter, finalize, map, switchMap, take, tap } from "rxjs";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
@@ -117,34 +117,58 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		}
 	}
 
-	ngOnInit(): void {
-		if (this.overlayData.serving) {
-			this.serving.set(this.overlayData.serving);
-			this.servingSizes = [this.overlayData.serving.servingSize];
-			this.food.set(this.overlayData.serving?.food);
-			this.nutritions.set(this.servingsService.getServingNutritions(this.overlayData.serving));
-			this.prefillForm({ ...this.overlayData.serving });
-
-			if (this.overlayData.serving.isEditable === false) {
-				this.form.disable();
-			} else if (this.overlayData.serving.isFinalized) {
-				this.form.get("amount")?.disable();
-				this.form.get("servingSize")?.disable();
-			}
-		}
-
-		if (!this.overlayData.foodId) {
+	private prefillServingData(serving: Serving) {
+		if (!serving) {
 			return;
 		}
 
-		this.foodService
-			.getFood(this.overlayData.foodId)
-			.pipe(
-				catchError(() => {
-					this.snackService.open("This food can't be added right now.", "Close");
-					this.closeOverlay();
+		this.servingSizes = this.combineServingSizes([
+			serving.servingSize,
+			...(serving.food.servingSizes ? serving.food.servingSizes : [])
+		]);
 
-					return EMPTY;
+		const servingData: Serving = {
+			...serving,
+			servingSize: serving.servingSize || this.servingSizes[0]
+		};
+
+		this.serving.set(serving);
+		this.food.set(serving?.food);
+		this.nutritions.set(this.servingsService.getServingNutritions(servingData));
+		this.prefillForm({ ...servingData });
+
+		if (serving.isEditable === false) {
+			this.form.disable();
+		} else if (serving.isFinalized) {
+			this.form.get("amount")?.disable();
+			this.form.get("servingSize")?.disable();
+		}
+	}
+
+	private combineServingSizes(servingSizes: ServingSize[]): ServingSize[] {
+		const combinedServingSizes: ServingSize[] = [];
+		servingSizes
+			.filter((s) => !!s)
+			.forEach((size) => {
+				if (!combinedServingSizes.some((s) => s.name === size.name)) {
+					combinedServingSizes.push(size);
+				}
+			});
+
+		return combinedServingSizes;
+	}
+
+	private prefillFoodData(foodId: string) {
+		this.foodService
+			.getFood(foodId)
+			.pipe(
+				map((food) => {
+					if (!food) {
+						this.snackService.open("This food can't be added right now.", "Close");
+						this.closeOverlay();
+					}
+
+					return food;
 				}),
 				filter((food) => !!food),
 				tap((food) => this.food.set(food)),
@@ -159,6 +183,17 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 				tap(() => this.updateNutritions())
 			)
 			.subscribe();
+	}
+
+	ngOnInit(): void {
+		if (this.overlayData.serving) {
+			this.prefillServingData(this.overlayData.serving);
+		} else if (this.overlayData.foodId) {
+			this.prefillFoodData(this.overlayData.foodId);
+		} else {
+			this.snackService.open("This food can't be added right now.", "Close");
+			this.closeOverlay();
+		}
 	}
 
 	ngAfterViewInit(): void {

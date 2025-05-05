@@ -70,15 +70,14 @@ export class ProductResultComponent implements OnInit {
 		}
 
 		return {
-			servingSize: product.servingSizes[0],
-			servingAmount: 1,
 			food: {
 				name: product.name,
 				images: product.images,
 				nutrientTags: product.nutrientTags,
 				brand: product.brand,
 				nutritions: product.nutritions,
-				dietaryFlags: product.dietaryFlags,
+				dietaryFlags: product.dietaryFlags, // TODO: Display on product page and create dietaryFlags component
+				servingSizes: product.servingSizes,
 				category: "Other",
 				isApproved: true
 			}
