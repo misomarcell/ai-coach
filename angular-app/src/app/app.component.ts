@@ -20,6 +20,7 @@ const ICONS = [
 	"carrot-solid",
 	"cow-solid",
 	"drumstick-bite-solid",
+	"egg-solid",
 	"fish-solid",
 	"lemon-solid",
 	"nut",

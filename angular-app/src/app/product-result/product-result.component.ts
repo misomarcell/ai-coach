@@ -15,14 +15,18 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { OverlayService } from "@aicoach/overlay";
 import { EditServingFormComponent } from "../servings/edit-serving-form/edit-serving-form.component";
+import { MatDividerModule } from "@angular/material/divider";
+import { DietaryFlagsComponent } from "../dietary-flags/dietary-flags.component";
 
 @Component({
 	imports: [
 		NgStyle,
 		PageTitleComponent,
+		DietaryFlagsComponent,
 		NutritionLabelComponent,
 		MatButtonModule,
 		MatChipsModule,
+		MatDividerModule,
 		MatProgressSpinnerModule,
 		MatIconModule
 	],
@@ -45,6 +49,15 @@ export class ProductResultComponent implements OnInit {
 	isLoading = signal(true);
 	product = signal<FoodProduct | null>(null);
 	nutrientTags = signal<NutrientTagLabel[]>([]);
+
+	get nutriScore(): string {
+		const product = this.product();
+		if (!product || !product.nutriScoreGrade) {
+			return "unknown";
+		}
+
+		return ["a", "b", "c", "d", "e"].includes(product.nutriScoreGrade) ? product.nutriScoreGrade : "unknown";
+	}
 
 	ngOnInit(): void {
 		const barcode = this.activatedRoute.snapshot.paramMap.get("barcode");
@@ -91,8 +104,16 @@ export class ProductResultComponent implements OnInit {
 				take(1),
 				takeUntilDestroyed(this.destroyRef),
 				tap((product) => {
-					this.product.set(product);
-					this.nutrientTags.set((product.nutrientTags ?? []).map((tag) => this.getNutrientTagLabel(tag)).filter((tag) => !!tag));
+					this.product.set({ ...product });
+					this.nutrientTags.set(
+						(product.nutrientTags ?? [])
+							.map((tag) => this.getNutrientTagLabel(tag))
+							.filter((tag) => !!tag)
+							.sort((a, b) => {
+								const order = { positive: 0, neutral: 1, negative: 2 };
+								return order[a.effect] - order[b.effect];
+							})
+					);
 				}),
 				catchError((error) => {
 					if (error.status === 404) {

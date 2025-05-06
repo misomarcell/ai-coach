@@ -65,5 +65,15 @@
 				font-style: italic;
 			}
 		}
+
+		.symbols-wrapper {
+			display: flex;
+			justify-content: center;
+			gap: 1rem;
+
+			img {
+				height: 86px;
+			}
+		}
 	}
 }

@@ -200,6 +200,7 @@ export interface FoodProduct {
 	servingSizes: ServingSize[];
 	dietaryFlags?: DietaryFlag[];
 	nutrientTags?: NutrientTag[];
+	nutriScoreGrade?: string;
 	brand?: string;
 }
 

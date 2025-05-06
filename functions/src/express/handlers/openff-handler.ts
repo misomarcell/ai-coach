@@ -51,6 +51,7 @@ function convertProduct(openffProduct: ProductV2): FoodProduct {
 		nutrientTags: convertToNutrientTags(openffProduct.nutrient_levels_tags),
 		dietaryFlags: convertToDietaryFlags(openffProduct.ingredients_analysis_tags),
 		servingSizes: convertServingSizes(openffProduct),
+		nutriScoreGrade: openffProduct.nutriscore_grade,
 		images: [{ url: openffProduct.image_url, type: "package" }]
 	};
 

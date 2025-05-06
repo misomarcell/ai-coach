@@ -6,7 +6,7 @@
 		<mat-spinner diameter="64" />
 	</div>
 } @else {
-	<div class="product-container">
+	<div class="product-container mb-5">
 		<app-page-title class="mb-2" [title]="_product?.name || 'Scan result'" />
 		@if (_product) {
 			<div class="content-wrapper">
@@ -32,17 +32,36 @@
 
 				<mat-chip-set>
 					@for (tag of nutrientTags(); track tag.name) {
-						<mat-chip [ngStyle]="{ '--mdc-chip-elevated-container-color': tag.color }" class="product-tag">
+						<mat-chip
+							[ngStyle]="{
+								'--mdc-chip-label-text-color': tag.color,
+								'--mdc-chip-with-trailing-icon-trailing-icon-color': tag.color,
+								'width': '100%'
+							}"
+						>
 							{{ tag.label }}
+							@if (["positive", "negative"].includes(tag.effect)) {
+								<mat-icon matChipTrailingIcon>{{ tag.effect === "positive" ? "mood" : "priority_high" }} </mat-icon>
+							} @else {
+								<mat-icon matChipTrailingIcon class="material-symbols-outlined">info</mat-icon>
+							}
 						</mat-chip>
 					}
 				</mat-chip-set>
 
-				<button mat-flat-button class="my-2 w-100" [disabled]="_isLoading || !_product" (click)="onAddClick()">
+				@if (_product.dietaryFlags) {
+					<app-dietary-flags [flags]="_product.dietaryFlags" class="my-2" />
+				}
+
+				<button mat-flat-button class="w-100 my-2" [disabled]="_isLoading || !_product" (click)="onAddClick()">
 					Add to Servings
 				</button>
 
 				<app-nutrition-label [nutritions]="_product.nutritions" />
+
+				<div class="symbols-wrapper mt-2">
+					<img height="86px" [src]="'assets/nutri-score/nutriscore-' + nutriScore + '.svg'" alt="NutriScore Grade" />
+				</div>
 			</div>
 		}
 	</div>
