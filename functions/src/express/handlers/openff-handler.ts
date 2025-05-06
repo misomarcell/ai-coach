@@ -1,24 +1,19 @@
-import { DietaryFlag, FoodProduct, NutrientTag, Nutrition, ServingSize } from "@aicoach/shared";
-import OpenFoodFacts, { ProductV2 } from "@openfoodfacts/openfoodfacts-nodejs";
+import { FoodProduct } from "@aicoach/shared";
+import { OpenFoodFacts } from "@openfoodfacts/openfoodfacts-nodejs";
 import { Request, Response } from "express";
 import { logger } from "firebase-functions";
-import {
-	openFoodFactsToDietaryFlagMapping,
-	openFoodFactsToNutrientTagMapping,
-	openFoodFactsToNutritionMapping
-} from "../../const/openff-mapping.const";
+import openffService from "../../services/openff.service";
+import productImportService from "../../services/product-import.service";
 
 export async function handle(request: Request, response: Response): Promise<Response> {
-	const client = new OpenFoodFacts(fetch, { country: "en" });
-	const barcode = request.params["barcode"];
-
 	try {
-		const product = await client.getProduct(barcode); // TODO: use axios and filter fields
-		if (!product) {
+		const barcode = request.params["barcode"];
+		const openFFProductMatch = await getExternalProduct(barcode);
+		if (!openFFProductMatch) {
 			return response.status(404).json({ error: "Product not found" });
 		}
 
-		const openFFProductMatch = await getExternalProduct(barcode);
+		await productImportService.createImportRequest(barcode, openFFProductMatch.lastUpdated || new Date());
 
 		return response.status(200).json(openFFProductMatch);
 	} catch (error) {
@@ -34,90 +29,10 @@ async function getExternalProduct(barcode: string): Promise<FoodProduct | undefi
 		return undefined;
 	}
 
-	const food = convertProduct(product);
+	const food = openffService.getAsProduct(product);
 	if (!food) {
 		return undefined;
 	}
 
 	return food;
-}
-
-function convertProduct(openffProduct: ProductV2): FoodProduct {
-	const food: FoodProduct = {
-		name: openffProduct.product_name_en || openffProduct.product_name,
-		brand: openffProduct.brands,
-		barcode: openffProduct.code,
-		nutritions: convertToNutrition(openffProduct.nutriments),
-		nutrientTags: convertToNutrientTags(openffProduct.nutrient_levels_tags),
-		dietaryFlags: convertToDietaryFlags(openffProduct.ingredients_analysis_tags),
-		servingSizes: convertServingSizes(openffProduct),
-		nutriScoreGrade: openffProduct.nutriscore_grade,
-		images: [{ url: openffProduct.image_url, type: "package" }]
-	};
-
-	return food;
-}
-
-function convertToDietaryFlags(ingredientsAnalysisTags: string[]): DietaryFlag[] {
-	if (!ingredientsAnalysisTags || ingredientsAnalysisTags.length === 0) {
-		return [];
-	}
-
-	return ingredientsAnalysisTags
-		.map((tag) => openFoodFactsToDietaryFlagMapping[tag])
-		.filter((flag): flag is DietaryFlag => flag !== undefined);
-}
-
-function convertToNutrientTags(nutrientLevels: string[]): NutrientTag[] {
-	if (!nutrientLevels || nutrientLevels.length === 0) {
-		return [];
-	}
-
-	return nutrientLevels.map((tag) => openFoodFactsToNutrientTagMapping[tag]).filter((tag): tag is NutrientTag => tag !== undefined);
-}
-
-function convertServingSizes(openffProduct: ProductV2): ServingSize[] {
-	const defaultServingSize: ServingSize = { name: "g", gramWeight: 1, isAiEstimate: false };
-	if (openffProduct && openffProduct.serving_size) {
-		return [
-			{
-				name: "Serving",
-				gramWeight: normalizeServingWeight(openffProduct.serving_size),
-				isAiEstimate: false
-			},
-			defaultServingSize
-		];
-	}
-
-	return [defaultServingSize, { name: "100g", gramWeight: 100, isAiEstimate: false }];
-}
-
-function normalizeServingWeight(input: string): number {
-	const servingWeight = parseFloat(input);
-	if (isNaN(servingWeight)) {
-		throw new Error(`Invalid serving weight: ${input}`);
-	}
-
-	return servingWeight % 1 === 0 ? Math.floor(servingWeight) : servingWeight;
-}
-
-function convertToNutrition(nutriments: { [key: string]: number }): Nutrition[] {
-	if (!nutriments || Object.keys(nutriments).length === 0) {
-		return [];
-	}
-
-	return Object.entries(nutriments)
-		.map(([key, amount]) => {
-			const mapping = openFoodFactsToNutritionMapping[key];
-			if (mapping) {
-				return {
-					type: mapping.type,
-					unit: mapping.unit,
-					amount
-				};
-			}
-
-			return null;
-		})
-		.filter((nutrition): nutrition is Nutrition => nutrition !== null);
 }

@@ -21,6 +21,29 @@ export class FoodService {
 		return data;
 	}
 
+	async getFoodByBarcode(barcode: string): Promise<FoodDb | undefined> {
+		const collectionRef = firestore().collection("foods");
+		const querySnapshot = await collectionRef.where("barcode", "==", barcode).get();
+
+		if (querySnapshot.empty) {
+			return undefined;
+		}
+
+		return querySnapshot.docs[0].data() as FoodDb;
+	}
+
+	async createFoodDocument(data: FoodDb): Promise<string> {
+		const documentRef = firestore().collection("foods").doc();
+		await documentRef.set({ ...data, id: data.id || documentRef.id });
+
+		return documentRef.id;
+	}
+
+	async updateFoodDocument(foodId: string, foodData: FoodDb): Promise<void> {
+		const documentRef = firestore().doc(`foods/${foodId}`);
+		await documentRef.set(foodData, { merge: true });
+	}
+
 	async updateUserFoodDocument(uid: string, foodId: string, data: Partial<FoodDb>): Promise<void> {
 		const documentRef = firestore().doc(`foods/${foodId}`);
 

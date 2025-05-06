@@ -201,6 +201,7 @@ export interface FoodProduct {
 	dietaryFlags?: DietaryFlag[];
 	nutrientTags?: NutrientTag[];
 	nutriScoreGrade?: string;
+	lastUpdated?: Date;
 	brand?: string;
 }
 
