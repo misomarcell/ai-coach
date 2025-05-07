@@ -119,10 +119,7 @@ export class AdminFoodEditorComponent implements OnInit {
 
 					return from(Promise.all(promises));
 				}),
-				tap((urls) => {
-					console.log("Image URLs:", urls);
-					this.imageSrc.set(urls);
-				}),
+				tap((urls) => this.imageSrc.set(urls)),
 				finalize(() => this.isLoading.set(false)),
 				catchError((err) => {
 					console.error("Error loading food", err);
