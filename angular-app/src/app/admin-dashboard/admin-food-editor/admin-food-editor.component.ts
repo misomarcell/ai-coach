@@ -11,11 +11,12 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { catchError, EMPTY, finalize, from, switchMap, take, tap } from "rxjs";
+import { catchError, EMPTY, filter, finalize, from, switchMap, take, tap } from "rxjs";
 import { EditFoodFormComponent } from "../../edit-food-form/edit-food-form.component";
 import { FullscreenOverlayRef } from "../../overlay/overlay-ref";
 import { FULLSCREEN_OVERLAY_DATA } from "../../overlay/overlay.token";
 import { FoodService } from "../../services/food.service";
+import { PromptService } from "../../services/prompt.service";
 
 @Component({
 	standalone: true,
@@ -44,6 +45,7 @@ export class AdminFoodEditorComponent implements OnInit {
 
 	private foodService = inject(FoodService);
 	private storage = inject(Storage);
+	private promptService = inject(PromptService);
 	private overlayRef = inject(FullscreenOverlayRef);
 	private overlayData = inject(FULLSCREEN_OVERLAY_DATA);
 	private destroyRef = inject(DestroyRef);
@@ -105,6 +107,11 @@ export class AdminFoodEditorComponent implements OnInit {
 				switchMap((food) => {
 					const promises = [];
 					for (const imgPath of food?.images || []) {
+						if (imgPath.url.startsWith("http")) {
+							promises.push(Promise.resolve(imgPath.url));
+							break;
+						}
+
 						const imageRef = ref(this.storage, imgPath.url);
 
 						promises.push(getDownloadURL(imageRef));
@@ -148,7 +155,16 @@ export class AdminFoodEditorComponent implements OnInit {
 	}
 
 	deleteFood(): void {
-		console.log("Not yet implemented");
+		const prompt = this.promptService.prompt("Delete food", "Are you sure you want to delete this food?", "yes-no");
+		prompt
+			.pipe(
+				filter((result) => result === "yes"),
+				take(1),
+				switchMap(() => this.foodService.deleteFood(this.foodId!)),
+				tap(() => this.snackBar.open("Food deleted", "Close")),
+				tap(() => this.overlayRef.close())
+			)
+			.subscribe();
 	}
 
 	generateServingSizes(): void {

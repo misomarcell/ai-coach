@@ -17,6 +17,7 @@ import {
 import { Storage, ref, uploadBytes } from "@angular/fire/storage";
 import { Observable, distinctUntilChanged, filter, from, map, of, switchMap, take } from "rxjs";
 import { AuthService } from "./auth.service";
+import { deleteDoc } from "firebase/firestore";
 
 @Injectable({
 	providedIn: "root"
@@ -117,6 +118,12 @@ export class FoodService {
 		const queryRef = query(collectionRef, where("barcode", "==", barcode));
 
 		return collectionData(queryRef, { idField: "id" }).pipe(map((matches) => matches[0]));
+	}
+
+	deleteFood(foodId: string): Observable<void> {
+		const docRef = doc(this.firestore, `foods/${foodId}`).withConverter(this.foodTypeConverter);
+
+		return from(deleteDoc(docRef));
 	}
 
 	private getUserPendingFood(): Observable<Food | undefined> {
