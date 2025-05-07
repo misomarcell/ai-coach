@@ -11,10 +11,9 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
-import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
-import { ActivatedRoute, Router, RouterModule } from "@angular/router";
+import { ActivatedRoute, QueryParamsHandling, Router, RouterModule } from "@angular/router";
 import { debounceTime, distinctUntilChanged, Observable, startWith, switchMap, tap } from "rxjs";
 import { AuthService } from "../services/auth.service";
 import { FoodSearchResult, FoodSearchService, SearchFilters, SearchOptions, SearchResponse } from "../services/food-search.service";
@@ -36,9 +35,7 @@ import { FoodSearchResultComponent } from "./food-search-result/food-search-resu
 		MatCheckboxModule,
 		MatButtonModule,
 		MatInputModule,
-		MatFormFieldModule,
-		MatProgressSpinnerModule,
-		MatPaginatorModule
+		MatProgressSpinnerModule
 	],
 	templateUrl: "./food-search.component.html",
 	styleUrl: "./food-search.component.scss"
@@ -120,6 +117,13 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 			sortDirection: "desc",
 			dietaryFlags: []
 		});
+
+		this.preserveSearchState(1);
+	}
+
+	clearSearch(): void {
+		this.filterForm.get("query")?.setValue("");
+		this.preserveSearchState(1, "replace");
 	}
 
 	updateDietaryFlags(flag: string, checked: boolean) {
@@ -131,10 +135,6 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 		} else {
 			this.filterForm.get("dietaryFlags")?.setValue(currentFlags.filter((f: string) => f !== flag));
 		}
-	}
-
-	clearSearch(): void {
-		this.filterForm.get("query")?.setValue("");
 	}
 
 	goToNextPage(): void {
@@ -153,7 +153,7 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 		return this.foodSearchService.searchFoods(this.buildSearchOptions(filters, page));
 	}
 
-	private preserveSearchState(page?: number) {
+	private preserveSearchState(page?: number, handling?: QueryParamsHandling) {
 		const rawValue = this.filterForm.getRawValue();
 		const queryParams: Record<string, string | number> = Object.keys(rawValue)
 			.filter((key) => rawValue[key] !== "" && rawValue[key] != null)
@@ -170,7 +170,7 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 		this.router.navigate([], {
 			relativeTo: this.activatedRoute,
 			queryParams,
-			queryParamsHandling: "merge"
+			queryParamsHandling: handling || "merge"
 		});
 	}
 
