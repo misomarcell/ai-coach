@@ -1,24 +1,24 @@
 <div class="food-list-container">
-	<mat-form-field class="w-100">
-		<input matInput #search placeholder="Search food..." [formControl]="searchControl" class="search-input" />
-		@if (searchControl.value) {
-			<button mat-icon-button matSuffix class="mr-1" (click)="clearSearch()">
-				<mat-icon>close</mat-icon>
-			</button>
-		} @else {
-			<mat-icon matSuffix class="mr-1">search</mat-icon>
-		}
-	</mat-form-field>
-	<div class="filters-section">
-		<mat-expansion-panel>
-			<mat-expansion-panel-header>
-				<mat-panel-title>
-					<mat-icon>filter_list</mat-icon>
-					Filters
-				</mat-panel-title>
-			</mat-expansion-panel-header>
+	<form [formGroup]="filterForm">
+		<mat-form-field class="w-100">
+			<input matInput #search placeholder="Search food..." formControlName="query" class="search-input" />
+			@if (filterForm.get("query")?.value) {
+				<button mat-icon-button matSuffix class="mr-1" (click)="clearSearch()">
+					<mat-icon>close</mat-icon>
+				</button>
+			} @else {
+				<mat-icon matSuffix class="mr-1">search</mat-icon>
+			}
+		</mat-form-field>
+		<div class="filters-section">
+			<mat-expansion-panel>
+				<mat-expansion-panel-header>
+					<mat-panel-title>
+						<mat-icon>filter_list</mat-icon>
+						Filters
+					</mat-panel-title>
+				</mat-expansion-panel-header>
 
-			<form [formGroup]="filterForm">
 				<div class="filter-controls">
 					<mat-form-field appearance="outline">
 						<mat-label>Category</mat-label>
@@ -62,9 +62,9 @@
 
 					<button mat-button color="accent" (click)="resetFilters()">Reset Filters</button>
 				</div>
-			</form>
-		</mat-expansion-panel>
-	</div>
+			</mat-expansion-panel>
+		</div>
+	</form>
 
 	@if (isLoading()) {
 		<div class="loading-container">

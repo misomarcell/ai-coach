@@ -21,14 +21,15 @@ export type FoodSearchResult = Pick<
 >;
 
 export interface SearchFilters {
-	ownerUid: string;
+	query: string;
+	page: number;
 	category?: FoodCategory;
 	dietaryFlags?: DietaryFlag[];
 }
 
 export interface SearchOptions {
-	filters?: SearchFilters;
-	page?: number;
+	ownerUid: string;
+	filters: SearchFilters;
 	hitsPerPage?: number;
 	skipOwnerChecks?: boolean;
 }
@@ -49,31 +50,30 @@ export class FoodSearchService {
 	private readonly INDEX_NAME = "foods";
 	private readonly DEFAULT_HITS_PER_PAGE = 10;
 
-	searchFoods(query: string, options?: SearchOptions): Observable<SearchResponse<FoodSearchResult>> {
-		if (!query || query.trim() === "") {
-			return from(Promise.resolve({ query, hits: [], page: 0, nbPages: 0, totalHits: 0 }));
+	searchFoods(options: SearchOptions): Observable<SearchResponse<FoodSearchResult>> {
+		const filters = options.filters;
+		if (!filters.query || filters.query.trim() === "") {
+			return from(Promise.resolve({ query: filters.query, hits: [], page: 0, nbPages: 0, totalHits: 0 }));
 		}
 
 		const searchParams: any = {
 			indexName: this.INDEX_NAME,
-			query,
-			page: (options?.page || 1) - 1,
-			hitsPerPage: options?.hitsPerPage || this.DEFAULT_HITS_PER_PAGE
+			query: filters.query || "*",
+			page: (filters.page || 1) - 1,
+			hitsPerPage: options.hitsPerPage || this.DEFAULT_HITS_PER_PAGE
 		};
 
 		const filterStrings: string[] = [];
 		if (!options?.skipOwnerChecks) {
-			filterStrings.push(
-				options?.filters?.ownerUid ? `(isPublic:true OR ownerUid:"${options.filters.ownerUid}")` : "(isPublic:true)"
-			);
+			filterStrings.push(options?.ownerUid ? `(isPublic:true OR ownerUid:"${options.ownerUid}")` : "(isPublic:true)");
 		}
 
 		if (options?.filters?.category) {
-			filterStrings.push(`category:"${options.filters.category}"`);
+			filterStrings.push(`category:"${filters.category}"`);
 		}
 
-		if (options?.filters?.dietaryFlags?.length) {
-			const dietaryFlags = options.filters.dietaryFlags.map((flag) => `dietaryFlags:"${flag}"`);
+		if (filters.dietaryFlags?.length) {
+			const dietaryFlags = filters.dietaryFlags!.map((flag) => `dietaryFlags:"${flag}"`);
 			filterStrings.push(`(${dietaryFlags.join(" OR ")})`);
 		}
 
@@ -85,7 +85,7 @@ export class FoodSearchService {
 				.then((response) => {
 					const result = response.results[0];
 					return {
-						query,
+						query: result.query,
 						hits: result.hits.map(this.mapHit).filter((hit) => hit !== undefined),
 						page: result.page || 0,
 						nbPages: result.nbPages || 0,
@@ -94,7 +94,7 @@ export class FoodSearchService {
 				})
 				.catch((error) => {
 					console.error("Error searching foods with Algolia:", error);
-					return { query, hits: [], page: 0, nbPages: 0, totalHits: 0 };
+					return { query: filters.query, hits: [], page: 0, nbPages: 0, totalHits: 0 };
 				})
 		);
 	}
