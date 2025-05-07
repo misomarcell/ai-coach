@@ -97,7 +97,6 @@ export const ProductImageAnalysis = z.object({
 	brand: z.string().optional().describe("e.g., Kellogg's, Nestlé"),
 	category: z.enum(foodCategories).describe("Select the msot appropriate category from the list"),
 	dietaryFlags: z.array(z.enum(dietaryFlags)).describe("e.g., vegan, vegetarian, gluten-free, empty array if none"),
-	variation: z.string().optional().describe("Product variation, e.g. 'apple flavor'"),
 	isValidProductImage: z.boolean().describe("True if the attached are valid product images"),
 	servingSizes: z
 		.array(

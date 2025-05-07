@@ -5,7 +5,7 @@ import { logger } from "firebase-functions";
 import aiService, { AiModelConfig } from "./ai.service";
 import foodService from "./food.service";
 
-export type LabelAnalysis = Pick<Food, "brand" | "name" | "category" | "nutritions" | "variation"> & {
+export type LabelAnalysis = Pick<Food, "brand" | "name" | "category" | "nutritions"> & {
 	dietaryFlags: DietaryFlag[];
 	isValidProductImage: boolean;
 };

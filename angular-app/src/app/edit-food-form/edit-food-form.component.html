@@ -9,14 +9,6 @@
 		</mat-form-field>
 
 		<div class="form-row">
-			<mat-form-field class="form-field-name">
-				<mat-label>Variation</mat-label>
-				<input matInput formControlName="variation" placeholder="e.g. Apple flavor" />
-				@if (foodForm.get("variation")?.invalid && foodForm.get("variation")?.touched) {
-					<mat-error>{{ getErrorMessage("variation") }}</mat-error>
-				}
-			</mat-form-field>
-
 			<mat-form-field class="form-field-brand">
 				<mat-label>Brand</mat-label>
 				<input matInput formControlName="brand" placeholder="Enter brand name" />
@@ -24,9 +16,6 @@
 					<mat-error>{{ getErrorMessage("brand") }}</mat-error>
 				}
 			</mat-form-field>
-		</div>
-
-		<div class="form-row">
 			<mat-form-field class="form-field-barcode">
 				<mat-label>Barcode</mat-label>
 				<input matInput formControlName="barcode" placeholder="Barcode" />
@@ -37,6 +26,9 @@
 					<mat-error>{{ getErrorMessage("barcode") }}</mat-error>
 				}
 			</mat-form-field>
+		</div>
+
+		<div class="form-row">
 			<mat-form-field class="form-field-category">
 				<mat-label>Category</mat-label>
 				<mat-select formControlName="category">

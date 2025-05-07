@@ -95,11 +95,11 @@
 
 			@if (!isResultEmpty() && totalPages() > 1) {
 				<div class="pagination-controls">
-					<button mat-stroked-button [disabled]="currentPage() === 0" (click)="goToPreviousPage()">
+					<button mat-stroked-button [disabled]="currentPage() === 1" (click)="goToPreviousPage()">
 						<mat-icon>chevron_left</mat-icon>
 						<span>Previous</span>
 					</button>
-					<span class="page-info">Page {{ currentPage() + 1 }} of {{ totalPages() }}</span>
+					<span class="page-info">Page {{ currentPage() }} of {{ totalPages() }}</span>
 					<button mat-stroked-button class="reverse" [disabled]="currentPage() === totalPages() - 1" (click)="goToNextPage()">
 						<span>Next</span>
 						<mat-icon>chevron_right</mat-icon>

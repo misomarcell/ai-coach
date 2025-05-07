@@ -100,17 +100,15 @@
 		@if (_food && _food.nutritions.length > 0) {
 			<app-nutrition-label [nutritions]="nutritions()" [per]="per" />
 
-			@if (dietaryFlags.length > 0) {
-				<div class="d-flex jc-c">
-					<mat-chip-set>
-						@for (flag of dietaryFlags; track flag) {
-							<mat-chip>{{ flag }}</mat-chip>
-						}
-					</mat-chip-set>
-				</div>
+			@if (dietaryFlags) {
+				<app-dietary-flags [flags]="dietaryFlags" />
 			}
 
 			<app-nutrition-list [nutritions]="nutritions()" />
+		}
+
+		@if (productBarcode) {
+			<button mat-button (click)="openProductPage()">Product details</button>
 		}
 	</div>
 

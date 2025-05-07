@@ -1,7 +1,10 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { DietaryFlag, Food, ProductImage, ServingSize } from "./food.model";
 
-export type ServingFood = Pick<Food, "name" | "brand" | "category" | "source" | "isApproved" | "tags" | "nutrientTags" | "nutritions"> & {
+export type ServingFood = Pick<
+	Food,
+	"name" | "brand" | "type" | "category" | "source" | "isApproved" | "tags" | "nutrientTags" | "nutritions"
+> & {
 	id?: string;
 	images?: ProductImage[];
 	servingSizes?: ServingSize[];

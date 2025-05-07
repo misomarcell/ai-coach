@@ -1,4 +1,4 @@
-import { FoodDb, FoodStatus } from "@aicoach/shared";
+import { FoodDb, FoodStatus, FoodType } from "@aicoach/shared";
 import OpenFoodFacts, { ProductV2 } from "@openfoodfacts/openfoodfacts-nodejs";
 import { firestore } from "firebase-admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
@@ -17,21 +17,20 @@ export const productImportCreated = onDocumentCreated(
 	},
 	async (event) => {
 		const importData = event.data?.data() as ProductImport;
+		const barcode = importData.code;
+
 		if (!event.data || !importData) {
 			logger.warn(`No import data found for document: ${event.data?.id}`);
 
 			return null;
 		}
 
-		const barcode = importData.code;
-		const product = await getExternalProduct(barcode);
-		if (!product) {
-			logger.warn(`Product not found for barcode: ${barcode}`);
-
-			return await updateImportRequest(event.data.id, "failed", "Product not found");
-		}
-
 		try {
+			const product = await getExternalProduct(barcode);
+			if (!product) {
+				throw new Error(`External product not found for barcode: ${barcode}`);
+			}
+
 			const existingFood = await foodService.getFoodByBarcode(barcode);
 			const importFood = getAsFood(product);
 			if (!existingFood) {
@@ -51,23 +50,40 @@ export const productImportCreated = onDocumentCreated(
 
 					return await updateImportRequest(event.data.id, "updated", null);
 				} else {
-					logger.info(`Dismissed import request for barcode: ${barcode} as it is outdated`);
-					return await firestore().doc(`product-imports/${event.data?.id}`).delete();
+					return await deleteImportRequest(event.data?.id);
 				}
 			}
 
-			logger.error(`Invalid timestamps for barcode: ${barcode}`);
-			return await updateImportRequest(event.data.id, "failed", "Invalid timestamps");
+			throw new Error("Invalid date comparison for food documents");
 		} catch (error) {
 			logger.error(`Error processing product import for barcode: ${barcode}`, error);
-			return await updateImportRequest(event.data.id, "failed", error);
+			if (error instanceof Error) {
+				return await updateImportRequest(event.data.id, "failed", error.message);
+			} else {
+				return await updateImportRequest(event.data.id, "failed", JSON.stringify(error));
+			}
 		}
 	}
 );
 
 async function updateImportRequest(id: string, status: string, error?: unknown): Promise<void> {
-	const importRequestRef = firestore().collection("product-imports").doc(id);
-	await importRequestRef.set({ status, error }, { merge: true });
+	try {
+		const importRequestRef = firestore().collection("product-imports").doc(id);
+		await importRequestRef.set({ status, error }, { merge: true });
+		logger.info(`Updated import request with ID: ${id} to status: ${status}`);
+	} catch (error) {
+		logger.error(`Error updating import request with ID: ${id}`, error);
+	}
+}
+
+async function deleteImportRequest(id: string): Promise<void> {
+	try {
+		const importRequestRef = firestore().collection("product-imports").doc(id);
+		await importRequestRef.delete();
+		logger.info(`Deleted import request with ID: ${id}`);
+	} catch (error) {
+		logger.error(`Error deleting import request with ID: ${id}`, error);
+	}
 }
 
 async function getExternalProduct(barcode: string): Promise<ProductV2> {
@@ -81,6 +97,7 @@ function getAsFood(product: ProductV2): FoodDb {
 		name: product.product_name_en || product.product_name,
 		brand: product.brands,
 		barcode: product.code,
+		type: FoodType.Product,
 		nutritions: openffService.convertToNutrition(product.nutriments),
 		nutrientTags: openffService.convertToNutrientTags(product.nutrient_levels_tags),
 		dietaryFlags: openffService.convertToDietaryFlags(product.ingredients_analysis_tags),
@@ -88,7 +105,7 @@ function getAsFood(product: ProductV2): FoodDb {
 		images: [{ url: product.image_url, type: "package" }],
 		created: FieldValue.serverTimestamp(),
 		lastUpdatedAt: FieldValue.serverTimestamp(),
-		category: "Other",
+		category: "Unknown", // TODO: Create category mapper
 		ownerUid: "system",
 		status: FoodStatus.Created,
 		isPublic: true,

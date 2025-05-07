@@ -98,7 +98,8 @@ export const foodCategories = [
 	"Spices and Herbs",
 	"Baby Foods",
 	"Supplements",
-	"Other"
+	"Other",
+	"Unknown"
 ] as const;
 export type FoodCategory = (typeof foodCategories)[number];
 
@@ -135,6 +136,12 @@ export type NutrientTag = (typeof nutrientTags)[number];
 
 export const nutritionUnits = ["kcal", "g", "mg", "µg", "IU", "ml", "%"] as const;
 export type NutritionUnit = (typeof nutritionUnits)[number];
+
+export enum FoodType {
+	Product = "product",
+	Sourced = "sourced",
+	Custom = "custom"
+}
 
 export enum FoodStatus {
 	Analyzing = "analyzing",
@@ -173,7 +180,8 @@ export interface Food {
 	id: string;
 	name: string;
 	brand?: string;
-	barcode: string;
+	barcode?: string;
+	type: FoodType;
 	category: FoodCategory;
 	nutritions: Nutrition[];
 	servingSizes: ServingSize[];
@@ -186,7 +194,6 @@ export interface Food {
 	images: ProductImage[];
 	counters: FoodCounters;
 	source?: string;
-	variation?: string;
 	dietaryFlags?: DietaryFlag[];
 	nutrientTags?: NutrientTag[];
 	tags?: string[];

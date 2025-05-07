@@ -16,7 +16,6 @@ export type FoodSearchResult = Pick<
 	| "isApproved"
 	| "isPublic"
 	| "source"
-	| "variation"
 	| "dietaryFlags"
 	| "tags"
 >;
@@ -36,6 +35,7 @@ export interface SearchOptions {
 
 export interface SearchResponse<T> {
 	hits: T[];
+	query: string;
 	page: number;
 	nbPages: number;
 	totalHits: number;
@@ -51,13 +51,13 @@ export class FoodSearchService {
 
 	searchFoods(query: string, options?: SearchOptions): Observable<SearchResponse<FoodSearchResult>> {
 		if (!query || query.trim() === "") {
-			return from(Promise.resolve({ hits: [], page: 0, nbPages: 0, totalHits: 0 }));
+			return from(Promise.resolve({ query, hits: [], page: 0, nbPages: 0, totalHits: 0 }));
 		}
 
 		const searchParams: any = {
 			indexName: this.INDEX_NAME,
 			query,
-			page: options?.page || 0,
+			page: (options?.page || 1) - 1,
 			hitsPerPage: options?.hitsPerPage || this.DEFAULT_HITS_PER_PAGE
 		};
 
@@ -85,7 +85,8 @@ export class FoodSearchService {
 				.then((response) => {
 					const result = response.results[0];
 					return {
-						hits: result.hits.map(this.mapHit),
+						query,
+						hits: result.hits.map(this.mapHit).filter((hit) => hit !== undefined),
 						page: result.page || 0,
 						nbPages: result.nbPages || 0,
 						totalHits: result.nbHits || 0
@@ -93,15 +94,19 @@ export class FoodSearchService {
 				})
 				.catch((error) => {
 					console.error("Error searching foods with Algolia:", error);
-					return { hits: [], page: 0, nbPages: 0, totalHits: 0 };
+					return { query, hits: [], page: 0, nbPages: 0, totalHits: 0 };
 				})
 		);
 	}
 
-	private mapHit(hit: any): FoodSearchResult {
-		const foodName = hit._highlightResult.name?.value || hit.name;
-		const foodCategory = hit._highlightResult.category?.value || hit.category;
-		const foodBrand = hit._highlightResult.brand?.value || hit.brand;
+	private mapHit(hit: any): FoodSearchResult | undefined {
+		if (!hit || !hit.name) {
+			return undefined;
+		}
+
+		const foodName = hit._highlightResult?.name?.value || hit.name;
+		const foodCategory = hit._highlightResult?.category?.value || hit.category;
+		const foodBrand = hit._highlightResult?.brand?.value || hit.brand;
 
 		return {
 			id: hit.id,
@@ -114,7 +119,6 @@ export class FoodSearchService {
 			isApproved: hit.isApproved,
 			isPublic: hit.isPublic,
 			source: hit.source,
-			variation: hit.variation,
 			dietaryFlags: hit.dietaryFlags || [],
 			tags: hit.tags || []
 		};

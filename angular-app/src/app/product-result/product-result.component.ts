@@ -1,5 +1,5 @@
 import { popInEffect } from "@aicoach/animations";
-import { FoodProduct, NUTRIENT_TAG_MAP, NutrientTag, NutrientTagLabel, Serving } from "@aicoach/shared";
+import { FoodProduct, FoodType, NUTRIENT_TAG_MAP, NutrientTag, NutrientTagLabel, Serving } from "@aicoach/shared";
 import { isPlatformServer, NgStyle } from "@angular/common";
 import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
@@ -88,6 +88,7 @@ export class ProductResultComponent implements OnInit {
 				images: product.images,
 				nutrientTags: product.nutrientTags,
 				brand: product.brand,
+				type: FoodType.Product,
 				nutritions: product.nutritions,
 				dietaryFlags: product.dietaryFlags, // TODO: Display on product page and create dietaryFlags component
 				servingSizes: product.servingSizes,

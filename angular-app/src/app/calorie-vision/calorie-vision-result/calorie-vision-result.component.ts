@@ -1,5 +1,5 @@
 import { OverlayService } from "@aicoach/overlay";
-import { CalorieVision, Serving } from "@aicoach/shared";
+import { CalorieVision, FoodType, Serving } from "@aicoach/shared";
 import { isPlatformServer } from "@angular/common";
 import { Component, inject, OnInit, PLATFORM_ID, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
@@ -96,6 +96,7 @@ export class CalorieVisionResultComponent implements OnInit {
 				name: result.foodName,
 				category: result.foodCategory,
 				isApproved: false,
+				type: FoodType.Custom,
 				nutritions: result.nutritions,
 				source: "Calorie Vision",
 				tags: ["calorie-vision"]

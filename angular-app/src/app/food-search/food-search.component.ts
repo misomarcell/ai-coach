@@ -14,14 +14,14 @@ import { MatInputModule } from "@angular/material/input";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSelectModule } from "@angular/material/select";
-import { ActivatedRoute, RouterModule } from "@angular/router";
-import { combineLatest, debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from "rxjs";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
+import { combineLatest, debounceTime, distinctUntilChanged, map, Observable, startWith, switchMap, tap } from "rxjs";
 import { AuthService } from "../services/auth.service";
 import { FoodSearchResult, FoodSearchService, SearchOptions, SearchResponse } from "../services/food-search.service";
 import { FoodSearchResultComponent } from "./food-search-result/food-search-result.component";
 
 @Component({
-	selector: "app-search-search",
+	selector: "app-food-search",
 	standalone: true,
 	imports: [
 		FoodSearchResultComponent,
@@ -51,6 +51,7 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 	searchControl = new FormControl<string>("");
 	foodCategories = foodCategories;
 
+	private router = inject(Router);
 	private formBuilder = inject(FormBuilder);
 	private authService = inject(AuthService);
 	private platformId = inject(PLATFORM_ID);
@@ -61,7 +62,7 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 	adminSearch = input(false);
 	foodSelected = output<FoodSearchResult>();
 
-	currentPage = signal<number>(0);
+	currentPage = signal<number>(1);
 	totalPages = signal<number>(0);
 	totalHits = signal<number>(0);
 	currentUid = toSignal(this.authService.uid);
@@ -77,20 +78,21 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit(): void {
+		let page = this.activatedRoute.snapshot.queryParams["page"];
+		let query = this.activatedRoute.snapshot.queryParams["q"];
+		this.searchControl.setValue(query);
+
 		combineLatest([
-			this.searchControl.valueChanges.pipe(startWith("*"), debounceTime(300), distinctUntilChanged()),
+			this.searchControl.valueChanges.pipe(startWith(query || "*"), debounceTime(300), distinctUntilChanged()),
 			this.filterForm.valueChanges.pipe(startWith(this.filterForm.value))
 		])
 			.pipe(
-				tap(() => {
-					this.isLoading.set(true);
-					this.currentPage.set(0);
-				}),
+				tap(() => this.isLoading.set(true)),
+				tap(([searchQuery]) => this.currentPage.set(searchQuery === query ? page || 1 : 1)),
 				map(([searchQuery, filterValues]) => [searchQuery || "*", filterValues]),
-				switchMap(([searchQuery, filterValues]) =>
-					this.foodSearchService.searchFoods(searchQuery, this.buildSearchOptions(filterValues))
-				),
-				tap((result) => this.handleResults(result))
+				switchMap(([searchQuery, filterValues]) => this.search(searchQuery, filterValues)),
+				tap((result) => this.handleResults(result)),
+				tap(() => (query = page = undefined))
 			)
 			.subscribe((result) => this.foods.set(result.hits));
 	}
@@ -131,7 +133,49 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 		this.searchControl.setValue("");
 	}
 
-	buildSearchOptions(filterValues: any): SearchOptions {
+	goToNextPage(): void {
+		if (this.currentPage() < this.totalPages() - 1) {
+			this.loadPage(this.currentPage() + 1);
+		}
+	}
+
+	goToPreviousPage(): void {
+		if (this.currentPage() > 1) {
+			this.loadPage(this.currentPage() - 1);
+		}
+	}
+
+	private search(searchQuery: string, options: SearchOptions): Observable<SearchResponse<FoodSearchResult>> {
+		return this.foodSearchService.searchFoods(searchQuery, this.buildSearchOptions(options));
+	}
+
+	private preserveSearchState(searchQuery: string, page: number) {
+		const queryParams: { q: string; page: number } = {
+			q: searchQuery === "*" ? "" : searchQuery,
+			page
+		};
+
+		this.router.navigate([], {
+			relativeTo: this.activatedRoute,
+			queryParams,
+			queryParamsHandling: "merge"
+		});
+	}
+
+	private loadPage(page: number, query?: string): void {
+		this.isLoading.set(true);
+		this.currentPage.set(page);
+
+		const searchOptions = this.buildSearchOptions(this.filterForm.value);
+		searchOptions.page = page;
+
+		this.foodSearchService
+			.searchFoods(query || this.searchControl.value || "*", searchOptions)
+			.pipe(tap((result) => this.handleResults(result, page)))
+			.subscribe((result) => this.foods.set(result.hits));
+	}
+
+	private buildSearchOptions(filterValues: any): SearchOptions {
 		const options: SearchOptions = {
 			page: this.currentPage(),
 			hitsPerPage: this.pageSize(),
@@ -146,34 +190,10 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 		return options;
 	}
 
-	goToNextPage(): void {
-		if (this.currentPage() < this.totalPages() - 1) {
-			this.loadPage(this.currentPage() + 1);
-		}
-	}
-
-	goToPreviousPage(): void {
-		if (this.currentPage() > 0) {
-			this.loadPage(this.currentPage() - 1);
-		}
-	}
-
-	private loadPage(page: number): void {
-		this.isLoading.set(true);
-		this.currentPage.set(page);
-
-		const searchOptions = this.buildSearchOptions(this.filterForm.value);
-		searchOptions.page = page;
-
-		this.foodSearchService
-			.searchFoods(this.searchControl.value || "*", searchOptions)
-			.pipe(tap((result) => this.handleResults(result, page)))
-			.subscribe((result) => this.foods.set(result.hits));
-	}
-
 	private handleResults(result: SearchResponse<FoodSearchResult>, page?: number): void {
+		this.preserveSearchState(result.query, page ?? result.page + 1);
 		this.isResultEmpty.set(result.hits.length === 0);
-		this.currentPage.set(page ?? result.page);
+		this.currentPage.set(page ?? result.page + 1);
 		this.totalPages.set(result.nbPages);
 		this.totalHits.set(result.totalHits);
 		this.isLoading.set(false);

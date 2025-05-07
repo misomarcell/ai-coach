@@ -94,7 +94,6 @@ export class EditFoodFormComponent implements OnInit {
 			brand: [""],
 			barcode: [""],
 			category: ["", Validators.required],
-			variation: [""],
 			nutritions: this.formBuilder.array(this.createDefaultNutritions()),
 			servingSizes: this.formBuilder.array([this.createServingSize("g", 1), this.createServingSize("100g", 100)]),
 			dietaryFlags: [this.selectedDietaryFlags],

@@ -102,6 +102,10 @@ export const routes: Routes = [
 						path: "add/:foodId",
 						loadComponent: () => import("./add-food/add-food.component").then((m) => m.AddFoodComponent),
 						canActivate: [loggedInGuard]
+					},
+					{
+						path: "view-product/:barcode",
+						loadComponent: () => import("./product-result/product-result.component").then((m) => m.ProductResultComponent)
 					}
 				]
 			},

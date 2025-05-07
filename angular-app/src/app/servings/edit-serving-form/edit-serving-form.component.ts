@@ -1,6 +1,6 @@
 import { popInEffect } from "@aicoach/animations";
 import { FULLSCREEN_OVERLAY_DATA, FullscreenOverlayRef } from "@aicoach/overlay";
-import { Food, Nutrition, Serving, servingCategories, ServingCategory, ServingFood, ServingSize } from "@aicoach/shared";
+import { DietaryFlag, Food, Nutrition, Serving, servingCategories, ServingCategory, ServingFood, ServingSize } from "@aicoach/shared";
 import { CustomDateAdapter } from "@aicoach/utils/date-adapter.util";
 import { Platform } from "@angular/cdk/platform";
 import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
@@ -24,6 +24,7 @@ import { NutritionListComponent } from "../../nutrition-list/nutrition-list.comp
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
+import { DietaryFlagsComponent } from "../../dietary-flags/dietary-flags.component";
 
 interface PrefillOptions {
 	servingAmount?: number;
@@ -37,6 +38,7 @@ interface PrefillOptions {
 	standalone: true,
 	imports: [
 		NgxMaskDirective,
+		DietaryFlagsComponent,
 		NutritionLabelComponent,
 		NutritionListComponent,
 		ReactiveFormsModule,
@@ -68,6 +70,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	form: FormGroup;
 	servingCategories = servingCategories;
 	servingSizes: ServingSize[] = [];
+	productBarcode: string | undefined = undefined;
 
 	isOpenComment = signal<boolean>(false);
 	isSubmitting = signal<boolean>(false);
@@ -75,7 +78,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	food = signal<Food | ServingFood | undefined>(undefined);
 	serving = signal<Serving | undefined>(undefined);
 
-	get dietaryFlags(): string[] {
+	get dietaryFlags(): DietaryFlag[] {
 		return this.food()?.dietaryFlags || [];
 	}
 
@@ -115,74 +118,6 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		if (this.formSubscription) {
 			this.formSubscription.unsubscribe();
 		}
-	}
-
-	private prefillServingData(serving: Serving) {
-		if (!serving) {
-			return;
-		}
-
-		this.servingSizes = this.combineServingSizes([
-			serving.servingSize,
-			...(serving.food.servingSizes ? serving.food.servingSizes : [])
-		]);
-
-		const servingData: Serving = {
-			...serving,
-			servingSize: serving.servingSize || this.servingSizes[0]
-		};
-
-		this.serving.set(serving);
-		this.food.set(serving?.food);
-		this.nutritions.set(this.servingsService.getServingNutritions(servingData));
-		this.prefillForm({ ...servingData });
-
-		if (serving.isEditable === false) {
-			this.form.disable();
-		} else if (serving.isFinalized) {
-			this.form.get("amount")?.disable();
-			this.form.get("servingSize")?.disable();
-		}
-	}
-
-	private combineServingSizes(servingSizes: ServingSize[]): ServingSize[] {
-		const combinedServingSizes: ServingSize[] = [];
-		servingSizes
-			.filter((s) => !!s)
-			.forEach((size) => {
-				if (!combinedServingSizes.some((s) => s.name === size.name)) {
-					combinedServingSizes.push(size);
-				}
-			});
-
-		return combinedServingSizes;
-	}
-
-	private prefillFoodData(foodId: string) {
-		this.foodService
-			.getFood(foodId)
-			.pipe(
-				map((food) => {
-					if (!food) {
-						this.snackService.open("This food can't be added right now.", "Close");
-						this.closeOverlay();
-					}
-
-					return food;
-				}),
-				filter((food) => !!food),
-				tap((food) => this.food.set(food)),
-				tap((food) => {
-					food.servingSizes.forEach((size) => {
-						if (!this.servingSizes.some((s) => s.name === size.name)) {
-							this.servingSizes.push(size);
-						}
-					});
-				}),
-				tap(() => this.prefillForm()),
-				tap(() => this.updateNutritions())
-			)
-			.subscribe();
 	}
 
 	ngOnInit(): void {
@@ -349,8 +284,82 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		});
 	}
 
+	async openProductPage(): Promise<boolean> {
+		this.overlayRef?.close();
+		return this.router.navigate(["foods/view-product", this.productBarcode]);
+	}
+
 	closeOverlay(): void {
 		this.overlayRef?.close();
+	}
+
+	private prefillServingData(serving: Serving) {
+		if (!serving) {
+			return;
+		}
+
+		this.servingSizes = this.combineServingSizes([
+			serving.servingSize,
+			...(serving.food.servingSizes ? serving.food.servingSizes : [])
+		]);
+
+		const servingData: Serving = {
+			...serving,
+			servingSize: serving.servingSize || this.servingSizes[0]
+		};
+
+		this.serving.set(serving);
+		this.food.set(serving?.food);
+		this.nutritions.set(this.servingsService.getServingNutritions(servingData));
+		this.prefillForm({ ...servingData });
+
+		if (serving.isEditable === false) {
+			this.form.disable();
+		} else if (serving.isFinalized) {
+			this.form.get("amount")?.disable();
+			this.form.get("servingSize")?.disable();
+		}
+	}
+
+	private combineServingSizes(servingSizes: ServingSize[]): ServingSize[] {
+		const combinedServingSizes: ServingSize[] = [];
+		servingSizes
+			.filter((s) => !!s)
+			.forEach((size) => {
+				if (!combinedServingSizes.some((s) => s.name === size.name)) {
+					combinedServingSizes.push(size);
+				}
+			});
+
+		return combinedServingSizes;
+	}
+
+	private prefillFoodData(foodId: string) {
+		this.foodService
+			.getFood(foodId)
+			.pipe(
+				map((food) => {
+					if (!food) {
+						this.snackService.open("This food can't be added right now.", "Close");
+						this.closeOverlay();
+					}
+
+					return food;
+				}),
+				filter((food) => !!food),
+				tap((food) => this.food.set(food)),
+				tap((food) => {
+					this.productBarcode = food.barcode;
+					food.servingSizes.forEach((size) => {
+						if (!this.servingSizes.some((s) => s.name === size.name)) {
+							this.servingSizes.push(size);
+						}
+					});
+				}),
+				tap(() => this.prefillForm()),
+				tap(() => this.updateNutritions())
+			)
+			.subscribe();
 	}
 
 	private addServing(food: ServingFood, servingData?: Partial<Serving>): void {

@@ -17,10 +17,16 @@ export class PageTitleComponent {
 	title = input.required<string>();
 
 	onBackClick() {
-		if (this.route.snapshot.parent) {
+		const backUrl = window.history.state?.backUrl;
+
+		if (backUrl) {
+			this.router.navigateByUrl(backUrl);
+		} else if (window.history.length > 1) {
+			window.history.back();
+		} else if (this.route.snapshot.parent) {
 			this.router.navigate(["../"], { relativeTo: this.route });
 		} else {
-			this.router.navigate(["/"]);
+			this.router.navigate(["/dashboard"]);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 import {
 	FoodCategory,
+	FoodType,
 	Nutrition,
 	NutritionType,
 	NutritionUnit,
@@ -153,6 +154,7 @@ export class CronometerService {
 					category: this.mapfoodCategory(rowMap.get("Category")),
 					nutritions,
 					isApproved: false,
+					type: FoodType.Custom,
 					dietaryFlags: [],
 					tags: ["cronometer-exported"],
 					source: "Cronometer"

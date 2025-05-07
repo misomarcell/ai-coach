@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FoodCategory, FoodDb, FoodStatus, Nutrition, ServingSize } from "@aicoach/shared";
+import { FoodCategory, FoodDb, FoodStatus, FoodType, Nutrition, ServingSize } from "@aicoach/shared";
 import { FieldValue } from "firebase-admin/firestore";
 import fs from "fs";
 import path from "path";
@@ -84,6 +84,7 @@ function convertFood(input: FoundationFoodsEntity): Partial<FoodDb> {
 		name: input.description,
 		category: mappedCategory,
 		servingSizes: [],
+		type: FoodType.sourced,
 		created: FieldValue.serverTimestamp(),
 		lastUpdatedAt: FieldValue.serverTimestamp(),
 		status: FoodStatus.Created,
@@ -93,7 +94,6 @@ function convertFood(input: FoundationFoodsEntity): Partial<FoodDb> {
 		ownerUid: "system",
 		images: [],
 		source: "USDA",
-		variation: undefined,
 		dietaryFlags: getAssumedFlags(mappedCategory),
 		tags: []
 	};

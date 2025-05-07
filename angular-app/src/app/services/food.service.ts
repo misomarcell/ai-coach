@@ -1,10 +1,9 @@
-import { Food, FoodDb, FoodStatus } from "@aicoach/shared";
+import { Food, FoodDb, FoodStatus, FoodType } from "@aicoach/shared";
 import { Injectable } from "@angular/core";
 import {
 	Firestore,
 	FirestoreDataConverter,
 	Timestamp,
-	addDoc,
 	collection,
 	collectionData,
 	doc,
@@ -51,11 +50,16 @@ export class FoodService {
 	};
 
 	createFood(): Observable<string> {
-		const collectionRef = collection(this.firestore, "foods").withConverter(this.foodTypeConverter);
-		const foodDocument: Partial<Food> = {
+		const docRef = doc(collection(this.firestore, "foods").withConverter(this.foodTypeConverter));
+		const foodDocument: Omit<Food, "id" | "ownerUid"> = {
 			status: FoodStatus.Creating,
+			type: FoodType.Custom,
+			created: new Date(),
 			isApproved: false,
 			isPublic: false,
+			name: "",
+			category: "Unknown",
+			counters: { added: 0 },
 			source: "User",
 			nutritions: [],
 			servingSizes: [],
@@ -65,8 +69,8 @@ export class FoodService {
 		return this.authService.getCurrentUser().pipe(
 			take(1),
 			filter((user) => !!user),
-			switchMap((user) => addDoc(collectionRef, { ...foodDocument, ownerUid: user.uid })),
-			map((documentRef) => documentRef.id)
+			switchMap((user) => setDoc(docRef, { ...foodDocument, id: docRef.id, ownerUid: user.uid })),
+			map(() => docRef.id)
 		);
 	}
 

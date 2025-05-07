@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FoodCategory, FoodDb, FoodStatus, Nutrition, NutritionType } from "@aicoach/shared";
+import { FoodCategory, FoodDb, FoodStatus, FoodType, Nutrition, NutritionType } from "@aicoach/shared";
 import { FieldValue } from "firebase-admin/firestore";
 import path from "path";
 import { readFile, utils } from "xlsx";
@@ -53,6 +53,7 @@ function convertRowsToFoods(row: any): Partial<FoodDb> {
 		isPublic: true,
 		ownerUid: "system",
 		source: "CIQUAL",
+		type: FoodType.sourced,
 		created: FieldValue.serverTimestamp(),
 		lastUpdatedAt: FieldValue.serverTimestamp(),
 		status: FoodStatus.Created,

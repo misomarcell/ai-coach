@@ -28,6 +28,7 @@ module.exports = {
 		"indent": ["error", "tab", { "SwitchCase": 1, "ignoredNodes": ["ArrowFunctionExpression", "ConditionalExpression"] }],
 		"comma-dangle": ["error", "never"],
 		"import/order": "error",
+		"@typescript-eslint/no-explicit-any": 0,
 		"operator-linebreak": 0,
 		"no-case-declarations": 0,
 		"import/no-unresolved": 0,
