@@ -102,11 +102,10 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 			return;
 		}
 
-		this.activatedRoute.queryParams.subscribe((params) => {
-			if (params["focus"]) {
-				setTimeout(() => this.searchInput?.nativeElement.click(), 300);
-			}
-		});
+		const queryParams = this.activatedRoute.snapshot.queryParams;
+		if (queryParams["focus"]) {
+			setTimeout(() => this.searchInput?.nativeElement.click(), 300);
+		}
 	}
 
 	resetFilters(): void {
