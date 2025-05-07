@@ -14,23 +14,21 @@ export const healthProfileWrittenTrigger = onDocumentWritten(
 	},
 	async (event) => {
 		const snapshot = event.data;
-		const userId = event.params.userId;
+		const uid = event.params.userId;
 
 		if (!snapshot) {
 			logger.error("Health profile not found");
 			return;
 		}
 
-		await dailyTargetsService.updateTargetsStatus(userId, "in-progress");
-
 		try {
-			const healthProfile = await userService.getHealthProfile(userId);
+			await dailyTargetsService.updateTargetsStatus(uid, "in-progress");
+
+			const healthProfile = await userService.getHealthProfile(uid);
 			if (!healthProfile) {
 				logger.error("User has no health profile");
 				return;
 			}
-
-			logger.info("❤️ Health profile found. Proceeding...");
 
 			const targetsResult = await aiService.getDailyNutritionTargets(healthProfile);
 			if (!targetsResult) {
@@ -38,11 +36,10 @@ export const healthProfileWrittenTrigger = onDocumentWritten(
 				return;
 			}
 
-			logger.info(`✅ Daily nutrition (${targetsResult.nutritons.length}) targets retrieved successfully. Proceeding...`);
-
-			await dailyTargetsService.setDailyTargets(userId, targetsResult);
+			await dailyTargetsService.setDailyTargets(uid, targetsResult);
 		} catch (error) {
-			await dailyTargetsService.updateTargetsStatus(userId, "error");
+			logger.error(`Error processing health profile for user ${uid}`, error);
+			await dailyTargetsService.updateTargetsStatus(uid, "error");
 		}
 	}
 );

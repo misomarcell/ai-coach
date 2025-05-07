@@ -8,9 +8,8 @@ export const userAuthCreated = auth.user().onCreate(async (user) => {
 	try {
 		await createUserProfile(user);
 		await createUserSettings(user);
-		logger.info("User documents created successfully!", { uid: user.uid });
 	} catch (error) {
-		logger.error("Error creating user", error);
+		logger.error(`Error creating profile document for user ${user.uid}`, error);
 	}
 
 	async function createUserProfile(user: UserRecord): Promise<void> {

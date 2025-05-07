@@ -33,6 +33,7 @@ export const visionDocumentUpdated = onDocumentUpdated(
 				await visionService.processVisionUpload(userId, documentId);
 			}
 		} catch (error) {
+			logger.error(`Error processing vision document for user ${userId}`, error);
 			await visionService.updateVisionDocument(userId, documentId, { status: CalorieVisionStatus.Error });
 		}
 	}

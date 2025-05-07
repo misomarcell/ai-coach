@@ -29,10 +29,13 @@ export const analysisRequestCreated = onDocumentCreated(
 		logger.info(`Processing analysis request ${analysisId} for user ${userId}`);
 
 		try {
+			await analysisService.updateAnalysisStatus(userId, analysisId, AnalysisRequestStatus.Processing);
+
 			const ongoinAnalyses = await analysisService.getAnalysesByStatus(userId, [
 				AnalysisRequestStatus.Created,
 				AnalysisRequestStatus.Processing
 			]);
+
 			if (ongoinAnalyses.filter((ongoing) => ongoing.id !== analysis.id)?.length > 0) {
 				logger.info(`User ${userId} already has an ongoing analysis request`);
 				await analysisService.updateAnalysisStatus(
@@ -42,8 +45,6 @@ export const analysisRequestCreated = onDocumentCreated(
 					"User already has an ongoing analysis request"
 				);
 			}
-
-			await analysisService.updateAnalysisStatus(userId, analysisId, AnalysisRequestStatus.Processing);
 
 			const healthProfile = await userService.getHealthProfile(userId);
 			if (!healthProfile) {

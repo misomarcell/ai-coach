@@ -70,7 +70,6 @@ async function updateImportRequest(id: string, status: string, error?: unknown):
 	try {
 		const importRequestRef = firestore().collection("product-imports").doc(id);
 		await importRequestRef.set({ status, error }, { merge: true });
-		logger.info(`Updated import request with ID: ${id} to status: ${status}`);
 	} catch (error) {
 		logger.error(`Error updating import request with ID: ${id}`, error);
 	}
@@ -80,7 +79,6 @@ async function deleteImportRequest(id: string): Promise<void> {
 	try {
 		const importRequestRef = firestore().collection("product-imports").doc(id);
 		await importRequestRef.delete();
-		logger.info(`Deleted import request with ID: ${id}`);
 	} catch (error) {
 		logger.error(`Error deleting import request with ID: ${id}`, error);
 	}
