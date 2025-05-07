@@ -6,6 +6,7 @@ export class ProductImportService {
 	async createImportRequest(code: string, lastUpdatedAt: Date): Promise<void> {
 		const importRequest: ProductImport = {
 			code,
+			status: "pending",
 			createdAt: FieldValue.serverTimestamp(),
 			lastUpdatedAt: Timestamp.fromDate(lastUpdatedAt)
 		};

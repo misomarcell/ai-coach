@@ -17,7 +17,7 @@ export const productImportCreated = onDocumentCreated(
 	},
 	async (event) => {
 		const importData = event.data?.data() as ProductImport;
-		if (!importData) {
+		if (!event.data || !importData) {
 			logger.warn(`No import data found for document: ${event.data?.id}`);
 
 			return null;
@@ -27,7 +27,8 @@ export const productImportCreated = onDocumentCreated(
 		const product = await getExternalProduct(barcode);
 		if (!product) {
 			logger.warn(`Product not found for barcode: ${barcode}`);
-			return null;
+
+			return await updateImportRequest(event.data.id, "failed", "Product not found");
 		}
 
 		try {
@@ -35,12 +36,9 @@ export const productImportCreated = onDocumentCreated(
 			const importFood = getAsFood(product);
 			if (!existingFood) {
 				const documentId = await foodService.createFoodDocument(importFood);
-				await firestore()
-					.doc(`product-imports/${event.data?.id}`)
-					.set({ status: "imported" } as ProductImport);
 				logger.info(`Created new food document for barcode: ${barcode} with ID: ${documentId}`);
 
-				return;
+				return await updateImportRequest(event.data.id, "imported", null);
 			}
 
 			const importFoodLastUpdated = (importData.lastUpdatedAt as Timestamp)?.toDate();
@@ -48,28 +46,29 @@ export const productImportCreated = onDocumentCreated(
 			const existingFoodLastUpdated = (existingFood.lastUpdatedAt as Timestamp)?.toDate();
 			if (importFoodLastUpdated && existinFoodCreated && existingFoodLastUpdated) {
 				if (importFoodLastUpdated > existinFoodCreated && importFoodLastUpdated > existingFoodLastUpdated) {
-					await foodService.updateFoodDocument(existingFood.id, importFood);
-					await firestore()
-						.doc(`product-imports/${event.data?.id}`)
-						.set({ status: "updated" } as ProductImport);
 					logger.info(`Updated existing food document for barcode: ${barcode} with ID: ${existingFood.id}`);
+					await foodService.updateFoodDocument(existingFood.id, importFood);
+
+					return await updateImportRequest(event.data.id, "updated", null);
 				} else {
-					firestore().doc(`product-imports/${event.data?.id}`).delete();
 					logger.info(`Dismissed import request for barcode: ${barcode} as it is outdated`);
+					return await firestore().doc(`product-imports/${event.data?.id}`).delete();
 				}
-			} else {
-				logger.error(`Invalid timestamps for barcode: ${barcode}`);
 			}
 
-			return;
+			logger.error(`Invalid timestamps for barcode: ${barcode}`);
+			return await updateImportRequest(event.data.id, "failed", "Invalid timestamps");
 		} catch (error) {
 			logger.error(`Error processing product import for barcode: ${barcode}`, error);
-			await firestore()
-				.doc(`product-imports/${event.data?.id}`)
-				.set({ status: "failed", error } as ProductImport);
+			return await updateImportRequest(event.data.id, "failed", error);
 		}
 	}
 );
+
+async function updateImportRequest(id: string, status: string, error?: unknown): Promise<void> {
+	const importRequestRef = firestore().collection("product-imports").doc(id);
+	await importRequestRef.set({ status, error }, { merge: true });
+}
 
 async function getExternalProduct(barcode: string): Promise<ProductV2> {
 	const client = new OpenFoodFacts(fetch);
