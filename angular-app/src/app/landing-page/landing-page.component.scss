@@ -1,11 +1,33 @@
-.auth-header {
+@use "../../ai-highlight" as *;
+
+:host {
+	display: flex;
+	flex-direction: column;
+}
+
+.auth-wrapper {
 	position: sticky;
-	background-color: var(--mat-sys-surface-container-high);
-	border-bottom: 1px solid var(--mat-sys-outline);
+	background-color: var(--mat-sys-surface-container);
+	border-bottom: 1px solid var(--mat-sys-inverse-on-surface);
+}
+
+.title-wrapper {
+	text-align: center;
+	text-shadow: 3px 5px 10px rgb(8 15 16 / 50%);
 }
 
 .title {
+	font-weight: 900;
 	font-size: 2rem;
 	line-height: 2;
 	margin: 0;
+}
+
+.subtitle {
+	font-size: 1rem;
+	line-height: 1;
+}
+
+.vision-demo-section {
+	padding: 0 1rem;
 }

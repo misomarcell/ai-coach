@@ -1,0 +1,21 @@
+<mat-card>
+	<mat-card-content>
+		<div class="description">
+			<h3 class="title">Counting calories, made easy</h3>
+			<h4 class="subtitle">Just point & shoot, Calorie Vision takes over the rest.</h4>
+		</div>
+		<div class="scanner-container">
+			<div class="food-track">
+				@for (food of visibleFoods(); track food) {
+					<div class="food-emoji" [@emojiState]="food.position">
+						{{ food.emoji }}
+					</div>
+				}
+			</div>
+			<div class="scanner-box"></div>
+		</div>
+		<div class="name-display">
+			<div class="typewriter">{{ textContent() }}</div>
+		</div>
+	</mat-card-content>
+</mat-card>

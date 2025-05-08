@@ -1,9 +1,13 @@
-<div class="auth-header d-flex flex-column gap-2 p-2">
+<div class="auth-wrapper d-flex gap-2 p-2">
+	<button mat-flat-button class="w-100" [routerLink]="['/register']">Create account</button>
 	<button mat-stroked-button class="w-100" [routerLink]="['/login']">Log in</button>
-	<button mat-flat-button class="w-100" [routerLink]="['/register']">Create an account</button>
 </div>
 
-<div class="p-2">
-	<h1 class="title">KombuchAI</h1>
-	<p>{{ textContent() }}</p>
+<div class="title-wrapper p-2">
+	<h1 class="title">Kombuch<span class="ai-highlight">AI</span></h1>
+	<h2 class="subtitle">The future of nutrition tracking.</h2>
+</div>
+
+<div class="vision-demo-section">
+	<app-vision-demo />
 </div>

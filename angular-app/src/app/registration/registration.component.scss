@@ -1,3 +1,5 @@
+@use "../../ai-highlight" as *;
+
 :host {
 	max-width: var(--app-max-width);
 	display: block;

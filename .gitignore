@@ -45,3 +45,5 @@ functions/firebase-export-*
 # Other
 servings.csv
 
+
+**/.claude/settings.local.json
