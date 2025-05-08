@@ -1,0 +1,121 @@
+@use "../../../ai-highlight" as *;
+
+:host {
+	display: block;
+	width: 100%;
+}
+
+.footer-section {
+	background-color: var(--mat-sys-surface-container);
+	padding: 2rem 1rem 1rem;
+	margin-top: 2rem;
+	border-top: 1px solid var(--mat-sys-inverse-on-surface);
+
+	.footer-content {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		max-width: 1200px;
+		margin: 0 auto;
+
+		@media (min-width: 768px) {
+			flex-direction: row;
+			align-items: flex-start;
+		}
+
+		.footer-brand {
+			flex: 1;
+
+			.footer-title {
+				font-weight: 800;
+				font-size: 1.5rem;
+				line-height: 1.5;
+				margin: 0;
+			}
+
+			.footer-tagline {
+				color: var(--mat-sys-on-surface-variant);
+				margin: 0;
+				font-size: 1rem;
+			}
+		}
+
+		.footer-links {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 2rem;
+
+			.link-group {
+				min-width: 120px;
+
+				h4 {
+					font-size: 1.2rem;
+					line-height: 1.5;
+					font-weight: 600;
+					margin: 0 0 0.5rem;
+					color: var(--mat-sys-on-surface);
+				}
+
+				ul {
+					list-style: none;
+					padding: 0;
+					margin: 0;
+
+					li {
+						margin-bottom: 0.5rem;
+
+						a {
+							color: var(--mat-sys-on-surface-variant);
+							text-decoration: none;
+							font-size: 0.9rem;
+							transition: color 0.2s ease;
+
+							&:hover {
+								color: var(--tertiary-color);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.footer-bottom {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--mat-sys-outline-variant);
+		color: var(--mat-sys-on-surface-variant);
+		font-size: 0.8rem;
+
+		@media (min-width: 768px) {
+			flex-direction: row;
+		}
+
+		p {
+			margin: 0;
+		}
+
+		.social-links {
+			display: flex;
+			gap: 1rem;
+			margin-top: 1rem;
+
+			@media (min-width: 768px) {
+				margin-top: 0;
+			}
+
+			a {
+				color: var(--mat-sys-on-surface-variant);
+				transition: color 0.2s ease;
+
+				&:hover {
+					color: var(--tertiary-color);
+				}
+			}
+		}
+	}
+}

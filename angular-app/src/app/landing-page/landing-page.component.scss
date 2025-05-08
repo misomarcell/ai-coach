@@ -3,6 +3,7 @@
 :host {
 	display: flex;
 	flex-direction: column;
+	gap: 1rem;
 }
 
 .auth-wrapper {
@@ -26,8 +27,11 @@
 .subtitle {
 	font-size: 1rem;
 	line-height: 1;
+	margin: 0;
 }
 
-.vision-demo-section {
+.vision-demo-section,
+.servings-demo-section {
 	padding: 0 1rem;
 }
+

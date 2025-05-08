@@ -99,6 +99,8 @@ body {
 	color: var(--mat-sys-on-surface);
 	height: 100%;
 	margin: 0;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 
 	--app-max-width: 800px;
 	--mat-expansion-container-background-color: var(--mat-sys-surface-container);

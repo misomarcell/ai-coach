@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, signal } from "@angular/core";
+import { Component, OnInit, OnDestroy, signal, inject, PLATFORM_ID } from "@angular/core";
 import { trigger, state, style, animate, transition } from "@angular/animations";
 import { MatCardModule } from "@angular/material/card";
+import { isPlatformBrowser } from "@angular/common";
 
 enum FoodPosition {
 	Entering = "entering",
@@ -96,6 +97,7 @@ export class VisionDemoComponent implements OnInit, OnDestroy {
 		{ id: 9, emoji: "🌯", name: "Beef Burrito, rice, 723 kcal" }
 	];
 
+	private platformId = inject(PLATFORM_ID);
 	visibleFoods = signal<FoodEmoji[]>([]);
 	currentIndex = signal<number>(3);
 	textContent = signal("");
@@ -104,8 +106,10 @@ export class VisionDemoComponent implements OnInit, OnDestroy {
 	isAnimating = false;
 
 	ngOnInit(): void {
-		this.setupInitialState();
-		this.startAnimationCycle();
+		if (isPlatformBrowser(this.platformId)) {
+			this.setupInitialState();
+			this.startAnimationCycle();
+		}
 	}
 
 	ngOnDestroy(): void {

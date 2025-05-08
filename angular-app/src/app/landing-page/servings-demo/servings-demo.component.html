@@ -1,0 +1,17 @@
+<mat-card>
+	<mat-card-content>
+		<div class="description">
+			<h3 class="title">Track your meals with ease</h3>
+			<h4 class="subtitle">Log your food intake with ease.</h4>
+		</div>
+		<div class="scrolling-container">
+			@for (item of visibleItems(); track item.id) {
+				<div class="food-item" [style.top.px]="item.top">
+					<span class="food-name">{{ item.name }}</span>
+					<span class="food-calories">{{ item.calories }} kcal</span>
+				</div>
+			}
+			<div class="shadow-overlay"></div>
+		</div>
+	</mat-card-content>
+</mat-card>
