@@ -163,10 +163,14 @@ export const routes: Routes = [
 			},
 			{
 				path: "",
-				redirectTo: "dashboard",
+				redirectTo: "/welcome",
 				pathMatch: "full"
 			}
 		]
+	},
+	{
+		path: "welcome",
+		loadComponent: () => import("./landing-page/landing-page.component").then((m) => m.LandingPageComponent)
 	},
 	{
 		path: "not-found",
