@@ -3,13 +3,26 @@
 :host {
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
+	gap: 2rem;
+	margin: 0 auto;
+	max-width: var(--app-max-width);
+	padding-top: 5rem;
 }
 
 .auth-wrapper {
-	position: sticky;
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	z-index: 9;
 	background-color: var(--mat-sys-surface-container);
 	border-bottom: 1px solid var(--mat-sys-inverse-on-surface);
+
+	@media screen and (min-width: 800px) {
+		border-radius: 0 0 12px 12px;
+		border-bottom: none;
+		margin: 0 1rem;
+	}
 }
 
 .title-wrapper {
@@ -31,7 +44,8 @@
 }
 
 .vision-demo-section,
-.servings-demo-section {
+.servings-demo-section,
+.nutrition-cloud-section,
+.analytics-demo-section {
 	padding: 0 1rem;
 }
-

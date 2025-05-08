@@ -1,0 +1,21 @@
+<mat-card>
+	<div class="bulb-container" #bulbContainer>
+		<mat-card-content>
+			<div class="description">
+				<h3 class="title">AI-powered nutrition insights</h3>
+				<h4 class="subtitle">Personalized recommendations based on your data.</h4>
+			</div>
+		</mat-card-content>
+
+		<div
+			#lightbulb
+			class="lightbulb"
+			[style.left.%]="bulbX()"
+			[style.top.%]="bulbY()"
+			[style.transform]="'scale(' + bulbScale() + ')'"
+			[style.filter]="'drop-shadow(0 0 ' + bulbGlow() * 25 + 'px rgba(255, 215, 0, 0.8))'"
+		>
+			💡
+		</div>
+	</div>
+</mat-card>

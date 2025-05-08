@@ -60,7 +60,8 @@
 	&::before {
 		content: "";
 		position: absolute;
-		background-color: rgba(255, 25, 25, 0.75);
+		background-color: rgba(255, 25, 25, 0.6);
+		border-radius: 50%;
 		width: 90%;
 		height: 2px;
 		animation: scanLine 2s infinite linear;

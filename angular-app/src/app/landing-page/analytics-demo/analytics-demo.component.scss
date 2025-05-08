@@ -1,0 +1,56 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+mat-card {
+	position: relative;
+	overflow: hidden;
+}
+
+.bulb-container {
+	position: relative;
+	min-height: 300px;
+	width: 100%;
+	overflow: visible;
+
+	.mat-mdc-card-content {
+		pointer-events: none;
+		z-index: 1;
+		position: relative;
+
+		.description {
+			text-align: center;
+			pointer-events: none;
+			user-select: none;
+
+			.title {
+				font-size: 1.2rem;
+				line-height: 1.2;
+				font-weight: 600;
+				margin: 0;
+			}
+
+			.subtitle {
+				font-size: 0.9rem;
+				line-height: 2;
+				font-weight: 400;
+				margin: 0;
+			}
+		}
+	}
+}
+
+.lightbulb {
+	position: absolute;
+	font-size: 3.5rem;
+	transform-origin: center center;
+	z-index: 2;
+	will-change: transform, left, top, filter;
+	cursor: grab;
+	user-select: none;
+
+	&:active {
+		cursor: grabbing;
+	}
+}
