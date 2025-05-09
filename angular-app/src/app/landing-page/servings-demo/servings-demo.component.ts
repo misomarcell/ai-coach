@@ -35,13 +35,16 @@ export class ServingsDemoComponent implements OnInit, OnDestroy {
 	];
 
 	private paltformId = inject(PLATFORM_ID);
+	private lastTimestamp: DOMHighResTimeStamp = 0;
+	private animationFrameId = 0;
+
 	visibleItems = signal<FoodItem[]>([]);
 	animationInterval: any;
 	itemHeight = 58;
 	containerHeight = 230;
 	currentIndex = 0;
 	currentTop = 0;
-	scrollSpeed = 0.25;
+	scrollSpeed = 30;
 
 	ngOnInit(): void {
 		if (isPlatformBrowser(this.paltformId)) {
@@ -70,39 +73,44 @@ export class ServingsDemoComponent implements OnInit, OnDestroy {
 	}
 
 	startScrollAnimation(): void {
-		const animate = () => {
-			this.updateItemPositions();
-			this.animationInterval = requestAnimationFrame(animate);
+		this.lastTimestamp = performance.now();
+		const animate = (timestamp: number) => {
+			const delta = timestamp - this.lastTimestamp;
+			this.lastTimestamp = timestamp;
+			this.updateItemPositions(delta);
+
+			this.animationFrameId = requestAnimationFrame(animate);
 		};
 
 		this.animationInterval = requestAnimationFrame(animate);
 	}
 
-	updateItemPositions(): void {
-		this.currentTop -= this.scrollSpeed;
+	updateItemPositions(delta: number): void {
+		const movement = this.scrollSpeed * (delta / 1000);
 
 		this.visibleItems.update((items) => {
-			const updatedItems = items.map((item) => ({
+			const shifted = items.map((item) => ({
 				...item,
-				top: item.top + this.currentTop
+				top: item.top - movement
 			}));
 
 			this.currentTop = 0;
 
-			const result = [...updatedItems];
-			if (result.length > 0 && result[0].top < -this.itemHeight) {
-				result.shift();
-
+			if (shifted[0].top < -this.itemHeight) {
+				shifted.shift();
 				this.currentIndex = (this.currentIndex + 1) % this.foodItems.length;
-				const lastItem = result[result.length - 1];
-				result.push({
-					...this.foodItems[this.currentIndex],
-					id: Date.now(),
-					top: lastItem.top + this.itemHeight
+
+				const last = shifted[shifted.length - 1];
+				const nextSource = this.foodItems[this.currentIndex];
+				shifted.push({
+					id: nextSource.id,
+					name: nextSource.name,
+					calories: nextSource.calories,
+					top: last.top + this.itemHeight
 				});
 			}
 
-			return result;
+			return shifted;
 		});
 	}
 }
