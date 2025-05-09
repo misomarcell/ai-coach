@@ -37,12 +37,18 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	overflow: hidden;
 }
 
 .food-emoji {
+	display: flex;
+	justify-content: center;
 	position: absolute;
 	font-size: 3.5rem;
-	transition: all 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+	width: 120px;
+	will-change: transform, opacity;
+	backface-visibility: hidden;
+	transform: translateZ(0);
 }
 
 .scanner-box {

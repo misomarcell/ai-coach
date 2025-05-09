@@ -3,19 +3,11 @@ import { trigger, state, style, animate, transition } from "@angular/animations"
 import { MatCardModule } from "@angular/material/card";
 import { isPlatformBrowser } from "@angular/common";
 
-enum FoodPosition {
-	Entering = "entering",
-	Left = "left",
-	Center = "center",
-	Right = "right",
-	Exiting = "exiting"
-}
-
 interface FoodEmoji {
 	id: number;
 	emoji: string;
 	name: string;
-	position?: FoodPosition;
+	position?: "entering" | "left" | "center" | "right" | "exiting";
 }
 
 @Component({
@@ -26,61 +18,53 @@ interface FoodEmoji {
 	animations: [
 		trigger("emojiState", [
 			state(
-				FoodPosition.Entering,
+				"entering",
 				style({
-					transform: "translateX(-200%) scale(0.5)",
+					transform: "translate3d(-150%, 0, 0) scale(0.5)",
 					opacity: 0
 				})
 			),
 			state(
-				FoodPosition.Left,
+				"left",
 				style({
-					transform: "translateX(-150%) scale(0.5)",
-					opacity: 0.7
+					transform: "translate3d(-100%, 0, 0) scale(0.5)",
+					opacity: 0.8
 				})
 			),
 			state(
-				FoodPosition.Center,
+				"center",
 				style({
-					transform: "translateX(0) scale(1)",
+					transform: "translate3d(0, 0, 0) scale(1)",
 					opacity: 1
 				})
 			),
 			state(
-				FoodPosition.Right,
+				"right",
 				style({
-					transform: "translateX(150%) scale(0.5)",
-					opacity: 0.7
+					transform: "translate3d(100%, 0, 0) scale(0.5)",
+					opacity: 0.8
 				})
 			),
 			state(
-				FoodPosition.Exiting,
+				"exiting",
 				style({
-					transform: "translateX(200%) scale(0.5)",
+					transform: "translate3d(150%, 0, 0) scale(0.5)",
 					opacity: 0
 				})
 			),
-			transition("void => *", [
-				style({
-					transform: "translateX(-250%) scale(0.3)",
-					opacity: 0
-				}),
-				animate("0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)")
-			]),
-			transition("* => void", [
+			transition("exiting => void", [
 				animate(
-					"0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)",
+					"400ms cubic-bezier(0.68, -0.55, 0.27, 1.55)",
 					style({
-						transform: "translateX(250%) scale(0.3)",
+						transform: "translate3d(150%, 0, 0) scale(0.5)",
 						opacity: 0
 					})
 				)
 			]),
-			transition("entering => left", [animate("1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)")]),
-			transition("left => center", [animate("1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)")]),
-			transition("center => right", [animate("1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)")]),
-			transition("right => exiting", [animate("1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)")]),
-			transition("* => *", [animate("1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)")])
+			transition("entering => left", animate("600ms cubic-bezier(0.68, -0.55, 0.27, 1.55)")),
+			transition("left => center", animate("600ms cubic-bezier(0.68, -0.55, 0.27, 1.55)")),
+			transition("center => right", animate("600ms cubic-bezier(0.68, -0.55, 0.27, 1.55)")),
+			transition("right => exiting", animate("600ms cubic-bezier(0.68, -0.55, 0.27, 1.55)"))
 		])
 	]
 })
@@ -119,10 +103,10 @@ export class VisionDemoComponent implements OnInit, OnDestroy {
 	}
 
 	setupInitialState(): void {
-		const initialFoods = [
-			{ ...this.foodEmojis[0], position: FoodPosition.Left, id: 100 },
-			{ ...this.foodEmojis[1], position: FoodPosition.Center, id: 101 },
-			{ ...this.foodEmojis[2], position: FoodPosition.Right, id: 102 }
+		const initialFoods: FoodEmoji[] = [
+			{ ...this.foodEmojis[0], position: "left", id: 100 },
+			{ ...this.foodEmojis[1], position: "center", id: 101 },
+			{ ...this.foodEmojis[2], position: "right", id: 102 }
 		];
 
 		this.visibleFoods.set(initialFoods);
@@ -137,7 +121,7 @@ export class VisionDemoComponent implements OnInit, OnDestroy {
 					this.isAnimating = false;
 				});
 			}
-		}, 3000);
+		}, 2000);
 	}
 
 	async runAnimationSequence(): Promise<void> {
@@ -145,46 +129,48 @@ export class VisionDemoComponent implements OnInit, OnDestroy {
 		await this.delay(100);
 
 		const nextIndex = this.currentIndex() % this.foodEmojis.length;
-		const newFood = {
+		const newFood: FoodEmoji = {
 			...this.foodEmojis[nextIndex],
-			position: FoodPosition.Entering,
+			position: "entering",
 			id: Date.now()
 		};
 
-		const currentFoods = this.visibleFoods();
-		const updatedFoods = [
-			newFood,
-			...currentFoods.map((food) => {
-				if (food.position === FoodPosition.Left) {
-					return { ...food, position: FoodPosition.Center };
-				} else if (food.position === FoodPosition.Center) {
-					return { ...food, position: FoodPosition.Right };
-				} else if (food.position === FoodPosition.Right) {
-					return { ...food, position: FoodPosition.Exiting };
-				}
-				return food;
-			})
-		];
+		this.visibleFoods.update((list) => [newFood, ...list]);
 
-		this.visibleFoods.set(updatedFoods);
-		this.currentIndex.update((idx) => (idx + 1) % this.foodEmojis.length);
-		this.visibleFoods.update((foods) => foods.filter((food) => food.position !== FoodPosition.Exiting));
+		await this.delay(0);
+
+		this.visibleFoods.update((list) =>
+			list.map((f) => {
+				switch (f.position) {
+					case "entering":
+						return { ...f, position: "left" };
+					case "left":
+						return { ...f, position: "center" };
+					case "center":
+						return { ...f, position: "right" };
+					case "right":
+						return { ...f, position: "exiting" };
+					default:
+						return f;
+				}
+			})
+		);
+
 		this.visibleFoods.update((foods) =>
 			foods.map((food) => {
-				if (food.position === FoodPosition.Entering) {
-					return { ...food, position: FoodPosition.Left };
+				if (food.position === "entering") {
+					return { ...food, position: "left" };
 				}
 				return food;
 			})
 		);
 
 		await this.delay(750);
-		const centerFood = updatedFoods.find((food) => food.position === FoodPosition.Center);
-		if (centerFood) {
-			await this.typeTextAsync(centerFood.name);
-		}
+		this.visibleFoods.update((list) => list.filter((f) => f.position !== "exiting"));
+		await this.typeTextAsync(this.foodEmojis.find((f) => f.position === "center")?.name || "");
+		this.currentIndex.update((idx) => (idx + 1) % this.foodEmojis.length);
 
-		await this.delay(3000);
+		await this.delay(2000);
 	}
 
 	delay(ms: number): Promise<void> {

@@ -6,7 +6,7 @@
 		</div>
 		<div class="scanner-container">
 			<div class="food-track">
-				@for (food of visibleFoods(); track food) {
+				@for (food of visibleFoods(); track food.id) {
 					<div class="food-emoji" [@emojiState]="food.position">
 						{{ food.emoji }}
 					</div>
