@@ -28,19 +28,33 @@
 .title-wrapper {
 	text-align: center;
 	text-shadow: 3px 5px 10px rgb(8 15 16 / 50%);
+
+	.title {
+		font-weight: 900;
+		font-size: 2rem;
+		line-height: 2;
+		margin: 0;
+	}
+
+	.subtitle {
+		font-size: 1rem;
+		line-height: 1;
+		margin: 0;
+	}
 }
 
-.title {
-	font-weight: 900;
-	font-size: 2rem;
-	line-height: 2;
-	margin: 0;
-}
+.install-card {
+	display: flex;
+	gap: 1rem;
+	border: 1px solid var(--mat-sys-inverse-on-surface);
+	border-radius: 12px;
+	padding: 1rem;
+	margin: 0 1rem;
 
-.subtitle {
-	font-size: 1rem;
-	line-height: 1;
-	margin: 0;
+	p {
+		font-weight: 600;
+		margin: 0;
+	}
 }
 
 .vision-demo-section,

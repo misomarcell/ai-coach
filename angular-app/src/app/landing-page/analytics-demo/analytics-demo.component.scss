@@ -24,7 +24,9 @@
 .bulb-container {
 	height: 100%;
 	width: 100%;
+	border-radius: 12px;
 	position: absolute;
+	overflow: hidden;
 }
 
 .bulb {
@@ -37,7 +39,7 @@
 	justify-content: center;
 	touch-action: none;
 	will-change: transform;
-	filter: drop-shadow(0 0 20px rgb(255, 187, 0)) drop-shadow(0 0 50px rgb(255, 217, 0));
+	filter: drop-shadow(0 0 20px rgba(255, 187, 0, 1)) drop-shadow(0 0 40px rgb(255, 217, 0));
 
 	cursor: grab;
 

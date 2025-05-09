@@ -12,12 +12,31 @@
 	<app-vision-demo />
 </div>
 
-<div class="analytics-demo-section">
-	<app-analytics-demo />
-</div>
+@defer {
+	<div class="analytics-demo-section">
+		<app-analytics-demo />
+	</div>
+}
 
-<div class="servings-demo-section">
-	<app-servings-demo />
-</div>
+@defer {
+	<div class="servings-demo-section">
+		<app-servings-demo />
+	</div>
+}
+
+@defer {
+	@if (isReadyToInstall()) {
+		<div class="install-card">
+			<img src="assets/app-icons/icon.svg" width="64px" height="64px" alt="logo" />
+			<div class="d-flex flex-column flex-grow jc-c ai-c">
+				<p>Unlock the full experience!</p>
+				<button mat-button class="w-100" (click)="installApp()">
+					<mat-icon>get_app</mat-icon>
+					Install app
+				</button>
+			</div>
+		</div>
+	}
+}
 
 <app-footer-section />
