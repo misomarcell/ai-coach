@@ -1,19 +1,20 @@
-<mat-card>
-	<div class="bulb-container" #bulbContainer>
-		<mat-card-content>
-			<div class="description">
-				<h3 class="title">AI-powered nutrition insights</h3>
-				<h4 class="subtitle">Personalized recommendations based on your data.</h4>
-			</div>
-		</mat-card-content>
-
+<mat-card class="analytics-card">
+	<mat-card-content>
+		<div class="description">
+			<h3 class="title">AI-powered nutrition insights</h3>
+			<h4 class="subtitle">Personalized recommendations based on your data.</h4>
+		</div>
+	</mat-card-content>
+	<div #container class="bulb-container">
 		<div
-			#lightbulb
-			class="lightbulb"
-			[style.left.%]="bulbX()"
-			[style.top.%]="bulbY()"
-			[style.transform]="'scale(' + bulbScale() + ')'"
-			[style.filter]="'drop-shadow(0 0 ' + bulbGlow() * 25 + 'px rgba(255, 215, 0, 0.8))'"
+			class="bulb"
+			tabindex="0"
+			(pointerdown)="onPointerDown($event)"
+			(pointermove)="onPointerMove($event)"
+			(pointerup)="onPointerUp($event)"
+			(focus)="onFocus()"
+			(blur)="onBlur()"
+			[style.transform]="'translate(' + x() + 'px, ' + y() + 'px) scale(' + scale() + ')'"
 		>
 			💡
 		</div>

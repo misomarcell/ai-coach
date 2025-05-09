@@ -36,15 +36,13 @@ export class ServingsDemoComponent implements OnInit, OnDestroy {
 
 	private paltformId = inject(PLATFORM_ID);
 	private lastTimestamp: DOMHighResTimeStamp = 0;
-	private animationFrameId = 0;
+
+	private animationInterval: any;
+	private itemHeight = 58;
+	private currentIndex = 0;
+	private scrollSpeed = 30;
 
 	visibleItems = signal<FoodItem[]>([]);
-	animationInterval: any;
-	itemHeight = 58;
-	containerHeight = 230;
-	currentIndex = 0;
-	currentTop = 0;
-	scrollSpeed = 30;
 
 	ngOnInit(): void {
 		if (isPlatformBrowser(this.paltformId)) {
@@ -79,7 +77,7 @@ export class ServingsDemoComponent implements OnInit, OnDestroy {
 			this.lastTimestamp = timestamp;
 			this.updateItemPositions(delta);
 
-			this.animationFrameId = requestAnimationFrame(animate);
+			requestAnimationFrame(animate);
 		};
 
 		this.animationInterval = requestAnimationFrame(animate);
@@ -93,8 +91,6 @@ export class ServingsDemoComponent implements OnInit, OnDestroy {
 				...item,
 				top: item.top - movement
 			}));
-
-			this.currentTop = 0;
 
 			if (shifted[0].top < -this.itemHeight) {
 				shifted.shift();
