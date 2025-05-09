@@ -19,6 +19,47 @@
 			margin: 0;
 		}
 	}
+
+	.video-bg {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: auto;
+		height: 100%;
+		min-width: 100%;
+		min-height: 100%;
+		transform: translate(-50%, -50%);
+		object-fit: cover;
+		z-index: 0;
+		filter: grayscale(1) opacity(0.5);
+		pointer-events: none;
+	}
+
+	.video-overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background-color: var(--mat-sys-surface-container);
+
+		mask-mode: alpha;
+		mask-image: radial-gradient(
+			circle at var(--maskX) var(--maskY),
+			transparent 0%,
+			transparent calc(100% - 50px),
+			rgba(29, 32, 34, 0.75),
+			var(--mat-sys-surface-container) 100%
+		);
+
+		-webkit-mask-mode: alpha;
+		-webkit-mask-image: radial-gradient(
+			circle 100px at var(--maskX) var(--maskY),
+			transparent 0%,
+			transparent calc(100% - 50px),
+			rgba(29, 32, 34, 0.75),
+			var(--mat-sys-surface-container) 100%
+		);
+	}
 }
 
 .bulb-container {
@@ -27,28 +68,28 @@
 	border-radius: 12px;
 	position: absolute;
 	overflow: hidden;
-}
 
-.bulb {
-	position: absolute;
-	width: 36px;
-	height: 36px;
-	font-size: 3rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	touch-action: none;
-	will-change: transform;
-	filter: drop-shadow(0 0 20px rgba(255, 187, 0, 1)) drop-shadow(0 0 40px rgb(255, 217, 0));
+	.bulb {
+		position: absolute;
+		width: 36px;
+		height: 36px;
+		font-size: 3rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		touch-action: none;
+		will-change: transform;
+		filter: drop-shadow(0 0 20px rgba(255, 187, 0, 1)) drop-shadow(0 0 40px rgb(255, 217, 0));
 
-	cursor: grab;
+		cursor: grab;
 
-	&:focus,
-	&:active {
-		outline: none;
-	}
+		&:focus,
+		&:active {
+			outline: none;
+		}
 
-	&.grabbing {
-		cursor: grabbing;
+		&.grabbing {
+			cursor: grabbing;
+		}
 	}
 }

@@ -10,6 +10,7 @@ import { MatCardModule } from "@angular/material/card";
 	styleUrls: ["./analytics-demo.component.scss"]
 })
 export class AnalyticsDemoComponent implements AfterViewInit {
+	// position + scale signals
 	x = signal(0);
 	y = signal(0);
 	scale = signal(1);
@@ -29,20 +30,20 @@ export class AnalyticsDemoComponent implements AfterViewInit {
 	private initialBeta: number | null = null;
 	private initialGamma: number | null = null;
 
-	private readonly amplitude = 0.5; // max 50% offset
-	private readonly smoothStep = 0.1; // lerp factor per event
-	private readonly maxTilt = 30; // degrees mapped to amplitude
+	private readonly amplitude = 0.5; // 50% of the smaller half‐size
+	private readonly smoothStep = 0.2; // easing factor
+	private readonly maxTilt = 30; // degrees → full 50% offset
 
 	ngAfterViewInit(): void {
-		const containerElement = this.container()?.nativeElement;
-		if (!containerElement || isPlatformServer(this.platformId)) {
-			return;
-		}
+		const elRef = this.container()?.nativeElement;
+		if (!elRef || isPlatformServer(this.platformId)) return;
 
-		const rect = containerElement.getBoundingClientRect();
-		const radius = 18; // half of 36px
+		const rect = elRef.getBoundingClientRect();
+		const radius = 18; // half of 36px bulb
 		this.hw = rect.width / 2 - radius;
 		this.hh = rect.height / 2 - radius;
+
+		// start centered
 		this.x.set(this.hw);
 		this.y.set(this.hh);
 	}
@@ -52,23 +53,25 @@ export class AnalyticsDemoComponent implements AfterViewInit {
 		if (this.initialBeta === null) {
 			this.initialBeta = event.beta ?? 0;
 			this.initialGamma = event.gamma ?? 0;
+			return;
 		}
 
-		const rawBeta = (event.beta ?? 0) - (this.initialBeta ?? 0);
-		const rawGamma = (event.gamma ?? 0) - (this.initialGamma ?? 0);
+		const rawB = (event.beta ?? 0) - (this.initialBeta ?? 0);
+		const rawG = (event.gamma ?? 0) - (this.initialGamma ?? 0);
 
-		const Bnorm = Math.max(-1, Math.min(1, rawBeta / this.maxTilt));
-		const Ynorm = Math.max(-1, Math.min(1, rawGamma / this.maxTilt));
+		const Bnorm = Math.max(-1, Math.min(1, rawB / this.maxTilt));
+		const Gnorm = Math.max(-1, Math.min(1, rawG / this.maxTilt));
 
-		// target offsets (±30% of hw/hh)
-		const targetX = this.hw + Ynorm * this.hw * this.amplitude;
-		const targetY = this.hh - Bnorm * this.hh * this.amplitude; // invert so “tilt away” pulls up
+		const pxAmp = Math.min(this.hw, this.hh) * this.amplitude;
+
+		const targetX = this.hw + Gnorm * pxAmp;
+		const targetY = this.hh + Bnorm * pxAmp;
 
 		if (!this.dragging) {
-			const curX = this.x();
-			const curY = this.y();
-			this.x.set(curX + (targetX - curX) * this.smoothStep);
-			this.y.set(curY + (targetY - curY) * this.smoothStep);
+			const cx = this.x();
+			const cy = this.y();
+			this.x.set(cx + (targetX - cx) * this.smoothStep);
+			this.y.set(cy + (targetY - cy) * this.smoothStep);
 		}
 	}
 
@@ -92,6 +95,7 @@ export class AnalyticsDemoComponent implements AfterViewInit {
 
 		const dx = evt.clientX - this.pointerStartX;
 		const dy = evt.clientY - this.pointerStartY;
+
 		const newX = Math.min(Math.max(this.dragStartX + dx, 0), this.hw * 2);
 		const newY = Math.min(Math.max(this.dragStartY + dy, 0), this.hh * 2);
 

@@ -1,10 +1,12 @@
 <mat-card class="analytics-card">
-	<mat-card-content>
+	<mat-card-content style="position: relative; z-index: 2">
 		<div class="description">
 			<h3 class="title">AI-powered nutrition insights</h3>
 			<h4 class="subtitle">Personalized recommendations based on your data.</h4>
 		</div>
 	</mat-card-content>
+	<video class="video-bg" autoplay muted loop playsinline type="video/webm" src="assets/matrix.webm"></video>
+	<div class="video-overlay" [style.--maskX]="x() + 18 + 'px'" [style.--maskY]="y() + 18 + 'px'"></div>
 	<div #container class="bulb-container">
 		<div
 			class="bulb"
