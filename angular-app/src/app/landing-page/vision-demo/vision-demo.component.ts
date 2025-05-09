@@ -167,7 +167,7 @@ export class VisionDemoComponent implements OnInit, OnDestroy {
 
 		await this.delay(750);
 		this.visibleFoods.update((list) => list.filter((f) => f.position !== "exiting"));
-		await this.typeTextAsync(this.foodEmojis.find((f) => f.position === "center")?.name || "");
+		await this.typeTextAsync(this.visibleFoods().find((f) => f.position === "center")?.name || "");
 		this.currentIndex.update((idx) => (idx + 1) % this.foodEmojis.length);
 
 		await this.delay(2000);
