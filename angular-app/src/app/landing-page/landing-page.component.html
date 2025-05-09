@@ -19,6 +19,10 @@
 }
 
 @defer {
+	<app-import-demo />
+}
+
+@defer {
 	<div class="servings-demo-section">
 		<app-servings-demo />
 	</div>
@@ -29,7 +33,8 @@
 		<div class="install-card">
 			<img src="assets/app-icons/icon.svg" width="64px" height="64px" alt="logo" />
 			<div class="d-flex flex-column flex-grow jc-c ai-c">
-				<p>Unlock the full experience!</p>
+				<h4>Unlock the full experience!</h4>
+
 				<button mat-button class="w-100" (click)="installApp()">
 					<mat-icon>get_app</mat-icon>
 					Install app

@@ -7,16 +7,21 @@ import { ServingsDemoComponent } from "./servings-demo/servings-demo.component";
 import { AnalyticsDemoComponent } from "./analytics-demo/analytics-demo.component";
 import { FooterSectionComponent } from "./footer-section/footer-section.component";
 import { PwaService } from "../services/pwa.service";
+import { ImportDemoComponent } from "./import-demo/import-demo.component";
+import { MatDividerModule } from "@angular/material/divider";
 
 @Component({
 	imports: [
 		RouterLink,
 		MatButtonModule,
 		MatIconModule,
+		MatDividerModule,
+		ImportDemoComponent,
 		VisionDemoComponent,
 		ServingsDemoComponent,
 		AnalyticsDemoComponent,
-		FooterSectionComponent
+		FooterSectionComponent,
+		ImportDemoComponent
 	],
 	templateUrl: "./landing-page.component.html",
 	styleUrl: "./landing-page.component.scss"
@@ -24,7 +29,11 @@ import { PwaService } from "../services/pwa.service";
 export class LandingPageComponent {
 	private pwaService = inject(PwaService);
 
-	isReadyToInstall = signal(this.pwaService.isReadyToInstall());
+	isReadyToInstall = signal(false);
+
+	constructor() {
+		this.isReadyToInstall.set(this.pwaService.isReadyToInstall());
+	}
 
 	installApp() {
 		if (this.pwaService.isReadyToInstall()) {

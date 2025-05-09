@@ -10,6 +10,7 @@ import { PwaService } from "./services/pwa.service";
 const ICONS = [
 	"telegram",
 	"cronometer",
+	"yazio",
 	"croissant",
 	"capsules-solid",
 	"baby-solid",
