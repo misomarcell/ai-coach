@@ -170,7 +170,12 @@ export const routes: Routes = [
 	},
 	{
 		path: "welcome",
-		loadComponent: () => import("./landing-page/landing-page.component").then((m) => m.LandingPageComponent)
+		loadComponent: () => import("./landing-page/landing-page.component").then((m) => m.LandingPageComponent),
+		canActivate: [loggedOutGuard]
+	},
+	{
+		path: "browse-foods",
+		loadComponent: () => import("./landing-page/food-browser/food-browser.component").then((m) => m.FoodBrowserComponent)
 	},
 	{
 		path: "not-found",

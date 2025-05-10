@@ -1,0 +1,41 @@
+:host {
+	max-width: var(--app-max-width);
+	display: block;
+	position: relative;
+	padding: 5rem 1rem;
+	margin: 0 auto;
+}
+
+.title-bar {
+	max-width: var(--app-max-width);
+	background: var(--mat-app-background-color);
+	border-bottom: 1px solid var(--mat-sys-surface-bright);
+	justify-content: space-between;
+	align-items: center;
+	position: fixed;
+	display: flex;
+	margin: 0 auto;
+	padding: 1rem;
+	height: 3rem;
+	gap: 1rem;
+	top: 0;
+	left: 0;
+	right: 0;
+
+	.title {
+		font-size: 1.2rem;
+		line-height: 1.2;
+		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+
+		::ng-deep em {
+			text-transform: none;
+			font-style: normal;
+		}
+	}
+}

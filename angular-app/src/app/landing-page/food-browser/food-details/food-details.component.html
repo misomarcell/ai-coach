@@ -1,0 +1,14 @@
+@let _food = overlayData.foodResult;
+
+<div class="title-bar">
+	<h4 class="title" [innerHtml]="_food?.name"></h4>
+	<button mat-icon-button (click)="closeOverlay()">
+		<mat-icon>close</mat-icon>
+	</button>
+</div>
+
+<app-dietary-flags class="my-2" [flags]="_food.dietaryFlags || []" />
+
+<app-nutrition-label class="my-2" [nutritions]="overlayData.foodResult.nutritions" />
+
+<app-nutrition-list class="my-2" [nutritions]="overlayData.foodResult.nutritions" />

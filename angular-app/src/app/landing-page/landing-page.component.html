@@ -1,6 +1,8 @@
-<div class="auth-wrapper d-flex gap-2 p-2">
-	<button mat-flat-button class="w-100" [routerLink]="['/register']">Create account</button>
-	<button mat-stroked-button class="w-100" [routerLink]="['/login']">Log in</button>
+<div class="auth-wrapper">
+	<div class="buttons d-flex gap-2">
+		<button mat-flat-button class="w-100" [routerLink]="['/register']">Create account</button>
+		<button mat-stroked-button class="w-100" [routerLink]="['/login']">Log in</button>
+	</div>
 </div>
 
 <div class="title-wrapper">
@@ -12,6 +14,10 @@
 	<app-vision-demo />
 </div>
 
+<div class="database-demo-section">
+	<app-database-demo />
+</div>
+
 @defer {
 	<div class="analytics-demo-section">
 		<app-analytics-demo />
@@ -19,7 +25,9 @@
 }
 
 @defer {
-	<app-import-demo />
+	<div class="import-demo-section">
+		<app-import-demo />
+	</div>
 }
 
 @defer {

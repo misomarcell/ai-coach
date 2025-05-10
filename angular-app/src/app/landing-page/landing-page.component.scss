@@ -6,7 +6,7 @@
 	gap: 2rem;
 	margin: 0 auto;
 	max-width: var(--app-max-width);
-	padding-top: 5rem;
+	padding-top: 4.5rem;
 
 	h4 {
 		font-size: 1rem;
@@ -17,23 +17,33 @@
 
 .auth-wrapper {
 	position: fixed;
+	display: flex;
+	justify-content: center;
+	width: 100vw;
 	left: 0;
 	right: 0;
 	top: 0;
 	z-index: 9;
-	background-color: var(--mat-sys-surface-container);
-	border-bottom: 1px solid var(--mat-sys-inverse-on-surface);
 
-	@media screen and (min-width: 800px) {
-		border-radius: 0 0 12px 12px;
-		border-bottom: none;
-		margin: 0 1rem;
+	.buttons {
+		max-width: var(--app-max-width);
+		background-color: var(--mat-sys-surface-container);
+		border-bottom: 1px solid var(--mat-sys-inverse-on-surface);
+		box-shadow: 0 0 10px var(--mat-sys-surface);
+		padding: 1rem;
+		flex-grow: 1;
+
+		@media screen and (min-width: 800px) {
+			border-radius: 0 0 12px 12px;
+			border-bottom: none;
+		}
 	}
 }
 
 .title-wrapper {
 	text-align: center;
 	text-shadow: 3px 5px 10px rgb(8 15 16 / 50%);
+	margin-top: 2rem;
 
 	.title {
 		font-weight: 900;
@@ -65,8 +75,10 @@
 }
 
 .vision-demo-section,
+.database-demo-section,
 .servings-demo-section,
 .nutrition-cloud-section,
-.analytics-demo-section {
+.analytics-demo-section,
+.import-demo-section {
 	padding: 0 1rem;
 }

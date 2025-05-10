@@ -6,15 +6,16 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router, RouterLink } from "@angular/router";
 import { passwordMatchValidator } from "../services/form.service";
 import { RegistrationService } from "./registration.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
 	selector: "app-register",
 	standalone: true,
 	imports: [
+		RouterLink,
 		ReactiveFormsModule,
 		FormsModule,
 		MatFormFieldModule,
