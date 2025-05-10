@@ -1,6 +1,8 @@
 <div class="login-wrapper">
-	<h3 [routerLink]="['/']">Kombuch<span class="ai-highlight">AI</span><span class="beta">(beta)</span></h3>
-	<p>Unlock a smarter way to optimize your nutrition today!</p>
+	<div class="title-bar mb-2">
+		<h3 [routerLink]="['/']">Kombuch<span class="ai-highlight">AI</span></h3>
+		<p class="subtitle">The future of nutrition tracking</p>
+	</div>
 	<mat-card appearance="outlined" class="login-card" (submit)="onNormalLogin()">
 		<form [formGroup]="formGroup">
 			<mat-form-field class="w-100">

@@ -7,15 +7,23 @@
 	height: 100vh;
 }
 
-.login-wrapper {
-	max-width: var(--app-max-width);
-	padding: 0 1rem;
-	margin: 0 auto;
+.title-bar {
+	font-family: Montserrat;
 
 	h3 {
 		font-weight: 900;
 		margin: 0;
 	}
+
+	.subtitle {
+		font-weight: 400;
+	}
+}
+
+.login-wrapper {
+	max-width: var(--app-max-width);
+	padding: 0 1rem;
+	margin: 0 auto;
 
 	.login-card {
 		.btn-google {

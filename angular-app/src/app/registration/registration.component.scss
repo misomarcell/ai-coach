@@ -7,9 +7,17 @@
 	margin: 0 auto;
 }
 
-h3 {
-	font-weight: 900;
-	margin: 0;
+.title-bar {
+	font-family: Montserrat;
+
+	h3 {
+		font-weight: 900;
+		margin: 0;
+	}
+
+	.subtitle {
+		font-weight: 400;
+	}
 }
 
 .btn-google {
