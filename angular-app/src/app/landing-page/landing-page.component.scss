@@ -59,6 +59,15 @@
 	}
 }
 
+.install-card {
+	.title {
+		line-height: 2;
+		width: 100%;
+		text-align: center;
+		border-bottom: 1px solid var(--mat-sys-inverse-on-surface);
+	}
+}
+
 .integration-card,
 .install-card {
 	display: flex;
