@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
-import { AuthService } from "../services/auth.service";
-import cookies from "js-cookie";
 import { Auth, createUserWithEmailAndPassword, updateProfile, UserCredential } from "@angular/fire/auth";
 import { doc, Firestore, setDoc } from "@angular/fire/firestore";
 import { Router } from "@angular/router";
+import cookies from "js-cookie";
+import { ExternalAuthProvider, AuthService } from "../services/auth.service";
 
 @Injectable({
 	providedIn: "root"
@@ -30,7 +30,7 @@ export class RegistrationService {
 		return credential;
 	}
 
-	async registerWithProvider(provider: "google" | "github"): Promise<UserCredential | undefined> {
+	async registerWithProvider(provider: ExternalAuthProvider): Promise<UserCredential | undefined> {
 		return this.authService.providerLogin(provider);
 	}
 

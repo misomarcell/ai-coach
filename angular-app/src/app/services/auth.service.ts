@@ -24,6 +24,8 @@ import { Router } from "@angular/router";
 import cookies from "js-cookie";
 import { filter, from, map, Observable, of, startWith, switchMap, take, tap } from "rxjs";
 
+export type ExternalAuthProvider = "google" | "github" | "facebook";
+
 @Injectable({
 	providedIn: "root"
 })
@@ -121,7 +123,7 @@ export class AuthService implements OnDestroy {
 		return credential;
 	}
 
-	async providerLogin(providerName: "google" | "github"): Promise<UserCredential> {
+	async providerLogin(providerName: ExternalAuthProvider): Promise<UserCredential> {
 		const provider = providerName === "google" ? new GoogleAuthProvider() : new GithubAuthProvider();
 		const credential = await signInWithPopup(this.auth, provider).catch((error) => this.handleAuthError(error));
 

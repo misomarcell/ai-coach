@@ -8,6 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router, RouterLink } from "@angular/router";
+import { ExternalAuthProvider } from "../services/auth.service";
 import { passwordMatchValidator } from "../services/form.service";
 import { RegistrationService } from "./registration.service";
 
@@ -69,12 +70,10 @@ export class RegistrationComponent {
 		}
 	}
 
-	async onProviderLogin(provider: "google" | "github"): Promise<void> {
+	async onProviderLogin(provider: ExternalAuthProvider): Promise<void> {
 		if (this.isRegistering()) {
 			return;
 		}
-
-		this.isRegistering.set(true);
 
 		try {
 			await this.registrationService.registerWithProvider(provider);

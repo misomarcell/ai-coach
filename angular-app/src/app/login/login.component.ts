@@ -8,7 +8,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { Router, RouterLink, RouterModule } from "@angular/router";
 import { first, from, switchMap } from "rxjs";
-import { AuthService } from "../services/auth.service";
+import { ExternalAuthProvider, AuthService } from "../services/auth.service";
 
 @Component({
 	selector: "app-login",
@@ -53,7 +53,7 @@ export class LoginComponent {
 		}
 	}
 
-	async onProviderLogin(provider: "google" | "github"): Promise<void> {
+	async onProviderLogin(provider: ExternalAuthProvider): Promise<void> {
 		if (this.isLoggingIn()) {
 			return;
 		}

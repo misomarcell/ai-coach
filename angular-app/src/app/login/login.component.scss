@@ -26,14 +26,18 @@
 	margin: 0 auto;
 
 	.login-card {
+		--mdc-filled-button-label-text-color: #e6e6e6;
+
 		.btn-google {
 			--mdc-filled-button-container-color: #db4437;
-			--mdc-filled-button-label-text-color: #e6e6e6;
 		}
 
 		.btn-github {
 			--mdc-filled-button-container-color: #2b3137;
-			--mdc-filled-button-label-text-color: #fafbfc;
+		}
+
+		.btn-facebook {
+			--mdc-filled-button-container-color: #1877f2;
 		}
 
 		padding: 1rem;

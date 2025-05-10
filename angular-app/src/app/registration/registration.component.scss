@@ -20,14 +20,20 @@
 	}
 }
 
-.btn-google {
-	--mdc-filled-button-container-color: #db4437;
+.provider-buttons {
 	--mdc-filled-button-label-text-color: #e6e6e6;
-}
 
-.btn-github {
-	--mdc-filled-button-container-color: #2b3137;
-	--mdc-filled-button-label-text-color: #fafbfc;
+	.btn-google {
+		--mdc-filled-button-container-color: #db4437;
+	}
+
+	.btn-github {
+		--mdc-filled-button-container-color: #2b3137;
+	}
+
+	.btn-facebook {
+		--mdc-filled-button-container-color: #1877f2;
+	}
 }
 
 .divider {

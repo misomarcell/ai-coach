@@ -68,9 +68,12 @@
 	<span>OR</span>
 </div>
 
-<div class="d-flex flex-column p-2 gap-2">
+<div class="provider-buttons d-flex flex-column p-2 gap-2">
 	<button mat-flat-button class="btn-google" type="button" (click)="onProviderLogin('google')" [disabled]="isRegistering()">
 		Register with Google
+	</button>
+	<button mat-flat-button class="btn-facebook" type="button" (click)="onProviderLogin('facebook')" [disabled]="isRegistering()">
+		Register with Facebook
 	</button>
 	<button mat-flat-button class="btn-github" type="button" (click)="onProviderLogin('github')" [disabled]="isRegistering()">
 		Register with GitHub
