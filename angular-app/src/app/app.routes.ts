@@ -213,6 +213,10 @@ export const routes: Routes = [
 		loadComponent: () => import("./legal/privacy-policy/privacy-policy.component").then((m) => m.PrivacyPolicyComponent)
 	},
 	{
+		path: "legal/data-deletion",
+		loadComponent: () => import("./legal/data-deletion/data-deletion.component").then((m) => m.DataDeletionComponent)
+	},
+	{
 		path: "**",
 		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
 	}
