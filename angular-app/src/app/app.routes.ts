@@ -205,6 +205,14 @@ export const routes: Routes = [
 		canActivate: [loggedOutGuard]
 	},
 	{
+		path: "legal/terms-of-service",
+		loadComponent: () => import("./legal/terms-of-service/terms-of-service.component").then((m) => m.TermsOfServiceComponent)
+	},
+	{
+		path: "legal/privacy-policy",
+		loadComponent: () => import("./legal/privacy-policy/privacy-policy.component").then((m) => m.PrivacyPolicyComponent)
+	},
+	{
 		path: "**",
 		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
 	}
