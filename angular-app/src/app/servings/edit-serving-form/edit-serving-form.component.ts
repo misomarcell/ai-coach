@@ -18,13 +18,13 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgxMaskDirective, provideNgxMask } from "ngx-mask";
-import { filter, finalize, map, switchMap, take, tap } from "rxjs";
+import { catchError, EMPTY, filter, finalize, switchMap, take, tap } from "rxjs";
+import { DietaryFlagsComponent } from "../../dietary-flags/dietary-flags.component";
 import { NutritionLabelComponent } from "../../nutrition-label/nutrition-label.component";
 import { NutritionListComponent } from "../../nutrition-list/nutrition-list.component";
 import { PromptDialogComponent, PromptDialogData, PromptDialogResult } from "../../prompt-dialog/prompt-dialog.component";
 import { FoodService } from "../../services/food.service";
 import { ServingsService } from "../servings.service";
-import { DietaryFlagsComponent } from "../../dietary-flags/dietary-flags.component";
 
 interface PrefillOptions {
 	servingAmount?: number;
@@ -114,12 +114,6 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		this.formSubscription = this.form.valueChanges.subscribe(() => this.updateNutritions());
 	}
 
-	ngOnDestroy(): void {
-		if (this.formSubscription) {
-			this.formSubscription.unsubscribe();
-		}
-	}
-
 	ngOnInit(): void {
 		if (this.overlayData.serving) {
 			this.prefillServingData(this.overlayData.serving);
@@ -132,7 +126,13 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 	}
 
 	ngAfterViewInit(): void {
-		setTimeout(() => this.amountField?.nativeElement.click(), 300);
+		setTimeout(() => this.amountField?.nativeElement.click(), 500);
+	}
+
+	ngOnDestroy(): void {
+		if (this.formSubscription) {
+			this.formSubscription.unsubscribe();
+		}
 	}
 
 	prefillForm(options?: PrefillOptions): void {
@@ -338,13 +338,11 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		this.foodService
 			.getFood(foodId)
 			.pipe(
-				map((food) => {
-					if (!food) {
-						this.snackService.open("This food can't be added right now.", "Close");
-						this.closeOverlay();
-					}
+				catchError(() => {
+					this.snackService.open("This food can't be added right now.", "Close");
+					this.closeOverlay();
 
-					return food;
+					return EMPTY;
 				}),
 				filter((food) => !!food),
 				tap((food) => this.food.set(food)),

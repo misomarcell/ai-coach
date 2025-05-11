@@ -93,8 +93,6 @@ export class FoodSearchComponent implements OnInit, AfterViewInit {
 				tap(() => (page = query = undefined))
 			)
 			.subscribe((result) => this.foods.set(result.hits));
-
-		console.log("");
 	}
 
 	ngAfterViewInit(): void {
