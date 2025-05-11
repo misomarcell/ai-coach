@@ -4,6 +4,7 @@ import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
 import { FirebaseApp } from "@angular/fire/app";
 import { connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
 import { connectFirestoreEmulator, initializeFirestore, provideFirestore } from "@angular/fire/firestore";
+import { getPerformance, providePerformance } from "@angular/fire/performance";
 import { connectStorageEmulator, getStorage, provideStorage } from "@angular/fire/storage";
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from "@angular/material/snack-bar";
@@ -54,6 +55,7 @@ export const appConfig: ApplicationConfig = {
 			return storage;
 		}),
 		provideAnalytics(() => getAnalytics()),
+		providePerformance(() => getPerformance()),
 		provideServiceWorker("ngsw-worker.js", {
 			enabled: !isDevMode(),
 			registrationStrategy: "registerWhenStable:30000"

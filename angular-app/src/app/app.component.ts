@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from "@angular/common";
 import { Component, inject, OnInit, PLATFORM_ID } from "@angular/core";
 import { Analytics } from "@angular/fire/analytics";
+import { Performance } from "@angular/fire/performance";
 import { MatIconRegistry } from "@angular/material/icon";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -51,6 +52,7 @@ export class AppComponent implements OnInit {
 	private sanitizer = inject(DomSanitizer);
 	private swUpdate = inject(SwUpdate);
 	private _analytics = inject(Analytics);
+	private _performance = inject(Performance);
 
 	constructor() {
 		for (const icon of ICONS) {

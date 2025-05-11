@@ -178,7 +178,7 @@ export class AuthService implements OnDestroy {
 	async logout() {
 		await this.auth
 			.signOut()
-			.then(() => this.router.navigate(["login"]))
+			.then(() => this.router.navigate(["/"]))
 			.then(() => window.location.reload());
 	}
 
