@@ -1,17 +1,18 @@
 import { provideHttpClient, withFetch } from "@angular/common/http";
 import { ApplicationConfig, inject, isDevMode, provideExperimentalZonelessChangeDetection } from "@angular/core";
+import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
 import { FirebaseApp } from "@angular/fire/app";
 import { connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
 import { connectFirestoreEmulator, initializeFirestore, provideFirestore } from "@angular/fire/firestore";
 import { connectStorageEmulator, getStorage, provideStorage } from "@angular/fire/storage";
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from "@angular/material/snack-bar";
 import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions, withIncrementalHydration } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { PreloadAllModules, provideRouter, withPreloading, withInMemoryScrolling } from "@angular/router";
+import { PreloadAllModules, provideRouter, withInMemoryScrolling, withPreloading } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { routes } from "./app.routes";
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from "@angular/material/snack-bar";
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -52,6 +53,7 @@ export const appConfig: ApplicationConfig = {
 
 			return storage;
 		}),
+		provideAnalytics(() => getAnalytics()),
 		provideServiceWorker("ngsw-worker.js", {
 			enabled: !isDevMode(),
 			registrationStrategy: "registerWhenStable:30000"
