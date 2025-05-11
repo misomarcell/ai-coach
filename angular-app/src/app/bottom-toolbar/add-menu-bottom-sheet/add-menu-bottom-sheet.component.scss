@@ -1,11 +1,13 @@
 .add-menu-container {
-	padding: 2rem 1rem 0 1rem;
+	padding: 1rem 1rem 0 1rem;
 	border-radius: 16px 16px 0 0;
 	background-color: var(--mat-sys-secondary-container);
 	color: var(--mat-sys-on-secondary-container);
 	display: grid;
+	overflow-y: hidden;
 	grid-template-columns: repeat(3, 1fr);
 	align-items: center;
+	gap: 1rem;
 }
 
 .menu-item {
@@ -18,13 +20,30 @@
 	flex-grow: 1;
 	height: 86px;
 	border-radius: 16px;
+	animation: slideUpDown 0.3s ease-in-out;
+	animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
 
 	&:nth-of-type(even) {
 		margin-bottom: 4rem;
 	}
 
+	.mat-icon {
+		font-size: 2rem;
+		width: 2rem;
+		height: 2rem;
+	}
+
 	.label {
 		font-size: 1rem;
 		line-height: 1;
+	}
+}
+
+@keyframes slideUpDown {
+	0% {
+		transform: translateY(100%);
+	}
+	100% {
+		transform: translateY(0);
 	}
 }
