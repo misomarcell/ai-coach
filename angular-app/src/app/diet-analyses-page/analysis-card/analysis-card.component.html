@@ -37,9 +37,11 @@
 } @else if (status === "failed") {
 	<mat-card class="error">
 		<mat-card-content>
-			<span>
+			@if (_analysis.request.failureReason) {
+				Error: {{ _analysis.request.failureReason }}
+			} @else {
 				This request couldn't be completed due to an unexpected error. Please try again later, or using a different model.
-			</span>
+			}
 			<mat-card-actions [align]="'end'">
 				<button mat-icon-button (click)="onDeleteClick()">
 					<mat-icon>delete</mat-icon>

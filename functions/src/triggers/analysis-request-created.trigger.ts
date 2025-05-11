@@ -42,18 +42,22 @@ export const analysisRequestCreated = onDocumentCreated(
 					userId,
 					analysisId,
 					AnalysisRequestStatus.Failed,
-					"User already has an ongoing analysis request"
+					"An analysis is already in progress"
 				);
 			}
 
 			const healthProfile = await userService.getHealthProfile(userId);
 			if (!healthProfile) {
-				throw new Error("User has no health profile");
+				throw new Error("Please complete your health profile first");
 			}
 
 			const now = new Date();
 			const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 			const servings = await servingsService.getUserServings(userId, { before: now, after: weekAgo });
+			if (servings.length < 15) {
+				throw new Error("Please add at least 15 servings within a week to get an analysis");
+			}
+
 			const formattedServings = await formatServings(servings);
 			const modelConfig: AiModelConfig = { model: analysis.request.model, temperature: 0.8, topP: 0.9 };
 			const analysisResult = await aiService.getAnalysisResult(formattedServings, healthProfile, modelConfig);
