@@ -5,13 +5,22 @@ import { logger } from "firebase-functions";
 import openffService from "../../services/openff.service";
 import productImportService from "../../services/product-import.service";
 
+const PRODUCT_CACHE: Record<string, FoodProduct> = {};
+
 export async function handle(request: Request, response: Response): Promise<Response> {
 	try {
 		const barcode = request.params["barcode"];
+
+		if (PRODUCT_CACHE[barcode]) {
+			return response.status(200).json(PRODUCT_CACHE[barcode]);
+		}
+
 		const openFFProductMatch = await getExternalProduct(barcode);
 		if (!openFFProductMatch) {
 			return response.status(404).json({ error: "Product not found" });
 		}
+
+		PRODUCT_CACHE[barcode] = openFFProductMatch;
 
 		await productImportService.createImportRequest(barcode, openFFProductMatch.lastUpdated || new Date());
 
