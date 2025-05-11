@@ -4,7 +4,7 @@
 	@if (isEmailVerified() === false) {
 		<app-menu-item class="verify-email-bar" (click)="onVerifyCLick()">
 			<mat-icon>warning</mat-icon>
-			<p>Please verify your e-mail address.</p>
+			<span>Please verify your e-mail address.</span>
 		</app-menu-item>
 	}
 	<app-menu-item [routerLink]="['health-profile']">
