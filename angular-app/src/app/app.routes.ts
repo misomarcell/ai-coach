@@ -141,6 +141,29 @@ export const routes: Routes = [
 				]
 			},
 			{
+				path: "legal",
+				loadComponent: () => import("./legal/legal.component").then((m) => m.LegalComponent),
+				children: [
+					{
+						path: "",
+						loadComponent: () => import("./legal/legal-menu/legal-menu.component").then((m) => m.LegalMenuComponent)
+					},
+					{
+						path: "terms-of-service",
+						loadComponent: () =>
+							import("./legal/terms-of-service/terms-of-service.component").then((m) => m.TermsOfServiceComponent)
+					},
+					{
+						path: "privacy-policy",
+						loadComponent: () => import("./legal/privacy-policy/privacy-policy.component").then((m) => m.PrivacyPolicyComponent)
+					},
+					{
+						path: "data-deletion",
+						loadComponent: () => import("./legal/data-deletion/data-deletion.component").then((m) => m.DataDeletionComponent)
+					}
+				]
+			},
+			{
 				path: "admin-dashboard",
 				loadComponent: () => import("./admin-dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
 				canActivate: [loggedInGuard, isAdminGuard],
@@ -203,18 +226,6 @@ export const routes: Routes = [
 		path: "forgot-password",
 		loadComponent: () => import("./forgot-password/forgot-password.component").then((m) => m.ForgotPasswordComponent),
 		canActivate: [loggedOutGuard]
-	},
-	{
-		path: "legal/terms-of-service",
-		loadComponent: () => import("./legal/terms-of-service/terms-of-service.component").then((m) => m.TermsOfServiceComponent)
-	},
-	{
-		path: "legal/privacy-policy",
-		loadComponent: () => import("./legal/privacy-policy/privacy-policy.component").then((m) => m.PrivacyPolicyComponent)
-	},
-	{
-		path: "legal/data-deletion",
-		loadComponent: () => import("./legal/data-deletion/data-deletion.component").then((m) => m.DataDeletionComponent)
 	},
 	{
 		path: "**",

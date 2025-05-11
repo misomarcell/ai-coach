@@ -1,0 +1,11 @@
+:host {
+	color: var(--mat-sys-on-secondary-container);
+	background-color: var(--mat-sys-secondary-container);
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	font-weight: bold;
+	border-radius: 8px;
+	padding: 1rem;
+	cursor: pointer;
+}

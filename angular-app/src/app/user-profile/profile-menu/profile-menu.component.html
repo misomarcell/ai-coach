@@ -1,49 +1,56 @@
 <app-page-title [main]="true" [title]="name()" />
 
-@if (isEmailVerified() === false) {
-	<div matRipple class="verify-email-bar p-2 gap-2 d-flex" (click)="onVerifyCLick()">
-		<mat-icon>warning</mat-icon>
-		<p class="bold">Please verify your e-mail address.</p>
-	</div>
-}
+<app-menu>
+	@if (isEmailVerified() === false) {
+		<app-menu-item class="verify-email-bar" (click)="onVerifyCLick()">
+			<mat-icon>warning</mat-icon>
+			<p>Please verify your e-mail address.</p>
+		</app-menu-item>
+	}
+	<app-menu-item [routerLink]="['health-profile']">
+		<mat-icon>favorite</mat-icon>
+		<span>Health profile</span>
+	</app-menu-item>
+	<app-menu-item [routerLink]="['settings']">
+		<mat-icon>settings</mat-icon>
+		<span>Settings</span>
+	</app-menu-item>
+	<app-menu-item [routerLink]="['integrations']">
+		<mat-icon>link</mat-icon>
+		<span>Integrations</span>
+	</app-menu-item>
+	<app-menu-item (click)="onFeedbackClick()">
+		<mat-icon>bug_report</mat-icon>
+		<span>Report a problem</span>
+	</app-menu-item>
 
-<div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['health-profile']">
-	<mat-icon>favorite</mat-icon>
-	<span>Health profile</span>
-</div>
-<div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['settings']">
-	<mat-icon>settings</mat-icon>
-	<span>Settings</span>
-</div>
-<div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['integrations']">
-	<mat-icon>link</mat-icon>
-	<span>Integrations</span>
-</div>
-<div matRipple class="menu-item bold d-flex gap-2 p-2" (click)="onFeedbackClick()">
-	<mat-icon>bug_report</mat-icon>
-	<span>Report a problem</span>
-</div>
-@if (isShareAvailable()) {
-	<div matRipple class="menu-item bold d-flex gap-2 p-2" (click)="onShareClick()">
-		<mat-icon>share</mat-icon>
-		<span>Share with friends</span>
-	</div>
-}
-@if (isAdmin()) {
-	<div matRipple class="menu-item bold d-flex gap-2 p-2" [routerLink]="['../admin-dashboard']">
-		<mat-icon>shield</mat-icon>
-		<span>Admin dashboard</span>
-	</div>
-}
-@if (isInstallable()) {
-	<div matRipple class="menu-item bold d-flex gap-2 p-2" (click)="onInstallClick()">
-		<mat-icon>get_app</mat-icon>
-		<span>Install app</span>
-	</div>
-}
-<div matRipple class="menu-item bold d-flex gap-2 p-2 mt-4" (click)="onLogoutClick()">
-	<mat-icon>logout</mat-icon>
-	<span>Log out</span>
-</div>
+	@if (isShareAvailable()) {
+		<app-menu-item (click)="onShareClick()">
+			<mat-icon>share</mat-icon>
+			<span>Share with friends</span>
+		</app-menu-item>
+	}
+	@if (isAdmin()) {
+		<app-menu-item [routerLink]="['../admin-dashboard']">
+			<mat-icon>shield</mat-icon>
+			<span>Admin dashboard</span>
+		</app-menu-item>
+	}
+	@if (isInstallable()) {
+		<app-menu-item (click)="onInstallClick()">
+			<mat-icon>get_app</mat-icon>
+			<span>Install app</span>
+		</app-menu-item>
+	}
+
+	<app-menu-item [routerLink]="['../legal']">
+		<mat-icon>help_outline</mat-icon>
+		<span>Info</span>
+	</app-menu-item>
+	<app-menu-item class="mt-4" (click)="onLogoutClick()">
+		<mat-icon>logout</mat-icon>
+		<span>Log out</span>
+	</app-menu-item>
+</app-menu>
 
 <div style="height: 3rem"></div>

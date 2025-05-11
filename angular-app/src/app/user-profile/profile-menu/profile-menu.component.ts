@@ -11,10 +11,12 @@ import { PromptService } from "../../services/prompt.service";
 import { PwaService } from "../../services/pwa.service";
 import { UserProfileService } from "../../services/user-profile.service";
 import { isPlatformBrowser } from "@angular/common";
+import { AppMenuModule } from "../../menu";
+import { MatCardModule } from "@angular/material/card";
 
 @Component({
 	selector: "app-profile-menu",
-	imports: [RouterModule, PageTitleComponent, MatIconModule, MatRippleModule],
+	imports: [RouterModule, AppMenuModule, MatCardModule, PageTitleComponent, MatIconModule, MatRippleModule],
 	templateUrl: "./profile-menu.component.html",
 	styleUrl: "./profile-menu.component.scss"
 })
@@ -86,9 +88,5 @@ export class ProfileMenuComponent {
 
 	onLogoutClick() {
 		this.authService.logout();
-	}
-
-	onNotImplementedClick() {
-		alert("This feature is not implemented yet.");
 	}
 }
