@@ -84,6 +84,8 @@
 		</mat-card-content>
 	</mat-card>
 
+	<button mat-button type="button" color="warn" (click)="onDeleteAccount()">Delete my account</button>
+
 	<button mat-flat-button type="submit" class="w-100 mb-4" [disabled]="formGroup.invalid || isSubmitting()">
 		@if (isSubmitting()) {
 			<mat-spinner diameter="20" />

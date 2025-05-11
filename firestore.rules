@@ -27,6 +27,10 @@ service cloud.firestore {
 			request.resource.data.source ==  "User";
 		}
 
+		match /account-deletions/{requestId} {
+			allow create, update: if request.auth != null && request.resource.data.uid == request.auth.uid;
+		}
+
 		match /{document=**} {
 			allow read, write: if isAdmin();
 		}

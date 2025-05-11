@@ -203,6 +203,9 @@ export class AuthService implements OnDestroy {
 			case "auth/wrong-password":
 				message = "Invalid password. Please check your password.";
 				break;
+			case "auth/user-disabled":
+				message = "User account is disabled.";
+				break;
 			case "auth/operation-not-allowed":
 				message = "Account creation is disabled. Please contact support.";
 				break;

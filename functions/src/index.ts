@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase-admin/app";
 import { initializeFirestore } from "firebase-admin/firestore";
 import { expressApiHandler } from "./express";
+import { accountDeletionRequestCreated } from "./triggers/account-deletion-request.created";
 import { analysisRequestCreated } from "./triggers/analysis-request-created.trigger";
 import { userAuthCreated } from "./triggers/auth-created.trigger";
 import { communicationCreated } from "./triggers/communication-created.trigger";
@@ -34,3 +35,4 @@ exports.servingCreatedTrigger = servingCreatedTrigger;
 exports.servingDeletedTrigger = servingDeletedTrigger;
 exports.visionDocumentUpdated = visionDocumentUpdated;
 exports.productImportCreated = productImportCreated;
+exports.accountDeletionRequestCreated = accountDeletionRequestCreated;

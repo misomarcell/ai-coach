@@ -17,10 +17,12 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ActivatedRoute, Router } from "@angular/router";
 import { catchError, EMPTY, filter, finalize, from, map, Observable, of, switchMap, take, tap } from "rxjs";
 import { PageTitleComponent } from "../../page-title/page-title.component";
+import { AccountDeletionService } from "../../services/account-deletion.service";
 import { AuthService } from "../../services/auth.service";
 import { ImageUploadService } from "../../services/image-upload.service";
 import { SettingsProfileService } from "../../services/settings-profile.service";
 import { UserProfileService } from "../../services/user-profile.service";
+import { PromptService } from "../../services/prompt.service";
 
 @Component({
 	imports: [
@@ -47,8 +49,10 @@ export class SettingsComponent {
 	private formBuilder = inject(FormBuilder);
 	private authService = inject(AuthService);
 	private destroyRef = inject(DestroyRef);
+	private accountDeletionService = inject(AccountDeletionService);
 	private settingsProfileService = inject(SettingsProfileService);
 	private profileService = inject(UserProfileService);
+	private promptService = inject(PromptService);
 	private snackBar = inject(MatSnackBar);
 	private actiavtedRoute = inject(ActivatedRoute);
 	private imageUploadService = inject(ImageUploadService);
@@ -229,6 +233,35 @@ export class SettingsComponent {
 					return of(EMPTY);
 				}),
 				finalize(() => this.isSubmitting.set(false))
+			)
+			.subscribe();
+	}
+
+	onDeleteAccount() {
+		const prompt = this.promptService.prompt(
+			"Delete Account",
+			`Are you sure you want to delete your account?
+
+			This action cannot be reverted!
+
+			Your account wil be deleted within 14 days after the request is created.`,
+			"yes-no"
+		);
+
+		prompt
+			.pipe(
+				filter((result) => result === "yes"),
+				switchMap(() => this.accountDeletionService.createAccountDeletionRequest()),
+				catchError((error) => {
+					console.error("Error creating account deletion request", error);
+					this.snackBar.open("Failed to create account deletion request", "Close", { panelClass: "snackbar-error" });
+					return EMPTY;
+				}),
+				switchMap(() => {
+					this.snackBar.open("Your account will be deleted soon.", "Close");
+
+					return from(this.authService.logout());
+				})
 			)
 			.subscribe();
 	}

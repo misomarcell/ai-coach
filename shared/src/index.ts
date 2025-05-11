@@ -1,4 +1,5 @@
 export * from "./consts/nutrient-map.const";
+export * from "./models/account-deletion.model";
 export * from "./models/ai-shared.model";
 export * from "./models/analysis.model";
 export * from "./models/calorie-vision.model";

@@ -1,7 +1,9 @@
 :host {
 	display: block;
 
-	em {
+	a,
+	a:visited {
 		color: var(--tertiary-color);
+		text-decoration: none;
 	}
 }

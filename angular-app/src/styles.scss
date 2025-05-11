@@ -78,6 +78,11 @@ body {
 		--mdc-outlined-button-outline-color: var(--mat-sys-error);
 	}
 
+	.mat-mdc-button:not(:disabled).mat-warn {
+		--mdc-text-button-label-text-color: var(--mat-sys-error);
+		--mat-text-button-state-layer-color: var(--mat-sys-error);
+	}
+
 	.add-menu-bottom-sheet {
 		.mat-bottom-sheet-container {
 			border-radius: 24px 24px 0 0;
