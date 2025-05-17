@@ -34,12 +34,15 @@ export class ReportPageComponent {
 
 	formGroup = new FormGroup({
 		title: new FormControl("", [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
-		description: new FormControl("", [Validators.required, Validators.minLength(10), Validators.maxLength(500)])
+		description: new FormControl("", [Validators.required, Validators.minLength(30), Validators.maxLength(500)])
 	});
 
 	constructor() {
 		const title = this.activatedRoute.snapshot.queryParamMap.get("title");
-		this.formGroup.get("title")?.setValue(title);
+		if (title) {
+			this.formGroup.get("title")?.setValue(title);
+			this.formGroup.get("title")?.disable();
+		}
 	}
 
 	onSubmit() {

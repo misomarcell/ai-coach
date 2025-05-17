@@ -3,14 +3,21 @@
 <p class="text-center pb-2">Please describe what seems to be the problem below.</p>
 
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="w-100">
-	<mat-form-field class="w-100">
+	<mat-form-field class="w-100 mb-2">
 		<mat-label>Title</mat-label>
 		<input matInput formControlName="title" />
+		@if (formGroup.get("title")?.invalid) {
+			<mat-error>Must be 10 to 100 characters long</mat-error>
+		}
 	</mat-form-field>
 
-	<mat-form-field class="w-100">
-		<mat-label>Description</mat-label>
+	<mat-form-field class="w-100 mb-2">
+		<mat-label>Describe the problem</mat-label>
 		<textarea formControlName="description" rows="4" matInput></textarea>
+
+		@if (formGroup.get("description")?.invalid) {
+			<mat-error>Must be 30 to 500 characters long</mat-error>
+		}
 	</mat-form-field>
 
 	<button mat-flat-button class="w-100">
