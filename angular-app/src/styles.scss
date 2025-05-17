@@ -37,6 +37,12 @@ body {
 		)
 	);
 
+	a {
+		text-decoration: none;
+		font-style: italic;
+		color: var(--tertiary-color);
+	}
+
 	.mat-mdc-menu-panel {
 		--mat-menu-container-color: var(--mat-sys-on-secondary);
 		--mat-menu-item-spacing: 2rem;

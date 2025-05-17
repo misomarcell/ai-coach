@@ -11,6 +11,7 @@ import { Router, RouterLink } from "@angular/router";
 import { ExternalAuthProvider } from "../services/auth.service";
 import { passwordMatchValidator } from "../services/form.service";
 import { RegistrationService } from "./registration.service";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @Component({
 	selector: "app-register",
@@ -24,6 +25,7 @@ import { RegistrationService } from "./registration.service";
 		MatButtonModule,
 		MatCardModule,
 		MatIconModule,
+		MatCheckboxModule,
 		MatProgressSpinnerModule,
 		RouterLink
 	],
@@ -43,7 +45,8 @@ export class RegistrationComponent {
 			displayName: new FormControl("", [Validators.required, Validators.minLength(3), Validators.maxLength(32)]),
 			email: new FormControl("", [Validators.required, Validators.email]),
 			password: new FormControl("", [Validators.required, Validators.minLength(6), Validators.maxLength(32)]),
-			confirmPassword: new FormControl("", [Validators.required])
+			confirmPassword: new FormControl("", [Validators.required]),
+			termsAccepted: new FormControl(false, [Validators.requiredTrue])
 		},
 		{
 			validators: passwordMatchValidator("password", "confirmPassword")

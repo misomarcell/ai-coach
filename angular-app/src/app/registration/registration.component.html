@@ -52,6 +52,11 @@
 		}
 	</mat-form-field>
 
+	<mat-checkbox class="mb-2" formControlName="termsAccepted">
+		I accept the <a routerLink="/legal/terms-of-service">Terms of Service</a> and
+		<a routerLink="/legal/privacy-policy">Privacy Policy</a>
+	</mat-checkbox>
+
 	@if (formGroup.hasError("passwordMismatch")) {
 		<mat-error> Passwords are not the same </mat-error>
 	}
