@@ -64,7 +64,7 @@
 			<button mat-mini-fab class="mt-1" (click)="isOpenComment.set(!isOpenComment())">
 				<mat-icon>{{ isOpenComment() ? "expand_less" : "edit_note" }}</mat-icon>
 			</button>
-			<button mat-mini-fab class="mt-1"><mat-icon>flag</mat-icon></button>
+			<button mat-mini-fab class="mt-1" (click)="onReportClick()"><mat-icon>flag</mat-icon></button>
 		</div>
 
 		@if (isOpenComment()) {

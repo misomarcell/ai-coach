@@ -289,6 +289,27 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		return this.router.navigate(["foods/view-product", this.productBarcode]);
 	}
 
+	onReportClick(): void {
+		const food = this.food();
+		const queryParams: any = {};
+		if (this.productBarcode) {
+			queryParams.barcode = this.productBarcode;
+		}
+
+		if (food && food.id) {
+			queryParams.foodId = food.id;
+		}
+
+		if (food && food.name) {
+			queryParams.title = food.name;
+		}
+
+		queryParams.returnUrl = encodeURIComponent(this.router.url);
+
+		this.router.navigate(["/report"], { queryParams });
+		this.overlayRef?.close();
+	}
+
 	closeOverlay(): void {
 		this.overlayRef?.close();
 	}
@@ -311,6 +332,7 @@ export class EditServingFormComponent implements OnInit, AfterViewInit, OnDestro
 		this.serving.set(serving);
 		this.food.set(serving?.food);
 		this.nutritions.set(this.servingsService.getServingNutritions(servingData));
+		this.productBarcode = serving.food.barcode;
 		this.prefillForm({ ...servingData });
 
 		if (serving.isEditable === false) {

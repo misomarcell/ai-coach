@@ -10,6 +10,7 @@ export * from "./models/cronometer-food.model";
 export * from "./models/daily-targets.model";
 export * from "./models/food.model";
 export * from "./models/health-profile.model";
+export * from "./models/report.model";
 export * from "./models/serving.model";
 export * from "./models/settings-profile.model";
 export * from "./models/user-profile.model";

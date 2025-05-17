@@ -164,6 +164,11 @@ export const routes: Routes = [
 				]
 			},
 			{
+				path: "report",
+				loadComponent: () => import("./report-page/report-page.component").then((m) => m.ReportPageComponent),
+				canActivate: [loggedInGuard]
+			},
+			{
 				path: "admin-dashboard",
 				loadComponent: () => import("./admin-dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
 				canActivate: [loggedInGuard, isAdminGuard],

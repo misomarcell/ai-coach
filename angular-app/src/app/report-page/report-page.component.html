@@ -1,0 +1,23 @@
+<app-page-title title="Report issue" [main]="true" />
+
+<p class="text-center pb-2">Please describe what seems to be the problem below.</p>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="w-100">
+	<mat-form-field class="w-100">
+		<mat-label>Title</mat-label>
+		<input matInput formControlName="title" />
+	</mat-form-field>
+
+	<mat-form-field class="w-100">
+		<mat-label>Description</mat-label>
+		<textarea formControlName="description" rows="4" matInput></textarea>
+	</mat-form-field>
+
+	<button mat-flat-button class="w-100">
+		@if (isLoading()) {
+			<mat-spinner diameter="20" mode="indeterminate" class="mr-2" />
+		} @else {
+			Submit
+		}
+	</button>
+</form>

@@ -3,7 +3,7 @@ import { DietaryFlag, Food, ProductImage, ServingSize } from "./food.model";
 
 export type ServingFood = Pick<
 	Food,
-	"name" | "brand" | "type" | "category" | "source" | "isApproved" | "tags" | "nutrientTags" | "nutritions"
+	"name" | "brand" | "type" | "category" | "source" | "isApproved" | "tags" | "nutrientTags" | "nutritions" | "barcode"
 > & {
 	id?: string;
 	images?: ProductImage[];

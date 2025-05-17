@@ -88,9 +88,10 @@ export class ProductResultComponent implements OnInit {
 				images: product.images,
 				nutrientTags: product.nutrientTags,
 				brand: product.brand,
+				barcode: product.barcode,
 				type: FoodType.Product,
 				nutritions: product.nutritions,
-				dietaryFlags: product.dietaryFlags, // TODO: Display on product page and create dietaryFlags component
+				dietaryFlags: product.dietaryFlags,
 				servingSizes: product.servingSizes,
 				category: "Other",
 				isApproved: true
