@@ -54,11 +54,6 @@ export class ReportPageComponent {
 			return;
 		}
 
-		if (!foodId && !barcode) {
-			this.snackBar.open("Report cannot be created", "OK", { panelClass: "snackbar-error" });
-			return;
-		}
-
 		this.isLoading.set(true);
 
 		const report: Omit<Report, "id" | "createdAt" | "createdBy"> = {

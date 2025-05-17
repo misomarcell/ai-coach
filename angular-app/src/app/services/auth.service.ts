@@ -21,6 +21,7 @@ import {
 } from "@angular/fire/auth";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
+import { UserMetadata } from "firebase/auth";
 import cookies from "js-cookie";
 import { filter, from, map, Observable, of, startWith, switchMap, take, tap } from "rxjs";
 
@@ -118,21 +119,36 @@ export class AuthService implements OnDestroy {
 		if (credential?.user) {
 			cookies.set("__session", await credential.user.getIdToken());
 			await this.router.navigate(["dashboard"]);
+
+			return credential;
 		}
 
-		return credential;
+		return undefined;
 	}
 
-	async providerLogin(providerName: ExternalAuthProvider): Promise<UserCredential> {
+	async providerLogin(providerName: ExternalAuthProvider): Promise<UserCredential | undefined> {
 		const provider = providerName === "google" ? new GoogleAuthProvider() : new GithubAuthProvider();
-		const credential = await signInWithPopup(this.auth, provider).catch((error) => this.handleAuthError(error));
 
-		if (credential.user) {
-			cookies.set("__session", await credential.user.getIdToken());
-			this.router.navigate(["dashboard"]);
+		try {
+			const credential = await signInWithPopup(this.auth, provider);
+			if (credential && credential.user) {
+				cookies.set("__session", await credential.user.getIdToken());
+
+				if (this.isNewProviderUser(credential.user.metadata)) {
+					console.log("New provider user detected. Redirecting to profile setup.");
+					await this.router.navigate(["profile", "health-profile"]);
+				} else {
+					console.log("Existing user detected. Redirecting to dashboard.");
+					await this.router.navigate(["dashboard"]);
+				}
+
+				return credential;
+			}
+		} catch (error) {
+			this.handleAuthError(error);
 		}
 
-		return credential;
+		return undefined;
 	}
 
 	async getResetPasswordEmail(code: string): Promise<{ email?: string; error?: any }> {
@@ -175,6 +191,17 @@ export class AuthService implements OnDestroy {
 		);
 	}
 
+	isNewProviderUser(metadata: UserMetadata): boolean {
+		if (!metadata.creationTime || !metadata.lastSignInTime) {
+			return false;
+		}
+
+		const created = new Date(metadata.creationTime);
+		const lastLogin = new Date(metadata.lastSignInTime);
+
+		return Math.abs(created.getTime() - lastLogin.getTime()) < 1000;
+	}
+
 	async logout() {
 		await this.auth
 			.signOut()
@@ -182,7 +209,7 @@ export class AuthService implements OnDestroy {
 			.then(() => window.location.reload());
 	}
 
-	private handleAuthError(error: any): any {
+	private handleAuthError(error: any): void {
 		let message = "Authentication failed. Please try again.";
 		switch (error.code) {
 			case "auth/user-not-found":

@@ -62,12 +62,20 @@ export class LoginComponent {
 
 		try {
 			this.authService
-				.isLoggedIn()
+				.getCurrentUser()
 				.pipe(
 					first(),
-					switchMap((isLoggedIn) =>
-						isLoggedIn ? this.router.navigate(["dashboard"]) : from(this.authService.providerLogin(provider))
-					)
+					switchMap((currentUser) => {
+						if (currentUser) {
+							if (this.authService.isNewProviderUser(currentUser.metadata)) {
+								return from(this.router.navigate(["/profile", "health-profile"]));
+							} else {
+								return from(this.router.navigate(["/dashboard"]));
+							}
+						} else {
+							return from(this.authService.providerLogin(provider));
+						}
+					})
 				)
 				.subscribe();
 		} finally {
