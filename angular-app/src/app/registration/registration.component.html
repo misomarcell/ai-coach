@@ -4,7 +4,7 @@
 </div>
 <form class="d-flex flex-column p-2" [formGroup]="formGroup" (submit)="onRegister()">
 	<mat-form-field class="w-100">
-		<mat-label>Name</mat-label>
+		<mat-label>Your name</mat-label>
 		<input matInput required type="text" autocomplete="name" formControlName="displayName" />
 
 		@if (formGroup.controls.email.errors) {
