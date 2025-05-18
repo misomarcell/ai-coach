@@ -19,15 +19,20 @@
 		<mat-icon>link</mat-icon>
 		<span>Integrations</span>
 	</app-menu-item>
-	<app-menu-item [routerLink]="['/report']">
+	<app-menu-item [routerLink]="['/report']" class="mt-4">
 		<mat-icon>bug_report</mat-icon>
 		<span>Report a problem</span>
 	</app-menu-item>
 
-	@if (isShareAvailable()) {
-		<app-menu-item (click)="onShareClick()">
-			<mat-icon>share</mat-icon>
-			<span>Share with friends</span>
+	<app-menu-item [routerLink]="['../legal']">
+		<mat-icon>help_outline</mat-icon>
+		<span>Info</span>
+	</app-menu-item>
+
+	@if (isInstallable()) {
+		<app-menu-item (click)="onInstallClick()">
+			<mat-icon>get_app</mat-icon>
+			<span>Install app</span>
 		</app-menu-item>
 	}
 	@if (isAdmin()) {
@@ -36,16 +41,13 @@
 			<span>Admin dashboard</span>
 		</app-menu-item>
 	}
-	@if (isInstallable()) {
-		<app-menu-item (click)="onInstallClick()">
-			<mat-icon>get_app</mat-icon>
-			<span>Install app</span>
+
+	@if (isShareAvailable()) {
+		<app-menu-item (click)="onShareClick()" class="mt-4">
+			<mat-icon>share</mat-icon>
+			<span>Share with friends</span>
 		</app-menu-item>
 	}
-	<app-menu-item [routerLink]="['../legal']">
-		<mat-icon>help_outline</mat-icon>
-		<span>Info</span>
-	</app-menu-item>
 	<app-menu-item (click)="onDiscordClick()">
 		<mat-icon>discord</mat-icon>
 		<span>Join us on Discord!</span>
