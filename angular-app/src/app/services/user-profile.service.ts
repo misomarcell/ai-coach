@@ -1,8 +1,7 @@
 import { UserProfile, UserProfileDb } from "@aicoach/shared";
 import { inject, Injectable } from "@angular/core";
 import { doc, docData, Firestore, FirestoreDataConverter, serverTimestamp, setDoc, Timestamp } from "@angular/fire/firestore";
-import { ActivatedRouteSnapshot } from "@angular/router";
-import { filter, from, map, Observable, of, switchMap, take } from "rxjs";
+import { filter, from, map, Observable, switchMap, take } from "rxjs";
 import { AuthService } from "./auth.service";
 @Injectable({
 	providedIn: "root"
@@ -27,17 +26,11 @@ export class UserProfileService {
 		}
 	};
 
-	getUserProfile(activatedRoute?: ActivatedRouteSnapshot): Observable<UserProfile | undefined> {
-		if (activatedRoute && activatedRoute.data["userProfile"]) {
-			return of(activatedRoute.data["userProfile"] as UserProfile);
-		}
-
+	getUserProfile(): Observable<UserProfile | undefined> {
 		return this.authService.getCurrentUser().pipe(
 			filter((user) => !!user),
-			take(1),
 			map((user) => doc(this.firestore, "users", user.uid).withConverter(this.userProfileConverter)),
-			switchMap((userDoc) => docData(userDoc)),
-			map((user) => user)
+			switchMap((userDoc) => docData(userDoc))
 		);
 	}
 

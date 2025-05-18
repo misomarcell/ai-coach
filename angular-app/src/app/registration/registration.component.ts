@@ -7,7 +7,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Router, RouterLink } from "@angular/router";
+import { RouterLink } from "@angular/router";
 import { ExternalAuthProvider } from "../services/auth.service";
 import { passwordMatchValidator } from "../services/form.service";
 import { RegistrationService } from "./registration.service";
@@ -35,7 +35,6 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 export class RegistrationComponent {
 	private registrationService = inject(RegistrationService);
 	private snackBar = inject(MatSnackBar);
-	private router = inject(Router);
 
 	showPassword = signal(false);
 	isRegistering = signal(false);
@@ -79,6 +78,7 @@ export class RegistrationComponent {
 		}
 
 		try {
+			this.isRegistering.set(true);
 			await this.registrationService.registerWithProvider(provider);
 		} finally {
 			this.isRegistering.set(false);

@@ -42,11 +42,15 @@
 			<span>Install app</span>
 		</app-menu-item>
 	}
-
 	<app-menu-item [routerLink]="['../legal']">
 		<mat-icon>help_outline</mat-icon>
 		<span>Info</span>
 	</app-menu-item>
+	<app-menu-item (click)="onDiscordClick()">
+		<mat-icon>discord</mat-icon>
+		<span>Join us on Discord!</span>
+	</app-menu-item>
+
 	<app-menu-item class="mt-4" (click)="onLogoutClick()">
 		<mat-icon>logout</mat-icon>
 		<span>Log out</span>

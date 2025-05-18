@@ -1,10 +1,15 @@
 @use "../../ai-highlight" as *;
 
 :host {
+	display: flex;
+	flex-direction: column;
 	max-width: var(--app-max-width);
-	display: block;
+	justify-content: center;
+	align-items: center;
 	transform: translateY(2rem);
+	height: 100vh;
 	margin: 0 auto;
+	padding: 0 1rem;
 }
 
 .title-bar {

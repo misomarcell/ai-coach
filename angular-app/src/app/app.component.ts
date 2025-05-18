@@ -16,6 +16,7 @@ const ICONS = [
 	"yazio",
 	"croissant",
 	"capsules-solid",
+	"discord",
 	"baby-solid",
 	"bottle-droplet-solid",
 	"bottle-water-solid",

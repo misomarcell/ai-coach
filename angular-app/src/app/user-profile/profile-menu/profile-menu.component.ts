@@ -1,18 +1,18 @@
+import { UserProfile } from "@aicoach/shared";
+import { isPlatformBrowser } from "@angular/common";
 import { Component, inject, PLATFORM_ID, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { MatCardModule } from "@angular/material/card";
 import { MatRippleModule } from "@angular/material/core";
 import { MatIconModule } from "@angular/material/icon";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { RouterModule } from "@angular/router";
+import { ActivatedRoute, RouterModule } from "@angular/router";
 import { catchError, EMPTY, filter, from, map, switchMap } from "rxjs";
+import { AppMenuModule } from "../../menu";
 import { PageTitleComponent } from "../../page-title/page-title.component";
 import { AuthService } from "../../services/auth.service";
 import { PromptService } from "../../services/prompt.service";
 import { PwaService } from "../../services/pwa.service";
-import { UserProfileService } from "../../services/user-profile.service";
-import { isPlatformBrowser } from "@angular/common";
-import { AppMenuModule } from "../../menu";
-import { MatCardModule } from "@angular/material/card";
 
 @Component({
 	selector: "app-profile-menu",
@@ -23,7 +23,7 @@ import { MatCardModule } from "@angular/material/card";
 export class ProfileMenuComponent {
 	private platformId = inject(PLATFORM_ID);
 	private authService = inject(AuthService);
-	private profileService = inject(UserProfileService);
+	private activatedRoute = inject(ActivatedRoute);
 	private promptService = inject(PromptService);
 	private snackBar = inject(MatSnackBar);
 	private pwaService = inject(PwaService);
@@ -38,7 +38,7 @@ export class ProfileMenuComponent {
 		{ initialValue: true }
 	);
 	isAdmin = toSignal(this.authService.isAdmin(), { initialValue: false });
-	name = toSignal(this.profileService.getUserProfile().pipe(map((u) => u?.displayName || "")), { initialValue: "" });
+	name = signal<string>((this.activatedRoute.snapshot.data["userProfile"] as UserProfile)?.displayName || "");
 
 	constructor() {
 		this.isInstallable.set(this.pwaService.isReadyToInstall());
@@ -70,6 +70,10 @@ export class ProfileMenuComponent {
 		if (this.pwaService.isReadyToInstall()) {
 			this.pwaService.promptInstallPwa();
 		}
+	}
+
+	onDiscordClick(): void {
+		window.open("https://discord.gg/BJnV9P4az2", "_blank");
 	}
 
 	async onShareClick(): Promise<void> {

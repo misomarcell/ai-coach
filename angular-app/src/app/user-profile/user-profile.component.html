@@ -1,6 +1,12 @@
 @if (userProfile()) {
 	<router-outlet />
 } @else {
-	<h4>Error</h4>
-	<p>User profile not found.</p>
+	<div class="d-flex flex-column jc-c mt-5">
+		<h4>Something went wrong</h4>
+		<p>Your profile was not found, maybe creating it takes a bit longer than usual. Please try reloading the page.</p>
+		<div class="d-flex jc-c gap-2">
+			<button mat-stroked-button [routerLink]="['/dashboard']" class="w-100">Dashboard</button>
+			<button mat-flat-button (click)="reload()" class="w-100">Reload</button>
+		</div>
+	</div>
 }

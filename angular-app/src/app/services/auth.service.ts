@@ -135,10 +135,8 @@ export class AuthService implements OnDestroy {
 				cookies.set("__session", await credential.user.getIdToken());
 
 				if (this.isNewProviderUser(credential.user.metadata)) {
-					console.log("New provider user detected. Redirecting to profile setup.");
 					await this.router.navigate(["profile", "health-profile"]);
 				} else {
-					console.log("Existing user detected. Redirecting to dashboard.");
 					await this.router.navigate(["dashboard"]);
 				}
 
@@ -202,10 +200,10 @@ export class AuthService implements OnDestroy {
 		return Math.abs(created.getTime() - lastLogin.getTime()) < 1000;
 	}
 
-	async logout() {
+	async logout(returnUrl?: string[]) {
 		await this.auth
 			.signOut()
-			.then(() => this.router.navigate(["/"]))
+			.then(() => this.router.navigate(returnUrl ?? ["/"]))
 			.then(() => window.location.reload());
 	}
 

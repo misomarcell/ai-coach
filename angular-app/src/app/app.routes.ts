@@ -125,7 +125,8 @@ export const routes: Routes = [
 					{
 						path: "",
 						loadComponent: () =>
-							import("./user-profile/profile-menu/profile-menu.component").then((m) => m.ProfileMenuComponent)
+							import("./user-profile/profile-menu/profile-menu.component").then((m) => m.ProfileMenuComponent),
+						resolve: { userProfile: userProfileResolver }
 					},
 					{
 						path: "settings",
@@ -136,7 +137,7 @@ export const routes: Routes = [
 						path: "health-profile",
 						loadComponent: () =>
 							import("./user-profile/health-profile/health-profile.component").then((m) => m.HealthProfileComponent),
-						resolve: { healthProfile: healthProfileResolver }
+						resolve: { userProfile: userProfileResolver, healthProfile: healthProfileResolver }
 					},
 					{
 						path: "integrations",

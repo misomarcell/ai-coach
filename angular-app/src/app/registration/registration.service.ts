@@ -4,6 +4,7 @@ import { doc, Firestore, setDoc } from "@angular/fire/firestore";
 import { Router } from "@angular/router";
 import cookies from "js-cookie";
 import { ExternalAuthProvider, AuthService } from "../services/auth.service";
+import { Analytics, logEvent } from "@angular/fire/analytics";
 
 @Injectable({
 	providedIn: "root"
@@ -12,6 +13,7 @@ export class RegistrationService {
 	private firestore = inject(Firestore);
 	private auth = inject(Auth);
 	private authService = inject(AuthService);
+	private analytics = inject(Analytics);
 	private router = inject(Router);
 
 	async register(email: string, password: string, displayName: string): Promise<UserCredential> {
@@ -24,6 +26,7 @@ export class RegistrationService {
 				displayName
 			});
 
+			await logEvent(this.analytics, "registration", { provider: "email" });
 			await this.router.navigate(["profile", "health-profile"]);
 		}
 
