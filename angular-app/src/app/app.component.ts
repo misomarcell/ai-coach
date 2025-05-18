@@ -4,10 +4,11 @@ import { Analytics } from "@angular/fire/analytics";
 import { Performance } from "@angular/fire/performance";
 import { MatIconRegistry } from "@angular/material/icon";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { DomSanitizer } from "@angular/platform-browser";
-import { RouterOutlet } from "@angular/router";
+import { DomSanitizer, Title } from "@angular/platform-browser";
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from "@angular/router";
 import { SwUpdate } from "@angular/service-worker";
 import { PwaService } from "./services/pwa.service";
+import { filter, map, mergeMap } from "rxjs";
 
 const ICONS = [
 	"telegram",
@@ -51,6 +52,9 @@ export class AppComponent implements OnInit {
 	private snackBar = inject(MatSnackBar);
 	private sanitizer = inject(DomSanitizer);
 	private swUpdate = inject(SwUpdate);
+	private router = inject(Router);
+	private activatedRoute = inject(ActivatedRoute);
+	private titleService = inject(Title);
 	private _analytics = inject(Analytics);
 	private _performance = inject(Performance);
 
@@ -68,6 +72,22 @@ export class AppComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.router.events
+			.pipe(
+				filter((event) => event instanceof NavigationEnd),
+				map(() => {
+					let route = this.activatedRoute;
+					while (route.firstChild) route = route.firstChild;
+					return route;
+				}),
+				mergeMap((route) => route.data)
+			)
+			.subscribe((data) => {
+				if (data["title"]) {
+					this.titleService.setTitle(`KombuchAI - ${data["title"]}`);
+				}
+			});
+
 		if (this.swUpdate.isEnabled) {
 			this.swUpdate.versionUpdates.subscribe((event) => {
 				if (event.type === "VERSION_DETECTED") {

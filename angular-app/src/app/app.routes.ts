@@ -19,6 +19,7 @@ export const routes: Routes = [
 				path: "diet-analyses",
 				loadComponent: () => import("./diet-analyses-page/diet-analyses-page.component").then((m) => m.DietAnalysesPageComponent),
 				canActivate: [loggedInGuard],
+				data: { title: "Diet Analyses" },
 				children: [
 					{
 						path: "",
@@ -41,6 +42,7 @@ export const routes: Routes = [
 				path: "dashboard",
 				loadComponent: () => import("./dashboard/dashboard.component").then((m) => m.DashboardComponent),
 				canActivate: [loggedInGuard],
+				data: { title: "Dashboard" },
 				resolve: {
 					servings: servingsResolver,
 					dailyTargets: dailyTargetsResolver
@@ -50,6 +52,7 @@ export const routes: Routes = [
 				path: "calorie-vision",
 				loadComponent: () => import("./calorie-vision/calorie-vision.component").then((m) => m.CalorieVisionComponent),
 				canActivate: [loggedInGuard],
+				data: { title: "Calorie Vision" },
 				children: [
 					{
 						path: "",
@@ -78,16 +81,19 @@ export const routes: Routes = [
 			},
 			{
 				path: "scan",
-				loadComponent: () => import("./scanner-page/scanner-page.component").then((m) => m.ScannerPageComponent)
+				loadComponent: () => import("./scanner-page/scanner-page.component").then((m) => m.ScannerPageComponent),
+				data: { title: "Scan" }
 			},
 			{
 				path: "scan/:barcode",
-				loadComponent: () => import("./product-result/product-result.component").then((m) => m.ProductResultComponent)
+				loadComponent: () => import("./product-result/product-result.component").then((m) => m.ProductResultComponent),
+				data: { title: "Scan" }
 			},
 			{
 				path: "foods",
 				loadComponent: () => import("./foods-page/foods-page.component").then((m) => m.FoodsPageComponent),
 				canActivate: [loggedInGuard],
+				data: { title: "Foods" },
 				children: [
 					{
 						path: "",
@@ -114,6 +120,7 @@ export const routes: Routes = [
 				loadComponent: () => import("./user-profile/user-profile.component").then((m) => m.UserProfileComponent),
 				canActivate: [loggedInGuard],
 				resolve: { userProfile: userProfileResolver },
+				data: { title: "Profile" },
 				children: [
 					{
 						path: "",
@@ -143,6 +150,7 @@ export const routes: Routes = [
 			{
 				path: "legal",
 				loadComponent: () => import("./legal/legal.component").then((m) => m.LegalComponent),
+				data: { title: "Legal" },
 				children: [
 					{
 						path: "",
@@ -166,12 +174,14 @@ export const routes: Routes = [
 			{
 				path: "report",
 				loadComponent: () => import("./report-page/report-page.component").then((m) => m.ReportPageComponent),
-				canActivate: [loggedInGuard]
+				canActivate: [loggedInGuard],
+				data: { title: "Report" }
 			},
 			{
 				path: "admin-dashboard",
 				loadComponent: () => import("./admin-dashboard/admin-dashboard.component").then((m) => m.AdminDashboardComponent),
 				canActivate: [loggedInGuard, isAdminGuard],
+				data: { title: "Admin Dashboard" },
 				children: [
 					{
 						path: "",
@@ -199,15 +209,18 @@ export const routes: Routes = [
 	{
 		path: "welcome",
 		loadComponent: () => import("./landing-page/landing-page.component").then((m) => m.LandingPageComponent),
-		canActivate: [loggedOutGuard]
+		canActivate: [loggedOutGuard],
+		data: { title: "Smart Nutrition" }
 	},
 	{
 		path: "browse-foods",
-		loadComponent: () => import("./landing-page/food-browser/food-browser.component").then((m) => m.FoodBrowserComponent)
+		loadComponent: () => import("./landing-page/food-browser/food-browser.component").then((m) => m.FoodBrowserComponent),
+		data: { title: "Browse Foods" }
 	},
 	{
 		path: "not-found",
-		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent)
+		loadComponent: () => import("./not-found/not-found.component").then((m) => m.NotFoundComponent),
+		data: { title: "Not Found" }
 	},
 	{
 		path: "acctmgmt",
@@ -216,21 +229,25 @@ export const routes: Routes = [
 	{
 		path: "login",
 		loadComponent: () => import("./login/login.component").then((m) => m.LoginComponent),
-		canActivate: [loggedOutGuard]
+		canActivate: [loggedOutGuard],
+		data: { title: "Login" }
 	},
 	{
 		path: "register",
 		loadComponent: () => import("./registration/registration.component").then((m) => m.RegistrationComponent),
-		canActivate: [loggedOutGuard]
+		canActivate: [loggedOutGuard],
+		data: { title: "Register" }
 	},
 	{
 		path: "verify-email",
-		loadComponent: () => import("./account-management/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent)
+		loadComponent: () => import("./account-management/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent),
+		data: { title: "Verify Email" }
 	},
 	{
 		path: "forgot-password",
 		loadComponent: () => import("./forgot-password/forgot-password.component").then((m) => m.ForgotPasswordComponent),
-		canActivate: [loggedOutGuard]
+		canActivate: [loggedOutGuard],
+		data: { title: "Forgot Password" }
 	},
 	{
 		path: "**",
