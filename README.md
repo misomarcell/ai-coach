@@ -3,11 +3,7 @@
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.2.
 
 ## Screenshots
-<img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/8d94e668-69a0-4bc2-bbd4-a9a8cf104d8e" />
-<img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/fa50fa4f-4da3-4b22-a535-bcb8331421af" />
-<img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/977c36f9-38d2-4dcc-9b87-8ec0e368a1a5" />
-<img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/63a3602e-5ea4-4027-9a65-d70b818cf6db" />
-<img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/7ab3a53f-7d4d-42f8-a38c-4d4a95946523" />
+<img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/8d94e668-69a0-4bc2-bbd4-a9a8cf104d8e" /><img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/fa50fa4f-4da3-4b22-a535-bcb8331421af" /><img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/977c36f9-38d2-4dcc-9b87-8ec0e368a1a5" /><img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/63a3602e-5ea4-4027-9a65-d70b818cf6db" /><img width="381" height="720" alt="image" src="https://github.com/user-attachments/assets/7ab3a53f-7d4d-42f8-a38c-4d4a95946523" />
 
 
 ## Development server
